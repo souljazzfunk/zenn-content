@@ -396,38 +396,557 @@ release-check Skillが状態を分類
 
 # 導入順序
 
-## 最初の1週間
+Loop Engineeringは、最初から複数のsubagent、worktree、MCP、定期実行を組み合わせるものではありません。
 
-`CLAUDE.md`と、1つの検証可能な`/goal`を作ります。
+重要なのは、**まず1つの仕事を最後まで閉じられる小さなループを作り、そのループが安定してから自動化範囲を広げること**です。
 
-## 次の1週間
+理由は単純です。
 
-繰り返している手順を1つだけSkillにします。
+ループが失敗したときに、
 
-同時に、状態ファイルを追加します。
+- 指示が悪かったのか
+- 完了条件が曖昧だったのか
+- Claudeの実装が悪かったのか
+- テストが不十分だったのか
+- subagent間の受け渡しが悪かったのか
+- 自動実行のタイミングが悪かったのか
 
-## その後
+が分からなくなるためです。
 
-読み取り専用のレビュー用subagentを追加します。
+最初から複雑なAgentic Workflowを作ると、AIが高度に動いているようには見えても、実際には「どこで品質が壊れているのか分からないシステム」になりやすくなります。
 
-## 安定後
+そのため、導入順序は機能ベースではなく、**ループの成熟度**で考えます。
 
-worktreeと外部スケジューラを導入します。
+```text
+Manual
+  ↓
+Repeatable
+  ↓
+Verifiable
+  ↓
+Delegated
+  ↓
+Scheduled
+  ↓
+Autonomous
+```
 
-次の指標を観測します。
+## Phase 1. Manual Loop
 
-- 実行頻度
-- 失敗率
-- 手戻り
-- 人へのエスカレーション数
+### まず、人間がループ全体を動かす
+
+最初は自動化しません。
+
+Claude Codeに1つの具体的な仕事を渡し、人間が開始、確認、再指示、停止を行います。
+
+この段階で確認したいのは、Claude Codeの性能そのものではなく、
+
+> この仕事には、明確な開始条件と完了条件を定義できるか
+
+という点です。
+
+例えば、次のような依頼です。
+
+```text
+Fix the failing authentication test.
+
+Done means:
+- tests/auth/session.test.ts passes
+- npm run lint passes
+- no files outside src/auth and tests/auth are changed
+```
+
+ここでは、まだ`/loop`もsubagentも必要ありません。
+
+Claudeに実装させ、テスト結果を確認し、人間が完了判定します。
+
+### この段階で得たいもの
+
+仕事を何回か繰り返すうちに、
+
+- 毎回伝えている制約
+- 毎回実行しているコマンド
+- よく起こる失敗
+- 完了判定に必要な証拠
+
+が見えてきます。
+
+それが次のフェーズでルール化する材料になります。
+
+### 次へ進む条件
+
+同じ種類の仕事を2回から3回実行して、
+
+> ほぼ同じ説明と確認手順を使っている
+
+状態になったら、次へ進みます。
+
+## Phase 2. Repeatable Loop
+
+### 繰り返し部分を`CLAUDE.md`とSkillへ移す
+
+Manual Loopを数回回すと、毎回同じことをClaudeに説明していることに気付きます。
+
+例えば、
+
+```text
+Run npm test before finishing.
+Do not modify migration files.
+Do not push automatically.
+```
+
+と毎回伝えているのであれば、それはプロンプトではなくプロジェクトルールです。
+
+`CLAUDE.md`へ移します。
+
+```markdown
+# CLAUDE.md
+
+## Commands
+
+- Test: npm test
+- Lint: npm run lint
+
+## Safety
+
+- Never push or merge automatically.
+- Do not modify database migrations unless explicitly requested.
+```
+
+一方、毎回同じ順番で行う作業はSkillにします。
+
+例えばCI失敗調査なら、
+
+```text
+.claude/skills/ci-triage/SKILL.md
+```
+
+を作ります。
+
+```markdown
+---
+name: ci-triage
+description: Investigate the current CI failure.
+allowed-tools: Read Grep Glob Bash
+---
+
+1. Inspect the failing job.
+2. Reproduce the failure locally.
+3. Identify the smallest likely root cause.
+4. Run the relevant tests.
+5. Report the result and evidence.
+```
+
+これで、
+
+```text
+/ci-triage
+```
+
+という短い指示だけで、同じ手順を再現できます。
+
+### なぜこの段階が必要なのか
+
+Agentic Workflowでは、モデル性能以上に**再現性**が重要になります。
+
+毎回自由なプロンプトを書くと、同じ仕事でもプロセスが毎回変わります。
+
+Skillにすることで、
+
+```text
+人間の頭の中の手順
+        ↓
+明示された手順
+        ↓
+再利用可能なWorkflow
+```
+
+に変わります。
+
+### 次へ進む条件
+
+同じSkillを何回か実行して、
+
+- 手順が大きく変わらない
+- 誤ったファイルを触らない
+- 必要な証拠を毎回出せる
+
+状態になったら、次へ進みます。
+
+## Phase 3. Verifiable Loop
+
+### 「Claudeが完了と言った」を完了条件にしない
+
+ここからLoop Engineeringらしくなります。
+
+人間が毎回結果を読んで判断する代わりに、**機械的に確認できる完了条件**を増やします。
+
+例えば、
+
+```text
+npm test
+npm run lint
+npm run typecheck
+```
+
+がすべて成功することを完了条件にします。
+
+```text
+/goal npm test exits 0,
+npm run lint exits 0,
+and npm run typecheck exits 0
+```
+
+重要なのは、
+
+```text
+Claude says "done"
+```
+
+ではなく、
+
+```text
+Test = PASS
+Lint = PASS
+Typecheck = PASS
+```
+
+という外部シグナルを使うことです。
+
+### UI開発なら
+
+完了条件はテストだけとは限りません。
+
+例えば、
+
+```text
+Build passes
++
+Screenshot comparison is acceptable
++
+No console errors
+```
+
+でも構いません。
+
+データパイプラインなら、
+
+```text
+Pipeline succeeds
++
+row count is within expected range
++
+schema has not changed
+```
+
+といった条件にできます。
+
+### この段階の目的
+
+人間が確認していた部分を、
+
+> Claude自身ではなく、別の証拠で確認する
+
+構造へ変えることです。
+
+これはAgentic Workflowの品質を大きく左右します。
+
+### 次へ進む条件
+
+人間が成果物を見る前に、
+
+> 成功か失敗かをかなり高い精度で判定できる
+
+状態になったら、次へ進みます。
+
+## Phase 4. Delegated Loop
+
+### 実装と検証を別の役割に分ける
+
+ここで初めてsubagentを導入します。
+
+例えば、
+
+```text
+fixer
+    ↓
+code-reviewer
+```
+
+という構造です。
+
+`fixer`はコードを変更できます。
+
+```text
+.claude/agents/fixer.md
+```
+
+一方、`code-reviewer`には編集権限を与えません。
+
+```markdown
+---
+name: code-reviewer
+description: Review changes and test evidence.
+tools: Read, Grep, Glob, Bash
+---
+
+Review the current git diff.
+
+Verify:
+- acceptance criteria
+- test evidence
+- security issues
+- unnecessary changes
+
+Do not edit files.
+```
+
+するとループは、
+
+```text
+Task
+ ↓
+Fixer
+ ↓
+Tests
+ ↓
+Reviewer
+ ↓
+Pass / Fix again / Escalate
+```
+
+になります。
+
+### なぜ最初からsubagentを使わないのか
+
+subagentを増やすと、システムは強力になりますが、同時に、
+
+- コンテキストの受け渡し
+- 権限管理
+- 責任範囲
 - トークン消費
-- 完了までの反復回数
+- 失敗原因
 
-:::message
-最初から「AIチーム」を作らないことが重要です。
+も増えます。
 
-まずは1つの小さな、可視化できる、検証可能なループを作り、その失敗から設計を育てます。
-:::
+単一エージェントのループが安定する前に導入すると、問題の切り分けが難しくなります。
+
+### worktreeを使うタイミング
+
+複数のエージェントが同時にコードを変更し始めたら、Git worktreeを導入します。
+
+```text
+main repo
+├── worktree/auth-fix
+├── worktree/frontend-fix
+└── worktree/docs
+```
+
+それぞれを独立した作業環境として扱います。
+
+この段階で初めて、並列化のメリットが出てきます。
+
+## Phase 5. Scheduled Loop
+
+### 人が「Claudeを起動する」仕事を自動化する
+
+ここまで安定したら、初めて時間ベースの自動実行を導入します。
+
+例えば、
+
+```text
+毎朝9時
+    ↓
+Open PRを確認
+    ↓
+CI failureを検出
+    ↓
+ci-triage
+    ↓
+状態ファイルを更新
+```
+
+とします。
+
+短時間の監視なら、
+
+```text
+/loop 10m /ci-triage
+```
+
+のようなClaude Code内のループを利用できます。
+
+一方、
+
+- 毎朝実行する
+- 夜間に実行する
+- セッションを閉じても動かす
+
+といった用途では、GitHub Actionsや外部スケジューラを使います。
+
+例えば、
+
+```yaml
+name: Nightly Agent Triage
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+```
+
+からClaude Codeを含むWorkflowを起動する、といった構成です。
+
+### なぜ自動実行を後回しにするのか
+
+壊れたループを自動実行すると、
+
+> 壊れた処理を、人間が見ていない場所で大量に実行する
+
+ことになります。
+
+そのため、
+
+```text
+Correct
+↓
+Repeatable
+↓
+Verifiable
+↓
+Automated
+```
+
+の順番を守ることが重要です。
+
+## Phase 6. Autonomous Loop
+
+### 人間は実行者ではなく、例外処理担当になる
+
+最終段階では、人間は毎回ループに参加しません。
+
+例えば、
+
+```text
+Issue発生
+   ↓
+Agentが分類
+   ↓
+安全な問題
+   ↓
+Worktree作成
+   ↓
+Fix
+   ↓
+Test
+   ↓
+Review
+   ↓
+PR作成
+```
+
+までは自動化します。
+
+人間には、
+
+```text
+Needs human decision
+```
+
+だけを送ります。
+
+例えば、
+
+- API仕様を変えるか
+- UXを変更するか
+- 本番Deployしてよいか
+- セキュリティ上のトレードオフを許容するか
+
+といった判断です。
+
+この状態になると、人間の役割は、
+
+```text
+Do the work
+```
+
+から、
+
+```text
+Design the system
+Review exceptions
+Improve the loop
+```
+
+へ変わります。
+
+これがLoop Engineeringの最終的な狙いです。
+
+## 期間ではなくExit Criteriaで進める
+
+実際には「1週間ごと」に区切る必要はありません。
+
+期間よりも、**各フェーズのExit Criteriaを満たしたら次へ進む**方式のほうが実務的です。
+
+| Phase | Exit Criteria |
+|---|---|
+| Manual | 完了条件を人間が明文化できる |
+| Repeatable | 同じ手順をSkillで再現できる |
+| Verifiable | 外部シグナルで成功判定できる |
+| Delegated | 実装と検証を分離できる |
+| Scheduled | 無人実行しても安全に停止できる |
+| Autonomous | 人間が例外だけを処理できる |
+
+つまり重要なのは、
+
+> 「何週間経ったか」ではなく、「どこまで人間の判断を安全にシステムへ移せたか」
+
+です。
+
+## 最初に作るなら、このループから始める
+
+最初の題材として、新機能開発全体を選ぶ必要はありません。
+
+例えばCI失敗対応なら、
+
+```text
+CI failure
+    ↓
+原因を調査
+    ↓
+小さい修正
+    ↓
+Test
+    ↓
+Lint
+    ↓
+Reviewer
+    ↓
+Human approval
+```
+
+という小さなループから始められます。
+
+このループが安定した後に、
+
+```text
+CI
+↓
+Review comments
+↓
+Issue triage
+↓
+Dependency updates
+↓
+Release preparation
+```
+
+と対象を広げていきます。
+
+Loop Engineeringでは、最初から大きなAgentic Systemを設計するより、
+
+> **1つのループを閉じる → 測る → 改善する → 次のループをつなぐ**
+
+という進め方のほうが、結果として高度な自動化へ到達しやすくなります。
 
 # まとめ
 
