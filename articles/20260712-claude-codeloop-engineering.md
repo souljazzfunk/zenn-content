@@ -948,6 +948,78 @@ Loop Engineeringでは、最初から大きなAgentic Systemを設計するよ�
 
 という進め方のほうが、結果として高度な自動化へ到達しやすくなります。
 
+# ループが静かに壊すもの
+
+ここまで「ループをどう作るか」を説明してきましたが、最後に「ループが何を壊しうるか」を押さえておきます。
+
+出所は、Armin Ronacherの[The Coming Loop](https://lucumr.pocoo.org/2026/6/23/the-coming-loop/)です。
+
+## テストは通るのに、理解可能性が失われる
+
+Ronacherが指摘するのは、無監督のループが繰り返されるときに起こる、静かな劣化です。
+
+LLMは例外やエラーを極端に嫌います。彼はKarpathyの「mortally terrified of exceptions（例外を死ぬほど恐れている）」という表現を引きながら、モデルは設計を直すのではなく、症状に防御的なパッチを当てる傾向があると述べます。
+
+> If each iteration adds another small defense, the system slowly becomes less understandable while appearing more robust.
+>
+> （各反復が小さな防御を1つずつ追加していくと、システムは頑健に見えながら、徐々に理解しにくくなっていく）
+
+不正な状態を「そもそも起こりえない設計」にするのが正しい修正である場面でも、ループは「あらゆる不正ケースをハンドリングするコード」を積み上げがちです。
+
+ここで注意したいのは、この劣化が**本記事で推奨してきた検証シグナルをすべて通過する**ことです。
+
+```text
+Test = PASS
+Lint = PASS
+Typecheck = PASS
+
+でも、コードは読めなくなっていく
+```
+
+防御的なtry-catch、不要なfallback、重複したnullチェックは、テストを壊しません。むしろテストを通りやすくします。Verifiable Loopの外部シグナルは、この種の劣化を検出できないのです。
+
+## これから実装する人への示唆
+
+この懸念は、Loop Engineeringをやめる理由ではありません。Ronacher自身も、移植、パフォーマンス調査、セキュリティスキャンなど、成果物に長い寿命を求めない領域ではループが有効だと認めています。
+
+そのうえで、本記事のループ設計に次の要素を足すことを勧めます。
+
+### 1. 停止条件に「設計の劣化を防ぐ制約」を含める
+
+「テストが通る」だけでは足りません。差分サイズの上限と、防御的パッチの禁止を明示します。
+
+```text
+/goal npm test exits 0, npm run lint exits 0,
+the diff stays under 150 lines,
+and no new try-catch or fallback branches are added
+unless the plan explains why the invalid state cannot be prevented
+```
+
+### 2. code-reviewerに「理解可能性」を評価させる
+
+Step 4のレビュー担当は、テスト証拠だけでなく、劣化の兆候を明示的に見る役割を持たせます。
+
+```markdown
+Also check for loop-induced degradation:
+- Defensive patches that handle symptoms instead of fixing root causes
+- New try-catch, fallback, or null-check branches without justification
+- Duplicated logic or abstractions that paper over unclear design
+
+Flag these as "Must fix" even if all tests pass.
+```
+
+### 3. 人間がコードを読む地点を、意図的に残す
+
+Phase 6のAutonomous Loopでも、「人間は例外だけを見る」を「人間はコードを読まない」にしてはいけません。
+
+Ronacherは、機械の参加を前提としないと保守できないコードベースが生まれることを警告し、最後にこう問いかけます。
+
+> 判断を放棄しないためにどうするか。良いエンジニアリングの規範をどう保つか。責任ある人間が監督し続けられる状態を、どう維持するか。
+
+ループの反復回数ではなく、時間や節目で「人間が差分ではなくコード全体を読む」レビューを定期的に入れます。これはEscalateの一種として、ループ設計そのものに組み込めます。
+
+Loop Engineeringの目的が「人が判断すべき地点まで、安全に作業を運ぶこと」であるなら、**コードを理解する能力を人間の側に残しておくこと**は、その前提条件です。
+
 # まとめ
 
 Claude Codeでloopを設計するとは、単に同じプロンプトを繰り返すことではありません。
@@ -983,6 +1055,7 @@ Loop Engineeringの中心は、AIに長時間働かせることではありま�
 # 参考資料
 
 - [Addy Osmani: Loop Engineering](https://addyosmani.com/blog/loop-engineering/)
+- [Armin Ronacher: The Coming Loop](https://lucumr.pocoo.org/2026/6/23/the-coming-loop/)
 - [Claude Code Docs: Run prompts on a schedule](https://code.claude.com/docs/en/scheduled-tasks)
 - [Claude Code Docs: Keep Claude working toward a goal](https://code.claude.com/docs/en/goal)
 - [Claude Code Docs: Best practices](https://code.claude.com/docs/en/best-practices)
