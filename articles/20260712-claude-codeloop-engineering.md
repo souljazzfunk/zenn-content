@@ -984,7 +984,39 @@ Typecheck = PASS
 
 そのうえで、本記事のループ設計に次の要素を足すことを勧めます。
 
-### 1. 停止条件に「設計の劣化を防ぐ制約」を含める
+順番に意味があります。CLAUDE.mdで**予防**し、停止条件で**抑制**し、レビューで**検出**し、人間の読みで**監査**する、という多層防御です。
+
+### 1. CLAUDE.mdで、防御的コードを生成段階から予防する
+
+レビューでの検出は事後対応です。
+
+CLAUDE.mdは実装担当を含む全エージェントが常に読む前提なので、防御的パッチをそもそも書かせないルールを置けます。
+
+```markdown
+## Error handling policy
+
+- Fail fast. Do not catch exceptions just to keep the program running.
+- Before handling an invalid state, first check whether the state
+  can be prevented at its source. Prefer making invalid states
+  impossible over handling them.
+- Any new defensive branch must include a comment explaining why
+  prevention at the source is not possible.
+
+## Root cause rule
+
+- When a test fails, fix the cause, not the symptom.
+- Never modify a test, add a special case, or widen a type
+  just to make a check pass.
+
+## Simplicity
+
+- Prefer deleting or simplifying code over adding it.
+- If you duplicate logic, refactor instead of copying.
+```
+
+これは記事のStep 2の基準、つまり「頻繁に変わらず、プロジェクト全体に適用されるルール」そのものです。
+
+### 2. 停止条件に「設計の劣化を防ぐ制約」を含める
 
 「テストが通る」だけでは足りません。差分サイズの上限と、防御的パッチの禁止を明示します。
 
@@ -995,7 +1027,7 @@ and no new try-catch or fallback branches are added
 unless the plan explains why the invalid state cannot be prevented
 ```
 
-### 2. code-reviewerに「理解可能性」を評価させる
+### 3. code-reviewerに「理解可能性」を評価させる
 
 Step 4のレビュー担当は、テスト証拠だけでなく、劣化の兆候を明示的に見る役割を持たせます。
 
@@ -1008,7 +1040,7 @@ Also check for loop-induced degradation:
 Flag these as "Must fix" even if all tests pass.
 ```
 
-### 3. 人間がコードを読む地点を、意図的に残す
+### 4. 人間がコードを読む地点を、意図的に残す
 
 Phase 6のAutonomous Loopでも、「人間は例外だけを見る」を「人間はコードを読まない」にしてはいけません。
 
