@@ -88,6 +88,44 @@ Remember
 
 完了、失敗、保留、次の一手は、Markdownやチケットに残します。
 
+## Agent、Loop、Harnessの違い
+
+本題に入る前に、この記事で扱う対象を3つの層に分けておきます。
+
+```text
+Agent
+  Claude Codeそのもの。
+  Plan → Tool → Edit → Verify という内部ループを持つ
+    ↓
+Loop
+  Agentを繰り返し実行し、成果を改善する反復
+    ↓
+Harness
+  Loopを安全に動かす、外側の制御システム
+```
+
+Claude Codeは、1回の実行の中でもツールを使い、結果を取り込み、次の行動を決めるループを回しています。しかしそれはAgentの**内部ループ**です。
+
+冒頭に示した`Discover → Decide → Execute → Verify → Escalate → Remember`は、Agentの外側から反復を制御する**外部ループ**であり、この外部ループを安全に運転するための仕組み一式がHarnessです。
+
+Harnessは、次の要素の集合として定義できます。
+
+```text
+Trigger（何をきっかけに起動するか）
+Scheduler（いつ実行するか）
+State（セッションの外に残す状態）
+Agent（実行主体）
+Judge（成果を評価する別の目）
+Permissions（何をしてよいか）
+Retry / Stop condition（いつ再実行し、いつ止めるか）
+Human escalation（何を人に渡すか）
+Observability（何が起きたかを追えること）
+```
+
+つまりLoop Engineeringとは、正確には**AgentをHarnessで包む設計**のことです。この記事で以降に登場する部品は、すべてこのHarnessのどこかの要素にあたります。
+
+なお、Armin Ronacherは[The Coming Loop](https://lucumr.pocoo.org/2026/6/23/the-coming-loop/)で、この外側の制御層をharnessと呼び、Agentの内部ループと明確に区別しています。この区別は記事の終盤でもう一度重要になります。
+
 # ループを構成する「5つ＋記憶」
 
 Addy Osmaniの整理を、Claude Codeで実装できる部品に変換すると、次のようになります。
@@ -416,6 +454,8 @@ Loop Engineeringは、最初から複数のsubagent、worktree、MCP、定期実
 最初から複雑なAgentic Workflowを作ると、AIが高度に動いているようには見えても、実際には「どこで品質が壊れているのか分からないシステム」になりやすくなります。
 
 そのため、導入順序は機能ベースではなく、**ループの成熟度**で考えます。
+
+これは言い換えると、むき出しのAgentに、Trigger、Judge、State、Escalationといった**Harnessの構成要素を1つずつ足していく過程**です。
 
 ```text
 Manual
@@ -956,7 +996,9 @@ Loop Engineeringでは、最初から大きなAgentic Systemを設計するよ�
 
 ## テストは通るのに、理解可能性が失われる
 
-Ronacherが指摘するのは、無監督のループが繰り返されるときに起こる、静かな劣化です。
+Ronacherが論じているのは、まさに本記事で言うHarness、つまりAgentを自然な停止点を越えて反復させる外側の制御層です。
+
+彼が指摘するのは、そのHarnessが無監督で回り続けるときに起こる、静かな劣化です。
 
 LLMは例外やエラーを極端に嫌います。彼はKarpathyの「mortally terrified of exceptions（例外を死ぬほど恐れている）」という表現を引きながら、モデルは設計を直すのではなく、症状に防御的なパッチを当てる傾向があると述べます。
 
@@ -1067,6 +1109,8 @@ Claude Codeでloopを設計するとは、単に同じプロンプトを繰り�
 7. 次回のために何を記録するか
 
 Claude Codeでは、それぞれを次の機能に対応させられます。
+
+言い換えると、これはHarnessの構成要素をClaude Codeの機能で組むための対応表です。
 
 | 設計対象 | Claude Codeでの実装 |
 |---|---|
