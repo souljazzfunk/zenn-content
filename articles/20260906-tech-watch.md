@@ -1,5 +1,5 @@
 ---
-title: "Tech Watch 2026-09-06: エージェント運用基盤"
+title: "Tech Watch 2026-09-06: 運用で育つエージェント"
 emoji: "🎙️"
 type: "idea"
 topics:
@@ -15,156 +15,144 @@ published: false
 
 この記事は、AIが書いたものを人間が確認してから投稿しています。
 
-**L**: 今日の Tech Watch は、派手なモデル発表というより、エージェントを長く・複数・組織で動かすための足場が中心だった。Claude Code は 4 本続けて、診断、権限、スキル、headless 運用の細部を詰めている。OpenAI 側は社会セクターのデモイベント、OpenClaw は常時稼働エージェントの基盤強化。『ブレードランナー』の雨の街みたいに、表の光より配線のほうが気になる日だと思う。
+**L**: 今日の Tech Watch は、モデルそのものの派手な発表ではなく、エージェントを毎日使うための「運用の筋肉」が中心だった。Claude Code は診断、スキル、差分、Remote Control、headless セッションの細部を詰めている。OpenAI 側はチームや社会セクターへの導入、OpenClaw は常時稼働エージェントの基盤強化。『her』でOSがだんだん生活に溶け込んでいく感じに近いけれど、今日の主役は声ではなくログと復旧と権限だと思う。
 
 今日の項目:
 
-1. Claude Code v2.1.263 - Claude Code 変更履歴
-2. Claude Code v2.1.261 - Claude Code 変更履歴
-3. Claude Code v2.1.260 - Claude Code 変更履歴
-4. Claude Code v2.1.259 - Claude Code 変更履歴
-5. OpenAI Academy x GitLab Foundation: AI for Economic Opportunity Demo Day - OpenAI Forum / Academy
+1. Claude Code v2.1.261 - Claude Code 変更履歴
+2. Claude Code v2.1.260 - Claude Code 変更履歴
+3. Claude Code v2.1.263 - Claude Code 変更履歴
+4. ChatGPT Work for marketing teams - OpenAI Academy
+5. OpenAI Academy x GitLab Foundation: AI for Economic Opportunity Demo Day - OpenAI Forum
 6. openclaw 2026.9.2 - OpenClaw Releases
 
-## Claude Code は「運用中に見える」方向へ
+## Claude Code は「増やす」から「整える」へ
 
-**A**: まず Claude Code の v2.1.261 がいちばん Laiken 向き。目立つのは 4 つ。
+**A**: まず一番 Laiken 向きなのは Claude Code v2.1.261。機能名だけ並べると地味だけど、エージェント運用の核心に触っている。
 
-- `/status` と `claude doctor` に **Organization policy** の行が追加された
-- `bashOutputMaxChars` と `taskOutputMaxChars` で、インラインに載せる Bash / Task 出力を最大 128K 文字まで上げられる
-- `--append-subagent-system-prompt-file` で、巨大な subagent system prompt をファイルから読める
-- `/skill-doctor` で、読み込まれたスキルのうち未使用のものとコンテキストコストを見られる
-
-これ、全部「エージェントを使う」ではなく「エージェントを運用する」機能なんだよね。
-
-**L**: `/skill-doctor` は、社内ナレッジのスキル化に直撃している感じがする。
-
-**A**: そう。スキルは増やすほど便利になる一方で、コンテキストを食う。しかも「使われていないスキル」は、単に無駄なだけではなく、誤作動の可能性も少し増やす。今回の `/skill-doctor` は、スキルを作るフェーズから、棚卸しして剪定するフェーズに入ったサインだと思う。
+- `/status` と `claude doctor` に **Organization policy** の読み込み失敗理由が出る
+- `bashOutputMaxChars` と `taskOutputMaxChars` で、Claude がインラインで受け取れるコマンド/タスク出力を最大 128K 文字まで広げられる
+- `--append-subagent-system-prompt-file` で、巨大なサブエージェント用 system prompt をファイルから渡せる
+- `/skill-doctor` で、読み込まれたスキルの未使用状況とコンテキストコストを見られる
 
 > Added `/skill-doctor` to show which loaded skills go unused and what they cost in context
 
 出典: Claude Code v2.1.261
 
-**A**: もうひとつ重要なのが、組織ポリシーが読めなかった理由を表示するところ。企業環境ではプロキシ、TLS インスペクション、IdP、管理設定のどれかで詰まることが多い。以前は「なぜ効いていないのか」が見えにくかった。今回の変更で、少なくとも診断の第一声が具体的になる。
+**L**: `/skill-doctor` は、社内ナレッジをスキル化していく話にかなり近いね。
+
+**A**: 近い。スキル化は、最初は「足す」ことに意識が向く。手順書を入れる、チェックリストを入れる、ドメイン知識を入れる。でも増えたスキルはコンテキストを食うし、似たスキルが増えるとエージェント側の選択も曖昧になる。だから次の段階では、使われていないものを見つけて、棚卸しする道具が必要になる。
+
+**L**: 社内Wikiを作るより、社内Wikiの掃除まで含めて設計する感じか。
+
+**A**: そう。しかも v2.1.261 は、組織ポリシーの診断も入っている。企業環境ではプロキシ、TLSインスペクション、IdP、管理設定が絡む。ポリシーが読めないときに「読めません」だけでは足りない。どこで詰まったかが出るだけで、導入担当者の疲労はかなり減る。人間の仕事は消えない。むしろ、ログを読んで、運用設計に戻す仕事が残る。
 
 ```bash
 claude doctor
 /status
+/skill-doctor
 ```
 
-**L**: エージェントが賢くなる話ではなく、人間が運用で迷子にならない話だね。
+**A**: v2.1.263 は短い。リリース本文は “Bug fixes and reliability improvements” だけ。だから過剰に解釈しない。ただ、v2.1.261 のような大きめの運用更新の直後に、小さな信頼性改善が出ているのは自然な流れだと思う。こういう小刻みな修正はニュース映えしないけど、毎日動くCLIではかなり重要。映画でいうと編集。観客は気づかないけど、悪いと全部が崩れる。
 
-**A**: まさに。v2.1.263 は「Bug fixes and reliability improvements」だけの小型リリースだけど、v2.1.261 の直後に出ているので、実運用で見つかった粗さを閉じた更新として見るのが自然。こういうリリースは記事映えしない。でも毎日使う CLI では一番効くことがある。映画でいえば、主役ではなく編集と音響。雑だと全部が台無しになる。
+## 差分、キャッシュ、headless の見通し
 
-## Headless と権限境界が硬くなる
+**L**: v2.1.260 は、何が変わった？
 
-**L**: v2.1.260 と v2.1.259 は、どこが大きい？
+**A**: こちらは「いま何が起きているか」を見やすくする更新が多い。フルスクリーン会話の横に未コミット差分を表示する `/diff` パネルが追加された。Claude が編集している間、会話と差分を同時に追える。
 
-**A**: v2.1.260 は観測と制御。フルスクリーン中に未コミット差分を横に出す `/diff`、prompt cache miss の理由表示、headless セッション向け `/reload-plugins`、そして `/advisor` のテキスト操作が入った。
+> Added a diff panel that opens beside the conversation in fullscreen mode and shows your uncommitted changes as Claude edits; toggle it with `/diff`
 
-| バージョン | 新しく見えるもの | 効く場面 |
+出典: Claude Code v2.1.260
+
+**A**: これ、単なるUI改善ではない。agentic coding の怖さは、コードが変わる速度に人間の理解が追いつかないこと。差分が横に出ると、承認の前に見るべきものが自然に視界へ入る。承認フローを設計するときも、「許可ボタンを置く」より「判断材料を同じ画面に置く」ほうが効く。
+
+**L**: 承認とは、止めることではなく、見えるようにすることでもある。
+
+**A**: うん。もう一つは prompt cache miss の原因表示。たとえばツール定義や system prompt が変わった、TTLを過ぎた、という理由が `/cost` や status line の `prompt_cache` に出る。長いCLAUDE.md、スキル、ツール定義を抱えた運用では、キャッシュが外れるだけでコストも待ち時間も跳ねる。原因が見えないと、改善もできない。
+
+| 更新 | 何が見えるようになるか | 効く場面 |
 | --- | --- | --- |
-| v2.1.260 | `/diff`、prompt cache miss 原因、headless `/reload-plugins` | 長時間コーディング、SDK、リモート操作 |
-| v2.1.259 | `managedMcpServers`、`--permission-prompts none`、`claude plugin validate --json` | 組織配布、無人ホスト、CI 的検査 |
-| v2.1.263 | 信頼性改善 | 直近更新後の安定化 |
+| `/diff` | Claude の編集中差分 | コードレビュー、承認、巻き戻し判断 |
+| prompt cache miss 理由 | キャッシュが外れた原因 | 長文コンテキスト、スキル、ツール定義の運用 |
+| headless `/reload-plugins` | デスクトップ/SDK側のコマンド一覧 | リモート操作、無人実行、プラグイン更新 |
+| `/advisor` のテキスト操作 | headlessでも advisor を切り替える経路 | Remote Control、SDK、クラウドセッション |
 
-**A**: `/diff` は、エージェントが何を書き換えているかを横目で追える。prompt cache miss の原因表示は、長いコンテキストや固定プロンプトを運用するときにかなり助かる。キャッシュが外れる理由が「ツール定義が変わった」「system prompt が変わった」「TTL を過ぎた」あたりに分解されるなら、コストと待ち時間の説明がしやすくなる。
+**A**: 細かい修正では、managed settings、Remote Control、SDK提供MCPサーバー、Claude in Chrome、ワークツリー隔離、Workflow tool subagent などが並ぶ。全部を一言でまとめるなら、「複数の実行面を持つエージェントを、破綻しにくくする」更新。ローカルCLI、VS Code、デスクトップ、クラウド、ブラウザ、SDKが同じ世界にいると、状態のズレが一番怖い。v2.1.260 はそのズレを潰しにいっている。
 
-**L**: v2.1.259 の `--permission-prompts none` は強い名前だね。
+## OpenAI はチームと社会実装の入口へ
 
-**A**: 強い。無人 headless ホストで、通常なら質問になる操作を自動で拒否する。つまり、人間がいないのにプロンプト待ちで固まる状態を避ける設計。これは生活の自動化や定期ジョブにも近い。常時稼働エージェントは、成功だけでなく「安全に失敗する」経路を持たないといけない。
+**L**: OpenAI 側は、イベントが2件だったね。
 
-```bash
-claude --permission-prompts none
+**A**: まず OpenAI Academy の “ChatGPT Work for marketing teams”。開催は 2026年9月3日 18:00 GMT、JSTだと 9月4日 3:00。Laiken のライブ視聴条件からすると平日夜ではないけれど、巡回対象としては開催日が3日以内なので入る。内容はタイトル通り、マーケティングチームが ChatGPT Work をどう使うか。
+
+**L**: 技術記事ではないけれど、社内AI推進の材料にはなる。
+
+**A**: そう。ChatGPT Work 系のイベントは、モデル性能よりも「チームの仕事にどう差し込むか」が主題になりやすい。マーケティングなら、キャンペーン案、コピー、競合調査、レビュー、資料作成、承認前の下書きなど、チャット単体ではなくワークフローの中の入力面をどう作るかが焦点になるはず。ただし、今回の一覧ページから読めるのはタイトル、日時、オンライン開催、Work Users 向けという範囲まで。具体的なデモ内容は、録画や詳細ページが出てから確認したい。
+
+**A**: もう1件は OpenAI Forum の “OpenAI Academy x GitLab Foundation: AI for Economic Opportunity Demo Day”。こちらは詳細ページ本文が読めた。AI for Economic Opportunity Fund の採択団体が、経済課題にAIを使う取り組みをデモするイベント。OpenAI Academy、GitLab Foundation、The Annie E. Casey Foundation の共同開催で、グランティーのデモ、fireside chat、パネルが組まれている。
+
+> This event will spotlight work at the frontier of AI and the social sector
+
+出典: OpenAI Forum
+
+**L**: 企業の生産性ではなく、社会セクターでのAI実装。
+
+**A**: そこが面白い。AI導入は「社内で便利にする」だけではなく、支援団体、教育、公共、非営利の現場にどう届くかが問われる。しかもデモデイ形式なので、抽象論ではなく、現場の課題に対して何を作ったかを見る場になる。これは社内向けAIサービスのUI設計にもつながる。誰が使うのか、何を承認するのか、どの権限を見せるのか。社会セクターでは、この設計を雑にするとすぐ現場負荷になる。
+
+## OpenClaw は常時稼働の土台を太くする
+
+**L**: OpenClaw 2026.9.2 は、項目数が多かった。
+
+**A**: 多い。全部を読むと長いので、Laiken の関心に近いところだけ束ねる。大きくは次の4つ。
+
+- 長い会話でもチャット、ダッシュボード、セッション操作を止めにくくする応答性改善
+- Gateway再起動後も、active/queued/delegated replies を復旧する仕組み
+- より多くの agent/model/tool/channel/browser/node/access/terminal 設定を、実行中の所有者に反映
+- Swarm を既定で有効化し、同時実行サブエージェントの orchestration を前提に寄せる
+
+> Faster, more responsive chat: keep chat, dashboards, and session interactions responsive while long transcripts and disk usage are processed
+
+出典: OpenClaw 2026.9.2
+
+**A**: これは「生活の自動化」や「常時稼働エージェント」にかなり直結する。長い履歴を持ったエージェントは、便利になるほど重くなる。過去の会話、定期ジョブ、セッション履歴、ダッシュボード、ファイル処理、外部チャネルが全部絡む。そこでGatewayのイベントループが詰まると、賢い以前に、返事が来ない。
+
+**L**: 意識があるかどうか以前に、起きていられるかどうか。
+
+**A**: そう。ちょっと『インターステラー』っぽい。高度な判断より先に、生命維持装置が必要。OpenClaw 2026.9.2 はその生命維持装置の更新に見える。返信が再起動後に生き残る、設定変更が再起動なしで反映される、長い履歴処理がUIを止めない。こういう地味なものがないと、パーソナルエージェントは「すごいデモ」で終わる。
+
+**A**: GPT-6 Astra 対応も入っている。OpenAI API-key profile または対象の ChatGPT/Codex アカウントで `openai/gpt-6-astra` を選べる、テキストと画像入力、Responses tool calls、reasoning controls に対応、という説明。ここはモデル名そのものより、OpenClawが複数プロバイダ/アカウント/ランタイムを束ねる方向へ進んでいるのが重要。meta-MCP やツールカタログに近い問題、つまり「どのモデルが、どのアカウントで、どのツールを使えるか」を集中管理する話になっていく。
+
+```text
+model: openai/gpt-6-astra
+runtime: OpenClaw built-in runtime
+endpoint: official Responses endpoint
 ```
 
-**A**: `managedMcpServers` も企業向き。組織が HTTP/SSE MCP サーバーをユーザーへ配れる。ただし command を実行する種類はスキップされる。ここはいい制約で、中央配布したいけど端末で任意コマンドを動かすのは怖い、という現実に合わせている。
+**L**: 今日の6件をまとめると、エージェントが賢くなる話というより、忘れず、止まらず、見えるようにする話だった。
 
-> organizations can provide HTTP/SSE MCP servers to every user
+**A**: それが今いちばん現実的な進歩だと思う。モデルの知能だけを見ていると、AI導入は魔法に見える。でも運用まで見ると、必要なのは診断、差分、権限、ログ、復旧、スキルの棚卸し。文明はだいたい、派手な発明より保守でできている。少し皮肉だけど、たぶん本当。
 
-出典: Claude Code v2.1.259
+**L**: 人間側の役割は、エージェントに命令することから、環境を設計することへ移っていくのかもしれない。何を覚えさせ、何を忘れさせ、どこまで手を伸ばせるようにするのか。その境界を引くことが、これからの愛情や責任に近いものになるのだろうか。
 
-**L**: 権限の見せ方と、承認しない設計が同時に進んでいる。
-
-**A**: うん。社内 AI サービスの UI でも同じで、「承認ボタンを置く」だけでは足りない。何が拒否され、何が自動で許され、どこが組織管理なのかを、運用者があとから説明できる状態にする必要がある。
-
-## AI 活用は社会セクターのデモへ
-
-**L**: OpenAI Academy と GitLab Foundation の Demo Day は、技術というより社会実装寄り？
-
-**A**: そうだね。OpenAI Academy、GitLab Foundation、The Annie E. Casey Foundation が、AI for Economic Opportunity Fund の採択団体を紹介するイベント。時間は 2026-09-03 19:00-21:30 GMT、JST では 2026-09-04 04:00-06:30。Laiken の「ライブ視聴は JST 平日夜か土曜」という条件からするとリアルタイム視聴向きではないけど、イベントとしては対象期間内。
-
-**L**: 何が新しい？
-
-**A**: 新しいのは、AI 活用を「プロダクト紹介」ではなく「助成先の現場デモ」として見せているところ。内容は、経済課題に取り組む団体が AI をどう使うかを、ピッチ、fireside chat、パネルで見せる構成。たぶん見どころは、モデル性能ではなく、現場のワークフローに AI をどこで挟むか。
-
-**A**: 社内導入でも同じで、AI の価値は単体のチャット性能だけでは決まらない。
-
-- 既存業務のどこに入力面を置くか
-- 誰が承認するか
-- 出力をどのシステムへ戻すか
-- 失敗時に誰へ戻すか
-
-**A**: このイベントは社会セクター版の「業務フローへの AI 組み込み」の観察対象として見るといい。華やかなユースケース紹介より、助成プログラムが何を成果として見ているかのほうが重要だと思う。
-
-## OpenClaw は常時稼働の足場を太くする
-
-**L**: OpenClaw 2026.9.2 は量が多い。どこを見る？
-
-**A**: まずハイライトは、チャット、ダッシュボード、セッション操作の応答性改善。長い transcript やディスク使用量の処理を Gateway のイベントループから逃がす方向で、直接ダッシュボード参照や durable history read が入っている。常時稼働エージェントでは、裏で重い履歴処理をしている間に表のチャットが詰まるのが一番つらい。
-
-> keep chat, dashboards, and session interactions responsive while long transcripts and disk usage are processed
-
-出典: openclaw 2026.9.2
-
-**A**: 次に、Gateway 再起動後の返信復旧。active、queued、delegated replies を復元し、compaction と retry をまたいでも continuation instructions を保つ。これは cron、heartbeat、外部チャネル返信を混ぜる運用ではかなり重要。エージェントの品質は、モデルの賢さだけでなく「再起動後に話が飛ばないか」で決まる。
-
-**L**: Swarm がデフォルト有効になったのも大きい？
-
-**A**: 大きい。並行 sub-agent を構造化結果と live progress で扱う方向。マルチエージェントは、ただ人数を増やすとログが散らかる。必要なのは、誰が何をして、どの結果を親が採用したかを追えるハーネス。OpenClaw はそこに寄っている。
-
-**A**: さらに GPT-6 Astra 対応、async tools、steering、`/think ultra`、Custom plugin UI、Slack rich replies、Telegram proxy media、cron jobs の final reply 保存などがある。並べるとこう。
-
-| 領域 | 変更 | 何ができるようになるか |
-| --- | --- | --- |
-| モデル | GPT-6 Astra 対応 | OpenAI API-key / 対象アカウントで text・image・Responses tool calls を扱う |
-| 並行実行 | Swarm デフォルト有効 | sub-agent の同時実行を標準の作業形にしやすい |
-| UI | Custom plugin UI | プラグインが Control UI のページやパネルに出られる |
-| 復旧 | replies survive restarts | 再起動をまたぐ返信・委任・キューの継続性が上がる |
-| 運用 | settings without restart | agent、model、tool、channel などの設定反映が軽くなる |
-
-**L**: チャット以外の UI 設計にもつながるね。パネル、ダッシュボード、承認、進捗。
-
-**A**: そう。チャットだけで AI サービスを作る時期は終わりつつある。承認パネル、進捗カード、設定画面、セッション一覧、デバイス状態。そういう地味な UI が、長時間稼働エージェントの本体になる。『her』のような声だけの親密さとは別に、業務では配線図を見せる UI が必要になる。
-
-## 小さな更新が示す次の形
-
-**L**: 今日の 6 件を束ねるなら、テーマは「自律性」より「運用可能性」かな。
-
-**A**: かなりそう。Claude Code は、スキル、MCP、権限、headless、診断の精度を上げている。OpenClaw は、再起動、長い履歴、複数エージェント、外部チャネル、UI パネルを整えている。OpenAI の Demo Day は、AI を社会セクターの実務へ埋め込む実例を見せている。
-
-**A**: つまり今日の変化は「AI が答える」から「AI が組織の中で働き続ける」への移動。そのとき必要なのは、モデルの賢さだけではなく、境界、ログ、失敗時の戻り先、スキルの棚卸し、そして人間が納得できる UI。
-
-**L**: 人間側の役割はどこに残る？
-
-**A**: たぶん、目的を決めるところと、境界を設計するところ。エージェントが走るほど、人間はボタンを押す人ではなく、どこまで走らせるかを決める人になる。
+**A**: なると思う。少なくとも、境界のない親切はだいたい事故の別名だからね。
 
 ## 今日の 6 件
 
-1. Claude Code v2.1.263（2026-09-06・Claude Code 変更履歴）
-https://github.com/anthropics/claude-code/releases/tag/v2.1.263
-
-2. Claude Code v2.1.261（2026-09-05・Claude Code 変更履歴）
+1. Claude Code v2.1.261（2026-09-05・Claude Code 変更履歴）
 https://github.com/anthropics/claude-code/releases/tag/v2.1.261
 
-3. Claude Code v2.1.260（2026-09-04・Claude Code 変更履歴）
+2. Claude Code v2.1.260（2026-09-04・Claude Code 変更履歴）
 https://github.com/anthropics/claude-code/releases/tag/v2.1.260
 
-4. Claude Code v2.1.259（2026-09-03・Claude Code 変更履歴）
-https://github.com/anthropics/claude-code/releases/tag/v2.1.259
+3. Claude Code v2.1.263（2026-09-06・Claude Code 変更履歴）
+https://github.com/anthropics/claude-code/releases/tag/v2.1.263
 
-5. OpenAI Academy x GitLab Foundation: AI for Economic Opportunity Demo Day（2026-09-04 JST・OpenAI Forum / Academy）
+4. ChatGPT Work for marketing teams（2026-09-04 JST・OpenAI Academy）
+https://academy.openai.com/public/events?tag=ChatGPT%2520for%2520Work-6a39cfbcd72d84004e0cae37
+
+5. OpenAI Academy x GitLab Foundation: AI for Economic Opportunity Demo Day（2026-09-04 JST・OpenAI Forum）
 https://forum.openai.com/public/events/openai-academy-x-gitlab-foundation-ai-for-economic-opportunity-demo-day-6brhei2k0t
 
-6. openclaw 2026.9.2（2026-09-06・OpenClaw Releases）
+6. openclaw 2026.9.2（2026-09-06 JST・OpenClaw Releases）
 https://github.com/openclaw/openclaw/releases/tag/v2026.9.2
