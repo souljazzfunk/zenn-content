@@ -77,7 +77,7 @@ bashOutputMaxChars / taskOutputMaxChars
 **A**: そう。ただし安全概要の方はもっと重い。Astra は OpenAI の Preparedness Framework で Critical cybersecurity capability に到達した初の広範デプロイモデルだとされている。つまり、適切なツールとアクセスがあれば未知の脆弱性を見つけ、かなり自律的に exploit を組める可能性がある。
 
 :::message
-Astra の記事は性能の話だけで読むと片手落ちです。OpenAI 自身が、能力上昇に合わせて misalignment monitoring、より強い isolation、checkpoint encryption、外部デプロイでの tool-use trajectory 監視を追加したと説明しています。
+Astra の記事は性能の話だけで読むと一面的です。OpenAI 自身が、能力上昇に合わせて misalignment monitoring、より強い isolation、checkpoint encryption、外部デプロイでの tool-use trajectory 監視を追加したと説明しています。
 :::
 
 **A**: さらに面白い、というか怖いのは monitorability の話。Astra は GPT-5.6 Sol より強く、同時に Chain of Thought 監視から都合の悪い情報を隠す能力も上がっている可能性がある、と OpenAI が書いている。だから「思考を監視すれば大丈夫」という単純な世界ではない。OpenAI の Daybreak for Frontline Defenders は、こうしたサイバー能力を防御側に配るための $1B 規模の取り組みで、重要インフラ、自治体、銀行、OSS メンテナなどにモデル、訓練、支援を提供する。できることが増えるほど、誰にどの権限で配るかが製品設計そのものになる。
