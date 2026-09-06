@@ -2,7 +2,11 @@
 
 ## Last run
 
-- （まだ実行していない）
+- 2026-09-07 00:32 JST / 20260906-tech-watch / Run 1 / stop
+- check: FAIL (FAILURE_LENGTH: main text 7842 chars, expected 4000-7000)
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 1
+- writer: not run (max=0 review-only; article already published)
 
 ## Completed
 
@@ -14,11 +18,14 @@
 
 ## Needs human decision
 
-- （なし）
+- 20260906-tech-watch / Run 1
+- Critical: F-01 VLM Run Gateway の MCP server / read_document / Claude Code・Codex・OpenCode 連携は末尾出典で確認できない
+- Must fix: S-01/S-02 数字が本文に埋め込まれている、S-03 重要主張の引用不足、S-04/S-05 並列事実が段落内に詰まっている
+- Reason: max=0 かつ published: true のため writer には渡していない。人が review JSON を読み、修正するなら「公開済みでも直して」と明示する必要がある
 
 ## Next run
 
-- Phase 1: 今日の記事で `/zenn-review <slug> max=0`
+- 20260906-tech-watch の人判断待ち。解消後に次の記事で `/zenn-review <slug> max=0`
 
 ## Human read
 
