@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-07 00:32 JST / 20260906-tech-watch / Run 1 / stop
+- 2026-09-07 00:40 JST / 20260906-tech-watch / Run 2 / stop
 - check: FAIL (FAILURE_LENGTH: main text 7842 chars, expected 4000-7000)
 - fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 5 / Nice 1
-- writer: not run (max=0 review-only; article already published)
+- style: Critical 0 / Must fix 6 / Nice 1
+- writer: not run (review-only; article already published and unresolved human decision exists)
 
 ## Completed
 
@@ -18,10 +18,10 @@
 
 ## Needs human decision
 
-- 20260906-tech-watch / Run 1
+- 20260906-tech-watch / Run 2
 - Critical: F-01 VLM Run Gateway の MCP server / read_document / Claude Code・Codex・OpenCode 連携は末尾出典で確認できない
-- Must fix: S-01/S-02 数字が本文に埋め込まれている、S-03 重要主張の引用不足、S-04/S-05 並列事実が段落内に詰まっている
-- Reason: max=0 かつ published: true のため writer には渡していない。人が review JSON を読み、修正するなら「公開済みでも直して」と明示する必要がある
+- Must fix: S-01/S-02/S-03 数字が本文に埋め込まれている、S-04 重要主張の引用不足、S-05/S-06 並列事実が段落内に詰まっている
+- Reason: published: true かつ未解決の人間判断待ちがあるため writer には渡していない。人が review JSON を読み、修正するなら「公開済みでも直して」と明示する必要がある
 
 ## Next run
 
