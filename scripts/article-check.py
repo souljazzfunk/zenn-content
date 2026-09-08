@@ -30,10 +30,15 @@ H2_MIN, H2_MAX = 3, 5
 HEDGE_PER_1000_MAX = 3.0
 A_NUMBERED_LISTS_MAX = 1
 
-FALLBACK_BANNED = ["片手落ち", "めくら判", "つんぼ桟敷", "気違い", "キチガイ", "精神分裂", "色盲的", "痴呆", "白痴", "外人"]
+FALLBACK_BANNED = ["片手落ち", "めくら判", "つんぼ桟敷", "気違い", "キチガイ", "精神分裂", "色盲的", "痴呆", "白痴", "外人",
+                   "効く", "効い", "効き", "効か", "効け"]  # 末尾 5 つは動詞「効く」の活用形（効果・有効・効率には当たらない）
+FALLBACK_SLANG = ["刺さる", "ハマる", "やばい", "ヤバい", "爆速", "秒で", "ぶっちゃけ", "ガチで", "マジで", "神機能", "一択", "知見", "いい感じ", "エモい", "ワンチャン", "ググる"]
 FALLBACK_HEDGES = ["かもしれない", "場合によっては", "注意が必要", "補足すると", "一概には"]
 OLD_NAMES = ["レックス", "アンドレイ", "架空のキャラクター", "架空の人物"]
 AI_HEADER = "#### AIが書きました🤖"
+# 英語の形容詞・副詞が述語になっている箇所（「interesting です」「robust だ」）。名詞＋です は拾わない
+ENGLISH_ADJ = ["interesting", "robust", "obedient", "legit", "scalable", "cool", "nice", "crazy", "tricky", "elegant", "clever", "smart", "huge", "subtle", "weird", "fragile", "brittle", "naive", "safe", "unsafe", "fast", "slow", "cheap", "expensive", "powerful", "impressive", "boring", "exciting", "surprising", "reasonable", "obvious", "hard", "easy", "simple", "complex"]
+ENGLISH_PREDICATE_RE = re.compile(r"\b(" + "|".join(ENGLISH_ADJ) + r")\s*(です|でした|ですね|ですよ|だ[。、とねな]|な[のん]?\b|に見え|すぎる|かな)")
 SPEAKER_RE = re.compile(r"^\*\*([^*]+)\*\*:\s*(.*)$")
 URL_RE = re.compile(r"https?://[^\s)>\]」』]+")
 
@@ -121,6 +126,7 @@ def main():
     failures, warnings, stats = [], [], {}
     banned = read_list_section(args.rules, "禁止語") or FALLBACK_BANNED
     hedges = read_list_section(args.rules, "ヘッジ語") or FALLBACK_HEDGES
+    slang = read_list_section(args.rules, "避ける表現") or FALLBACK_SLANG
     if not Path(args.rules).exists():
         warnings.append(f"rules file not found ({args.rules}); using built-in lists")
 
@@ -223,10 +229,22 @@ def main():
     if table_issues:
         failures.append(f"FAILURE_TABLE_COLUMNS: {table_issues} table(s) with uneven columns")
 
-    # --- banned words
+    # --- banned words（禁止語は failure。動詞「効く」の活用形もここに含まれる）
     for w in banned:
         if w in body:
-            failures.append(f"FAILURE_BANNED_WORD: '{w}'")
+            failures.append(f"FAILURE_BANNED_WORD: '{w}' x{body.count(w)}")
+
+    # --- English adjectives used as predicates（warning。style reviewer が Must fix として扱う）
+    eng_hits = [m.group(0) for m in ENGLISH_PREDICATE_RE.finditer(main_text)]
+    stats["english_predicates"] = len(eng_hits)
+    if eng_hits:
+        warnings.append(f"WARNING_ENGLISH_PREDICATE: {len(eng_hits)} hit(s): {eng_hits[:3]}")
+
+    # --- engineer-blog slang（避ける表現は warning。style reviewer が Must fix として扱う）
+    slang_hits = {w: main_text.count(w) for w in slang if w in main_text}
+    stats["slang"] = sum(slang_hits.values())
+    for w, n in slang_hits.items():
+        warnings.append(f"WARNING_BLOG_SLANG: '{w}' x{n}")
 
     # --- degradation guards
     hedge_count = sum(main_text.count(h) for h in hedges)
