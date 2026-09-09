@@ -64,3 +64,39 @@
 - writer: changed false / addressed [] / declined [F-01, F-02, F-03, F-04, F-05, F-06, S-01, S-02, S-03, FAILURE_LIST_VS_SEEN_MISSING] / chars 5559 → 5559 / stop_reason max=3 reached
 - Result: stop
 - Harness change 候補: article-check.py の末尾 URL 照合が別日の既読 URL 31件を要求している可能性を確認する
+
+## Run 2 (2026-09-09 23:52 JST) 20260908-tech-watch
+- Trigger: telegram
+- check: FAIL (FAILURE_L_TOO_LONG: L average 146 chars > 120, FAILURE_BANNED_WORD: '効く' x2, FAILURE_BANNED_WORD: '効い' x1, FAILURE_LIST_VS_SEEN_MISSING: 31 seen URL(s) not in final list)
+- fact: Critical 3 / Must fix 9 / Nice 0 / unreachable 4
+- style: Critical 0 / Must fix 10 / Nice 0
+- writer: changed true / addressed [F-01〜F-12, S-01〜S-10] / declined [FAILURE_LIST_VS_SEEN_MISSING] / chars 4887 → 4057 / stop_reason なし（40%以上の改稿を人が許可）
+- Result: continue
+- Harness change 候補: article-check.py の末尾 URL 照合が別日の既読 URL を要求している可能性を確認する
+
+## Run 3 (2026-09-10 00:08 JST) 20260908-tech-watch
+- Trigger: telegram
+- check: FAIL (FAILURE_LIST_VS_SEEN_MISSING: 35 seen URL(s) not in final list)
+- fact: Critical 1 / Must fix 2 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 6 / Nice 0
+- writer: changed true / addressed [F-01, F-02, F-03, F-04, S-01, S-02, S-03, S-04, S-05, S-06] / declined [FAILURE_LIST_VS_SEEN_MISSING] / chars 4057 → 4064 / stop_reason なし
+- Result: continue
+- Harness change 候補: article-check.py の末尾 URL 照合が別日の既読 URL 35件を要求している可能性を確認する
+
+## Run 4 (2026-09-10 00:22 JST) 20260908-tech-watch
+- Trigger: telegram
+- check: FAIL (FAILURE_LIST_VS_SEEN_MISSING: 35 seen URL(s) not in final list)
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 0
+- writer: changed true / addressed [S-01, S-02] / declined [] / chars 4064 → 4207 / stop_reason なし
+- Result: continue
+- Harness change 候補: article-check.py の末尾 URL 照合が別日の既読 URL 35件を要求している可能性を確認する
+
+## Run 5 (2026-09-10 00:35 JST) 20260908-tech-watch
+- Trigger: telegram
+- check: FAIL (FAILURE_LIST_VS_SEEN_MISSING: 35 seen URL(s) not in final list)
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed false / addressed [] / declined [F-01, S-01, FAILURE_LIST_VS_SEEN_MISSING] / chars 4207 → 4207 / stop_reason max=3 reached after rewrite override
+- Result: stop
+- Harness change 候補: article-check.py の末尾 URL 照合が当日一覧ではなく累積 seen URL を要求する不具合を確認する

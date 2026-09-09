@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-09 23:29 JST / 20260907-tech-watch / Run 4 / stop
-- check: FAIL (末尾 URL 照合: 別記事の既読 URL 31件を要求)
-- fact: Critical 0 / Must fix 6 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 3 / Nice 0
-- writer: not run（max=3 reached）
+- 2026-09-10 00:35 JST / 20260908-tech-watch / Run 5 / stop
+- check: FAIL (末尾 URL 照合: 別記事の既読 URL 35件を要求)
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: not run（今回の許可後 max=3 reached）
 
 ## Completed
 
@@ -23,10 +23,10 @@
 - Must fix: S-01/S-02/S-03 数字が本文に埋め込まれている、S-04 重要主張の引用不足、S-05/S-06 並列事実が段落内に詰まっている
 - Reason: published: true かつ未解決の人間判断待ちがあるため writer には渡していない。人が review JSON を読み、修正するなら「公開済みでも直して」と明示する必要がある
 
-- 20260908-tech-watch / Run 1
-- Critical: F-01/F-02 は末尾一覧にない出典の記述、F-03 は出典で確認できないモデル名・価格などを含む
-- Must fix: F-04〜F-12 は取得不能な出典に依存、S-01〜S-09 は構成・英語表現・数値提示の修正が必要
-- Reason: 全指摘への対応には本文の40%以上の書き換えが必要として writer が停止（rewrite-too-large）
+- 20260908-tech-watch / Run 5
+- Critical: 0
+- Must fix: F-01 記事独自の評価を事実として断定、S-01 Video compressor・ChatGPT・Codex・AI for Economic Opportunity Demo Day の初出太字化
+- Reason: 40%以上の改稿許可後の writer 上限3回に到達。機械検査は共有 seen ファイル内の別記事 URL 35件との不一致が残る
 
 - 20260907-tech-watch / Run 4
 - Critical: 0
