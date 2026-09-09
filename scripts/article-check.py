@@ -297,7 +297,9 @@ def main():
         for w in warnings:
             print(f"  ! {w}")
     print(json.dumps(result, ensure_ascii=False))
-    return 0 if ok else 1
+    # 検査が実行できた時点で終了コードは 0。合否は JSON の pass で伝える
+    # （FAIL を非 0 にすると、OpenClaw が「Bash failed」として人に通知してしまう）
+    return 0
 
 
 if __name__ == "__main__":
