@@ -273,12 +273,12 @@ def main():
     if seen_path.exists():
         try:
             seen = json.loads(seen_path.read_text(encoding="utf-8"))
-            missing = [u for u in seen if u not in list_urls]
+            # seen は日付なしの累積配列（過去の巡回分をすべて含む）なので、
+            # 「既読が末尾一覧に無い」は失敗にできない。一覧側の URL が既読に無い場合だけ知らせる
             extra = [u for u in list_urls if u not in seen]
-            if missing:
-                failures.append(f"FAILURE_LIST_VS_SEEN_MISSING: {len(missing)} seen URL(s) not in final list")
+            stats["list_urls_not_in_seen"] = len(extra)
             if extra:
-                warnings.append(f"WARNING_LIST_VS_SEEN_EXTRA: {len(extra)} list URL(s) not in seen file")
+                warnings.append(f"WARNING_LIST_VS_SEEN_EXTRA: {len(extra)} list URL(s) not in seen file: {extra[:3]}")
         except Exception as e:  # noqa: BLE001
             warnings.append(f"WARNING_SEEN_UNREADABLE: {e}")
     else:
