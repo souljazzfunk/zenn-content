@@ -154,3 +154,25 @@
 - writer: not called (confirmation review) / total writer calls 1 / chars 4468 → 4461
 - Result: pass
 - Harness change 候補: 定訳のある一般名詞の英語混在を article-check.py で検出できるか検討する
+
+## Run 1 (2026-09-12 23:04 JST) 20260910-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 03be91e4aa4f
+- check: PASS
+- autofix: glossary 55 / banned 0 / markdown 1 / applied [F-01,F-04,F-03,F-05]
+- fact: Critical 2 / Must fix 2 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 0
+- writer: changed true / addressed [S-01,S-02,S-03,S-04,FAILURE_L_TOO_TALKATIVE] / declined [] / chars 6075 → 5561 / stop_reason none
+- Result: continue
+- Harness change 候補: 未登録英語の定訳候補が多数あり、定訳辞書の拡充候補
+
+## Run 2 (2026-09-12 23:06 JST) 20260910-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: a649e0e0876c
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-01,S-03]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 0
+- writer: not called (confirmation review) / total writer calls 1 / chars 5561 → 5563
+- Result: pass
+- Harness change 候補: 自動置換が出典タイトル内で語を連結しない保護と、3つ以上の値を検出する検査の追加候補
