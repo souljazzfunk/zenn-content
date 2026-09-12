@@ -132,3 +132,25 @@
 - writer: not called (confirmation review) / total writer calls 1 / chars 4554 → 4545
 - Result: pass
 - Harness change 候補: 英語一般名詞の定訳候補を定訳辞書へ追加し article-check.py で混在を検出できるか検討する
+
+## Run 4 (2026-09-12 22:26 JST) 20260912-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: af5e6849bd91
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4468 → 4461 / stop_reason なし / human decision: writer をもう1回許可
+- Result: continue
+- Harness change 候補: 定訳のある一般名詞の英語混在を article-check.py で検出できるか検討する
+
+## Run 5 (2026-09-12 22:28 JST) 20260912-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: af5e6849bd91
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called (confirmation review) / total writer calls 1 / chars 4468 → 4461
+- Result: pass
+- Harness change 候補: 定訳のある一般名詞の英語混在を article-check.py で検出できるか検討する

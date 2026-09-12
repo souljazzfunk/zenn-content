@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-12 22:10 JST / 20260911-tech-watch / Run 2 / pass
+- 2026-09-12 22:28 JST / 20260912-tech-watch / Run 5 / pass
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 12 / Nice 0
-- writer: not called (confirmation review) / total writer calls 1 / chars 4554 → 4545
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called (confirmation review) / total writer calls 1 / chars 4468 → 4461
 
 ## Completed
 
@@ -18,7 +18,7 @@
 
 ## Needs human decision
 
-- 20260912-tech-watch / Run 4
+- 解決済み（2026-09-12 「tech watch 09-12 をもう1回レビューして修正して」）: 20260912-tech-watch / Run 4
 - article_sha: 02357e3ca963
 - Critical: 0
 - Must fix: S-01 「chokepoint」を定訳のある日本語「単一の制御点」へ置き換える
@@ -43,7 +43,7 @@
 
 ## Next run
 
-- なし（20260911-tech-watch は公開可。公開は人が指示する）
+- なし（20260912-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
