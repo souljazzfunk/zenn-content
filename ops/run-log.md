@@ -110,3 +110,25 @@
 - writer: changed true / addressed [F-01, F-02, F-03, F-04, F-05, S-01〜S-11, FAILURE_BANNED_WORD] / declined [run-4 S-01] / chars 5044 → 4468 / stop_reason writer 上限3回に到達
 - Result: stop
 - Harness change 候補: 定訳のある一般名詞の英語混在を article-check.py で検出できるか検討する
+
+## Run 1 (2026-09-12 22:07 JST) 20260911-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 2aa08b141c90
+- check: FAIL (FAILURE_L_TOO_TALKATIVE, FAILURE_STRAY_URL)
+- autofix: glossary 23 / banned 0 / markdown 1 / applied [S-01,S-02,S-03,S-12]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 12 / Nice 0
+- writer: changed true / addressed [S-04,S-05,S-06,S-07,S-08,S-09,S-10,S-11,FAILURE_L_TOO_TALKATIVE,FAILURE_STRAY_URL] / declined [] / chars 4628 → 4554 / stop_reason なし
+- Result: continue
+- Harness change 候補: 英語一般名詞の混在を article-check.py または定訳辞書で検出・置換できるか検討する
+
+## Run 2 (2026-09-12 22:10 JST) 20260911-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 6ebb2049a0e9
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-02]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 12 / Nice 0
+- writer: not called (confirmation review) / total writer calls 1 / chars 4554 → 4545
+- Result: pass
+- Harness change 候補: 英語一般名詞の定訳候補を定訳辞書へ追加し article-check.py で混在を検出できるか検討する

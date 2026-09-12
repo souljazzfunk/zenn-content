@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-12 18:22 JST / 20260912-tech-watch / Run 4 / stop
+- 2026-09-12 22:10 JST / 20260911-tech-watch / Run 2 / pass
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 1 / Nice 0
-- writer: 3回実行 / 最終版 4468字 / 上限到達
+- style: Critical 0 / Must fix 12 / Nice 0
+- writer: not called (confirmation review) / total writer calls 1 / chars 4554 → 4545
 
 ## Completed
 
@@ -43,7 +43,7 @@
 
 ## Next run
 
-- 20260906-tech-watch、20260907-tech-watch、20260908-tech-watch、20260912-tech-watch は人判断待ち
+- なし（20260911-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
