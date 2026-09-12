@@ -241,10 +241,32 @@ def main():
         warnings.append(f"WARNING_ENGLISH_PREDICATE: {len(eng_hits)} hit(s): {eng_hits[:3]}")
 
     # --- engineer-blog slang（避ける表現は warning。style reviewer が Must fix として扱う）
-    slang_hits = {w: main_text.count(w) for w in slang if w in main_text}
+    slang_hits = {}
+    for w in slang:
+        if w == "秒で":
+            # 「10秒で処理」のような所要時間の表現は俗語ではない。数字の直後は除外する
+            n = len([m for m in re.finditer(re.escape(w), main_text) if not (m.start() > 0 and main_text[m.start() - 1].isdigit())])
+        else:
+            n = main_text.count(w)
+        if n:
+            slang_hits[w] = n
     stats["slang"] = sum(slang_hits.values())
     for w, n in slang_hits.items():
         warnings.append(f"WARNING_BLOG_SLANG: '{w}' x{n}")
+
+    # --- glossary（定訳のある英語が本文に残っている。article-fix.py で置換される想定。warning）
+    glossary = [i.split("→", 1)[0].strip() for i in (read_list_section(args.rules, "定訳（") or []) if "→" in i]
+    prose = re.sub(r"```.*?```", "", main_text, flags=re.S)
+    prose = "\n".join(l for l in prose.splitlines() if not l.startswith(">"))
+    prose = re.sub(r"`[^`\n]*`|https?://\S+", "", prose)
+    gl_hits = {}
+    for w in glossary:
+        n = len(re.findall(r"(?<![A-Za-z0-9_\-])" + re.escape(w) + r"(?![A-Za-z0-9_\-])", prose))
+        if n:
+            gl_hits[w] = n
+    stats["glossary"] = sum(gl_hits.values())
+    if gl_hits:
+        warnings.append("WARNING_GLOSSARY: " + ", ".join(f"'{w}' x{n}" for w, n in gl_hits.items()))
 
     # --- degradation guards
     hedge_count = sum(main_text.count(h) for h in hedges)
