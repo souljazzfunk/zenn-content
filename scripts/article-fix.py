@@ -96,7 +96,7 @@ def move_quote_sources(lines):
             block = lines[i:j]
             if (len(block) >= 3 and block[-2].strip() == ">"
                     and re.match(r"^>\s*\S", block[-1])):
-                name = block[-1][1:].strip()
+                name = re.sub(r"^(出典|Source)\s*[:：]\s*", "", block[-1][1:].strip())
                 if len(name) <= 40 and not re.search(r"[。.!?！？]$", name):
                     out.extend(block[:-2])
                     out.append("")
@@ -145,8 +145,10 @@ def glossary_fn(pairs, keep):
                 c += k
                 hits[rx.pattern] = hits.get(rx.pattern, 0) + k
         # 置換した日本語と隣の英単語の間の空白は詰める（記事は「Pythonクライアント」のように空白を入れない）
-        text = re.sub(r"(?<=[A-Za-z0-9]) \x00", "\x00", text)
-        text = re.sub(r"\x01 (?=[A-Za-z0-9])", "\x01", text)
+        text = re.sub(r"(?<=[A-Za-z0-9\x01]) \x00", "\x00", text)
+        text = re.sub(r"\x01 (?=[A-Za-z0-9\x00])", "\x01", text)
+        text = re.sub(r"(?<=[^\x00-\x7F]) \x00", "\x00", text)
+        text = re.sub(r"\x01 (?=[^\x00-\x7F])", "\x01", text)
         return text.replace("\x00", "").replace("\x01", ""), c
     return fn, hits
 
