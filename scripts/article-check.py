@@ -268,6 +268,13 @@ def main():
     if gl_hits:
         warnings.append("WARNING_GLOSSARY: " + ", ".join(f"'{w}' x{n}" for w, n in gl_hits.items()))
 
+    # --- stock phrases（決まり文句が 1 記事に 2 回以上。warning。style reviewer が Must fix に格上げする）
+    stock = read_list_section(args.rules, "決まり文句") or []
+    stock_hits = {w: main_text.count(w) for w in stock if main_text.count(w) >= 2}
+    stats["stock_phrases_repeated"] = len(stock_hits)
+    for w, n in stock_hits.items():
+        warnings.append(f"WARNING_STOCK_PHRASE: '{w}' x{n}")
+
     # --- degradation guards
     hedge_count = sum(main_text.count(h) for h in hedges)
     per_1000 = hedge_count * 1000 / max(chars_main, 1)
