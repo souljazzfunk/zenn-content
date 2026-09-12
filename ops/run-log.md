@@ -100,3 +100,13 @@
 - writer: changed false / addressed [] / declined [F-01, S-01, FAILURE_LIST_VS_SEEN_MISSING] / chars 4207 → 4207 / stop_reason max=3 reached after rewrite override
 - Result: stop
 - Harness change 候補: article-check.py の末尾 URL 照合が当日一覧ではなく累積 seen URL を要求する不具合を確認する
+
+## Run 4 (2026-09-12 18:22 JST) 20260912-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 02357e3ca963
+- check: PASS
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [F-01, F-02, F-03, F-04, F-05, S-01〜S-11, FAILURE_BANNED_WORD] / declined [run-4 S-01] / chars 5044 → 4468 / stop_reason writer 上限3回に到達
+- Result: stop
+- Harness change 候補: 定訳のある一般名詞の英語混在を article-check.py で検出できるか検討する

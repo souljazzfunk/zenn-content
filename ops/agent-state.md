@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-10 00:35 JST / 20260908-tech-watch / Run 5 / stop
-- check: FAIL (末尾 URL 照合: 別記事の既読 URL 35件を要求)
-- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- 2026-09-12 18:22 JST / 20260912-tech-watch / Run 4 / stop
+- check: PASS
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
 - style: Critical 0 / Must fix 1 / Nice 0
-- writer: not run（今回の許可後 max=3 reached）
+- writer: 3回実行 / 最終版 4468字 / 上限到達
 
 ## Completed
 
@@ -17,6 +17,14 @@
 - [ ] Phase 5 Scheduled: tech-watch ジョブに組み込み（手動で 3 日連続クリーンが条件）
 
 ## Needs human decision
+
+- 20260912-tech-watch / Run 4
+- article_sha: 02357e3ca963
+- Critical: 0
+- Must fix: S-01 「chokepoint」を定訳のある日本語「単一の制御点」へ置き換える
+- Reason: writer 上限3回に到達
+- Question: 追加修正を許可するか
+- Options: writer をもう1回許可 / 人が1語を修正 / このままにする
 
 - 20260906-tech-watch / Run 2
 - Critical: F-01 VLM Run Gateway の MCP server / read_document / Claude Code・Codex・OpenCode 連携は末尾出典で確認できない
@@ -35,7 +43,7 @@
 
 ## Next run
 
-- 20260906-tech-watch、20260907-tech-watch、20260908-tech-watch は人判断待ち
+- 20260906-tech-watch、20260907-tech-watch、20260908-tech-watch、20260912-tech-watch は人判断待ち
 
 ## Human read
 

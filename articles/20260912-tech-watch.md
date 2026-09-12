@@ -15,51 +15,75 @@ published: false
 
 この記事は、AIが書いたものを人間が確認してから投稿しています。
 
-**L**: 今日は、モデルの新機能そのものより、その能力を仕事として成立させる周辺の仕組みが目立つ。長い実行を支えるcontext管理、生成コードを本番へ通す品質管理、データとpluginの中央管理。『アポロ13』で宇宙船だけでなく地上管制まで含めてシステムだったように、agentもモデル単体では語れなくなってきた。
+**L**: 今日は、モデルの新機能そのものより、その能力を仕事として成立させる周辺の仕組みが目立つ。長い実行を支える**文脈管理**、生成コードを本番へ通す**品質管理**、データと**プラグイン**の**中央管理**。『アポロ13』で宇宙船だけでなく地上管制まで含めてシステムだったように、エージェントもモデル単体では語れなくなってきた。
 
 今日の項目:
 
-1. Hands-on with Claude（Anthropic）
-2. Habitatの大規模ストレージ基盤（OpenAI）
-3. OpenAI OneGov 2.0（OpenAI Academy）
-4. OpenClaw 2026.9.4（OpenClaw）
-5. SelfCompact（The Batch）
-6. Claude Fable 5.1の独立評価（The Batch）
-7. 音声認識モデル3種の比較（The Batch）
-8. Claude生成コードの品質基準（Simon Willison）
-9. AIを使ったDatasetteセキュリティ監査（Simon Willison）
-10. OpenRouterのprovider routing（Simon Willison）
+1. Habitatの大規模ストレージ基盤（OpenAI）
+2. OpenAI OneGov 2.0（OpenAI Academy）
+3. OpenClaw 2026.9.4（OpenClaw）
+4. SelfCompact（The Batch）
+5. Claude Fable 5.1の独立評価（The Batch）
+6. 音声認識モデル3種の比較（The Batch）
+7. Claude生成コードの品質基準（Simon Willison）
+8. AIを使ったDatasetteセキュリティ監査（Simon Willison）
+9. OpenRouterの提供事業者経路制御（Simon Willison）
 
-## 長時間agentのボトルネックは、文脈の量より区切り方
+## 長時間エージェントのボトルネックは、文脈の量より区切り方
 
-**L**: まずSelfCompactから。context windowを大きくすれば済む話ではない？
+**L**: まずSelfCompactから。コンテキストウィンドウを大きくすれば済む話ではない？
 
-**A**: 面白いのはたぶんここで、SelfCompactは「何文字たまったか」だけではなく「いま作業のどこにいるか」を見ている。16,000 tokensごとにprobeを差し込み、subtaskが終わったか、明確な到達点へ進んでいるかを同じモデルに判定させる。途中の計算や調査をまだ使う局面なら圧縮しない。区切りなら、50,000〜100,000 tokensのtrajectoryを1,000〜3,000 tokensへ要約して続行する。
+**A**: 面白いのはたぶんここで、SelfCompactは「何文字たまったか」だけではなく「いま作業のどこにいるか」を見ている。サブタスクが終わったか、明確な到達点へ進んでいるかを同じモデルに判定させ、途中の計算や調査をまだ使う局面なら圧縮しない。区切りならtrajectoryを要約して続行する。
+
+| 処理 | トークン数 |
+|---|---:|
+| 確認間隔 | 16,000 |
+| 圧縮前 | 50,000〜100,000 |
+| 圧縮後 | 1,000〜3,000 |
 
 > The rubric approach introduces a new agentic design pattern: exposing a tool and giving the model explicit criteria for using it.
->
-> The Batch
 
-**A**: つまり新しいのは**compactionをagentのaction spaceに入れ、呼び出し条件をrubricにしたこと**です。fine-tuningも外部supervisorも要らない。IMO-AnswerbenchではQwen3-30B-A3Bが52.1%で、固定間隔の48.7%、圧縮なしの45.2%を上回った。BrowseComp-PlusでもGLM-4.7-Flashが54.1%、固定間隔50.0%、圧縮なし45.6%。単に「圧縮したい？」と聞くだけだと固定間隔並みに落ちたので、効いたのは要約器より判断基準らしい。
+出典: The Batch
 
-**L**: memory管理までモデルに任せる。ただし自由判断ではなく、チェックリストを渡す。
+**A**: つまり新しいのは、圧縮をエージェントのaction spaceに入れ、呼び出し条件を評価基準として明示したことです。追加学習も外部の監督役も要らない。
 
-**A**: そう。かなり乱暴にまとめると、これは**context capacityからcontext controlへ**の移動に見える。長時間agentのharnessでは、圧縮、checkpoint、retry、評価をいつ実行するかが同じ種類の問題になる。AnthropicのHands-on with Claudeも、9月11日のサンフランシスコ回で参加者が実プロジェクトを持ち込みClaude Codeを使う形式でした。新しい製品発表ではないけれど、「一般論を聞く」から「自分のtaskとloopをその場で組む」へ学習の単位が変わっている。
+| ベンチマーク | 評価基準方式 | 固定間隔 | 圧縮なし |
+|---|---:|---:|---:|
+| IMO-Answerbench（Qwen3-30B-A3B） | 52.1% | 48.7% | 45.2% |
+| BrowseComp-Plus（GLM-4.7-Flash） | 54.1% | 50.0% | 45.6% |
+
+**A**: 両ベンチマークで評価基準方式が最も高い。単に「圧縮したい？」と聞くだけでは固定間隔並みなので、効果があったのは要約器より判断基準らしい。
+
+**L**: メモリ管理までモデルに任せる。ただし自由判断ではなく、チェックリストを渡す。
+
+**A**: そう。かなり乱暴にまとめると、これは**文脈容量から文脈制御へ**の移動に見える。
 
 ## 本番品質はモデルの賢さではなく、検証経路で作る
 
 **L**: Fable 5.1は高評価なのに、同じ日に「生成コードには人手以上の基準を」と出ている。矛盾しない？
 
-**A**: むしろ整合している。The Batchの整理ではClaude Fable 5.1は、Artificial Analysisの総合指標でGPT-6 Astraと53点で並び、複数週のknowledge workを測るAA-Briefcaseや、44職種の経済的taskを扱うGDPval-AA v2で首位だった。Vals Indexでも68.83%で1位。ただしcost per taskは前世代Fable 5より約20%増え、一般利用では30日data retentionも残る。benchmark上の能力と、企業が運用できる条件は別軸です。
+**A**: The Batchがまとめた評価と運用条件は次の通りです。
 
-**A**: Boris Chernyの発言はさらに実務的で、AnthropicではClaudeが書いたproduction codeに対し、lint、大量のtest、Claude-driven E2E、日次fuzzing、自動code reviewとsecurity review、自動refactoringを重ねているという。新しくできるのは「Claudeに本番コードを書かせること」ではなく、**生成から検証までを連続したmachine workflowにすること**です。
+| 観点 | Claude Fable 5.1の結果 | 比較対象・条件 |
+|---|---:|---|
+| Artificial Analysis総合指標 | 53点 | GPT-6 Astraと同点 |
+| AA-Briefcase | 1位 | 複数週の知識労働 |
+| GDPval-AA v2 | 1位 | 44職種の経済的タスク |
+| Vals Index | 68.83%、1位 | 独立評価 |
+| タスクあたり費用 | 約20%増 | 前世代Fable 5比 |
+| 一般利用のデータ保持 | 30日 | 運用条件 |
+| 対象となるEnterprise顧客のデータ保持 | ゼロ | 現在利用可能 |
+
+**A**: 面白いのはたぶんここで、能力評価の順位と費用・データ保持が別の列に並ぶ。これは何だ？ モデルの能力と本番で使える条件を別軸で検証する必要がある、ということだと思います。
+
+**A**: Boris Chernyの発言はさらに実務的で、AnthropicではClaudeが書いた本番コードに対し、lint、大量のテスト、ClaudeによるE2E、日次fuzzing、自動コードレビューとセキュリティレビュー、自動リファクタリングを重ねているという。つまり、Claudeによるコード生成から検証までを機械的な作業フローとして重ねています。
 
 **L**: Datasetteの監査は、その具体例に見える。
 
-**A**: そう見える。Simon WillisonとAlex GarciaはClaude Fable 5.1、GPT-5.6、GPT-6 Astraで監査し、Datasette 1.0a39と0.65.4のsecurity fixesへつなげた。人間側も、片方が問題を再現するautomated testを書き、もう片方がfixを実装する形で分担した。二人の人間と異なるmodelのcoding agentが同じ問題を別経路で見る。これは「AIがレビューした」より、failure modeを重ねない**異種レビューharness**として見ると面白い。
+**A**: そう見える。Simon WillisonとAlex GarciaはClaude Fable 5.1、GPT-5.6、GPT-6 Astraで監査し、Datasette 1.0a39と0.65.4のセキュリティ修正へつなげた。人間側も、片方が問題を再現する自動テストを書き、もう片方が修正を実装する形で分担した。これは、障害形態の異なる複数のレビュー経路を組み合わせたものとして見ると面白い。
 
 :::message
-公開Datasetteでpublic tableとprivate tableを混在させている場合、元記事はsecurity updateの適用を勧めています。
+公開Datasetteで公開テーブルと非公開テーブルを混在させている場合、元記事はセキュリティ更新の適用を勧めています。
 :::
 
 ## 中央サービスは、便利さと統制を同じ場所に集める
@@ -68,64 +92,95 @@ published: false
 
 **A**: 数字から見るとHabitatはかなり極端です。
 
-- 毎秒70 million超のrequest
-- 週1 billion超の利用者
-- ほぼ40の地域
-- 500 petabytes超のdata
+- 毎秒7,000万超のリクエスト
+- 毎週10億人超に使われる製品を支える
+- 約40地域
+- 500ペタバイト超のデータ
 
-**A**: 最初はAzure Cosmos DBにつながるPython client libraryだった。ところがrouting変更を数十serviceへ配るたびに、feature flag、shadowing、bug fix、rollbackの調整が必要になった。そこで独立serviceへ切り出し、deployment、observability、access control、audit log、storageへの到達経路を中央化した。ここで新しくできるのは、各product teamを待たずに基盤改善を全体へ反映し、agent actorを含むアクセス制御を一つのchokepointで実施することです。
+**A**: 最初はAzure Cosmos DBにつながるPythonクライアントライブラリだった。ところが経路制御の変更を数十のサービスへ配るたびに、機能フラグ、影響を本番経路と分離して確認する処理、不具合修正、ロールバックの調整が必要になった。そこで独立サービスへ切り出し、配備、可観測性、アクセス制御、監査ログ、ストレージへの到達経路を中央化した。ここで新しくできるのは、各製品チームを待たずに基盤改善を全体へ反映し、エージェントを含むアクセス制御を一つのchokepointで実施することです。
 
 **L**: OpenClawの「Plugins in one place」も、小さいHabitatのようなものか。
 
-**A**: 一つの見方としてはそうです。2026.9.4ではbundled pluginとClawHub pluginの発見、install、setup、settings、accessをControl UIのPlugins workspaceへ集約した。さらにprepared cloud sessions、失敗したupdateからの安全なrollback、terminal上の質問UI、長いdelegation後にもTalkへ最終結果を返す改善が入った。
+**A**: 一つの見方としてはそうです。2026.9.4では同梱プラグインとClawHubプラグインの発見、導入、設定、アクセス制御をControl UIのPlugins画面へ集約した。さらに準備済みクラウドセッション、失敗した更新からの安全なロールバック、ターミナル上の質問UI、長い委任後にもTalkへ最終結果を返す改善が入った。
 
-\`\`\`text
-plugin catalog → install → settings → access control
-project snapshot → prepared worker → session start
-update failure → compatibility check → rollback → gateway verification
-\`\`\`
+```text
+プラグイン一覧 → 導入 → 設定 → アクセス制御
+プロジェクトのスナップショット → 準備済みワーカー → セッション開始
+更新失敗 → 互換性確認 → ロールバック → ゲートウェイ検証
+```
 
-**A**: これ全部、同じ方向を向いている気がする。**distributed convenienceからcentralized control planeへ**です。便利なtoolを増やすほど、どこで見つけ、誰が使え、失敗時にどう戻すかを一か所で扱いたくなる。ただ、中央化は停止点も集中させる。Habitatがmulti-region reliabilityを積み、OpenClawがrollbackの適用条件を限定しているのは、その代償への回答でしょう。
+**A**: これ全部、同じ方向を向いている気がする。**分散した利便性から中央の管理面へ**、と呼べそうです。便利な道具を増やすほど、どこで見つけ、誰が使え、失敗時にどう戻すかを一か所で扱いたくなる。ただ、中央化は停止点も集中させる。Habitatが複数地域での信頼性を積み、OpenClawがロールバックの適用条件を限定しているのは、その代償への回答でしょう。
 
 **L**: OpenRouterの注意点もそこにつながる？
 
-**A**: つながるけれど、少し違う警告です。同じmodel IDを単一endpointで呼べても、裏のproviderごとにserving software、最適化、vision対応、reasoning effortの解釈が異なる場合がある。自動fallbackは可用性を上げる一方、挙動の再現性を下げる。新しくできるのは \`provider.only\` で実行先を限定し、\`/endpoints\` で候補providerを列挙して、routingを検証可能にすること。meta-gatewayを置くならcatalogだけでなく、capabilityと実測結果も管理対象になる。
+**A**: つながるけれど、少し違う警告です。同じモデルIDを単一の接続先で呼べても、裏の提供事業者ごとに推論用ソフトウェア、最適化、画像対応、推論量の解釈が異なる場合がある。自動的な代替経路への切り替えは可用性を上げる一方、挙動の再現性を下げる。実行先の固定と候補となる提供事業者の列挙は、次の形で指定できます。
+
+```json
+{
+  "provider": {
+    "only": ["<provider>"]
+  }
+}
+```
+
+```http
+GET /api/v1/models/{author}/{slug}/endpoints
+```
+
+**A**: これにより経路制御を検証可能にする。私の見方では、メタゲートウェイを置くなら、一覧だけでなく機能と実測結果も管理対象にする必要があります。
 
 ## 入力面と導入制度まで含めてAIサービスを設計する
 
 **L**: 残る二つは、音声認識と政府導入。技術基盤から急に人の側へ戻る。
 
-**A**: でもUIと運用の話としては連続しています。The Batchが比べたGemini 3.5 Transcribe、Muse Voice Transcribe、MAI-Transcribe-2は、どれも話者分離と多言語対応を持つ。価格はそれぞれ課金単位が違うけれど、概算ではGoogleが録音で約0.30ドル/時、streamingで約0.54ドル/時、Museが0.18ドル/時、Microsoftが年末まで0.10ドル/時。Microsoftは1時間の音声を10秒で処理できるとしている。
+**A**: The Batchが比べたGemini 3.5 Transcribe、Muse Voice Transcribe、MAI-Transcribe-2は、どれも話者分離と多言語対応を持つ。単価だけでなく課金単位と適用期間が異なります。
 
-**A**: 何が新しいかというと、speech-to-textが単なる文字起こしから、agent workflowの**常時入力adapter**になってきた。Museは80msごとに音声をsoft tokenへ変え、難しい箇所では次の音声を待つadaptive delayを使う。チャット欄に人が整形済みpromptを書く前提ではなく、会議、通話、現場音声からtaskを起こすUIを設計しやすくなる。
+| サービス | 処理方式 | 概算単価 | 音声トークン変換間隔 | 適用期間・公称処理時間 |
+|---|---|---:|---|---|
+| Google | 録音 | 約0.30ドル/時 | 記載なし | 記載なし |
+| Google | ストリーミング | 約0.54ドル/時 | 記載なし | 記載なし |
+| Muse | 記載なし | 0.18ドル/時 | 80ミリ秒 | 記載なし |
+| Microsoft | 記載なし | 0.10ドル/時 | 記載なし | 年末まで。1時間の音声に対して10秒 |
+
+**A**: 面白いのはたぶんここで、なぜ文字起こしモデルがエージェントの作業フローを前提にしているのか。Museは音声を短い間隔で音声トークンへ変え、難しい箇所では次の音声を待つ適応的な遅延処理を使う。何が新しいかというと、音声認識が文字起こしに加え、エージェントの作業フローへ接続する入力手段として位置づけられている。会議、通話、現場音声をタスクの入力に使うUIにも応用できそうです。UIと運用の話として前節と連続しているように見えます。
 
 **L**: OneGov 2.0は入力面ではなく、導入の摩擦を下げる話だね。
 
-**A**: 9月14日のOpenAI Academy配信では、10月1日から対象となる米国の連邦・州・地方・部族政府に、ChatGPT、Codex、APIを月額license feeなし、最低commitmentなし、対象usage costの50%割引で提供する27か月契約を説明する。新しいのはmodel capabilityではなく、procurement、pricing、training、onboardingをpackageにした点です。日本時間では9月15日0:15開始なので、平日夜の視聴枠にも一応入る。
+**A**: OpenAI Academyの配信では、OneGov 2.0の対象と契約条件を説明する。
+
+| 項目 | 内容 |
+|---|---|
+| 対象 | 米国の連邦・州・地方・部族政府 |
+| 契約開始 | 10月1日 |
+| 月額ライセンス料 | なし |
+| 最低利用額の約束 | なし |
+| 対象利用料の割引 | 50% |
+| 契約期間 | 27か月 |
+| 配信日時 | 9月14日、日本時間9月15日0:15 |
+
+**A**: 新しいのはモデルの能力ではなく、ChatGPT、Codex、APIについて、調達、価格設定、研修、導入支援を一体として提供した点です。
 
 **L**: 『her』では声が自然になった瞬間に、OSが機能一覧ではなく関係の相手になった。現実では、その手前に権限、監査、価格、教育という地味な層がずいぶんある。人間の役割はどこに残る？
 
-**A**: 少し引いて見ると、modelが賢くなるほど人間の仕事が消えるというより、設計対象が広がっている。contextをいつ圧縮するか、生成物をどのtest群へ通すか、provider差をどう固定するか、誰にどのtoolを見せるか、音声から何をtaskとして起こすか。たぶん今のagent engineeringは、modelへの指示作りより、**判断点と検証点をcontrol planeへ実装する仕事**に近づいています。
+**A**: 少し引いて見ると、モデルが賢くなるほど人間の仕事が消えるというより、設計対象が広がっている。文脈をいつ圧縮するか、生成物をどのテスト群へ通すか、提供事業者による差をどう固定するか、誰にどの道具を見せるか、音声から何をタスクとして起こすか。たぶん今のエージェント開発は、モデルへの指示作りより、判断点と検証点を中央の管理面へ実装する仕事に近づいています。
 
-## 今日の10件
+## 今日の9件
 
-1. Hands-on with Claude — 2026-09-11  
-   https://www.anthropic.com/events/build-with-claude
-2. Rapidly scaling online storage to serve over 1 billion ChatGPT users — 2026-09-11  
+1. Rapidly scaling online storage to serve over 1 billion ChatGPT users — 2026-09-11  
    https://openai.com/index/scaling-storage-one-billion-users-part-one/
-3. OpenAI OneGov 2.0: What Government Leaders Need to Know — 2026-09-14  
+2. OpenAI OneGov 2.0: What Government Leaders Need to Know — 2026-09-14  
    https://academy.openai.com/public/events/openai-onegov-2-0-what-government-leaders-need-to-know-72u08jy54f
-4. OpenClaw 2026.9.4 — 2026-09-11  
+3. OpenClaw 2026.9.4 — 2026-09-11  
    https://github.com/openclaw/openclaw/releases/tag/v2026.9.4
-5. A Tool for Better Context Management — 2026-09-11  
+4. A Tool for Better Context Management — 2026-09-11  
    https://www.deeplearning.ai/the-batch/a-tool-for-better-context-management
-6. Fable Holds The Top Spot (For Now) — 2026-09-11  
+5. Fable Holds The Top Spot (For Now) — 2026-09-11  
    https://www.deeplearning.ai/the-batch/fable-holds-the-top-spot-for-now
-7. Transcription Battles Heat Up — 2026-09-11  
+6. Transcription Battles Heat Up — 2026-09-11  
    https://www.deeplearning.ai/the-batch/transcription-battles-heat-up
-8. A quote from Boris Cherny — 2026-09-11  
+7. A quote from Boris Cherny — 2026-09-11  
    https://simonwillison.net/2026/Sep/11/boris-cherny/
-9. Datasette 1.0a39 and 0.65.4 security releases — 2026-09-11  
+8. Datasette 1.0a39 and 0.65.4 security releases — 2026-09-11  
    https://simonwillison.net/2026/Sep/11/datasette-security/
-10. So you want to use OpenRouter? — 2026-09-11  
+9. So you want to use OpenRouter? — 2026-09-11  
     https://simonwillison.net/2026/Sep/11/so-you-want-to-use-openrouter/
