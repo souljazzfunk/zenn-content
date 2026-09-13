@@ -255,3 +255,47 @@
 - writer: human edit / addressed [F-01,S-01] / chars 4103 → 4103 / user chose このままにする
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-14 08:15 JST) 20260914-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 87bfa8477734
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-06,S-02]
+- fact: Critical 0 / Must fix 6 / Nice 0 / unreachable 4
+- style: Critical 0 / Must fix 3 / Nice 0
+- writer: changed true / addressed [F-01,F-02,F-03,F-04,F-05,S-01,S-03] / declined [] / chars 4122 → 3992 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-14 08:21 JST) 20260914-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 7704d1a1915a
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,S-02]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 4
+- style: Critical 0 / Must fix 3 / Nice 1
+- writer: changed true / addressed [S-01,S-03,FAILURE_LENGTH] / declined [] / chars 3949 → 4133 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-14 08:23 JST) 20260914-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 1cc5f2b47364
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 0 / Must fix 3 / Nice 0 / unreachable 4
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: not called / writer_calls 2
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-09-14 08:24 JST) 20260914-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 1cc5f2b47364
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 4
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called / writer_calls 2
+- Result: pass
+- Harness change 候補: なし
