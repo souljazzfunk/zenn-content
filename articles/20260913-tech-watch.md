@@ -69,13 +69,13 @@ published: false
 
 **L**: 環境は箱で、harness はその中の操縦席？
 
-**A**: そう考えたくなるけれど、面白いのはたぶんそこが崩れている点です。Kimi の white-box 方式は Claude Code、Codex、OpenClaw などの道具interface や system prompt を再構成する。一方、Liquid AI や Agent Lightning の black-box 方式は既存 harness をそのまま動かし、通信から token-level trajectory を復元する。
+**A**: 操縦席というより制御盤、いや、それでも外側に見すぎていて、Kimi の white-box 方式が Claude Code、Codex、OpenClaw などの道具インターフェースやシステムプロンプトを再構成するなら、harness 自体が学習環境の一部です。一方、Liquid AI や Agent Lightning の black-box 方式は既存 harness をそのまま動かし、通信から token-level trajectory を復元する。
 
 > “the harness, rather than the training engine, owns the environment interaction loop”
 
 出典: Agent Lightning（Hugging Face の記事から引用）
 
-つまり、harness が単なる外装ではなく、action space と観測と終了条件を決める**学習対象の一部**になっている。かなり乱暴にまとめると、今起きているのは「モデルtraining から system training へ」という移動に見える。
+つまり、harness は単なる外装ではなく、action space と観測と終了条件を決める**学習環境の一部**になっている。かなり乱暴にまとめると、今起きているのは「モデルtraining から system training へ」という移動に見える。
 
 **L**: GPT-6 Astra の評価も、その見方で読むと違って見える？
 
@@ -105,7 +105,7 @@ published: false
 
 **A**: そこで wrapture がつながる。これは Python の monkey patching を testing と可観測性の両方に使う package で、method call を記録して timeline や tree にし、段階的に振る舞いを変え、TOML 設定だけで live tracing し、OpenTelemetry に出せる。applicationコードを大きく変えずに、エージェントが呼ぶ既存 API の境界へ観測点を差し込めるわけです。
 
-これはエージェント専用ではない。でも道具call が増えるほど、「最終回答」より「途中で何を呼び、何を受け取り、どこで遅くなったか」が debugging の中心になる。trace を後付けできるのは地味に強い。地味というのは褒め言葉です。production はだいたい地味な部品で助かる。
+これはエージェント専用ではない。でも道具call が増えるほど、「最終回答」より「途中で何を呼び、何を受け取り、どこで遅くなったか」が debugging の中心になる。トレースを後付けでき、TOML 設定だけで Python コードを変更せずに実行中のアプリケーションを追跡し、処理時間も記録できます。
 
 **L**: trynix.dev は、観測より再現の話？
 
@@ -133,6 +133,6 @@ tinydit はもっと実験記に近い。2.1億 parameter の diffusion transfor
 
 これは慰めとして読むより、role interface の変更として読む方がいいと思う。実装速度が上がると、仕様の曖昧さ、評価の不足、組織間の調整、権限設計が先に詰まる。人間はコードgenerator と競うのではなく、何を作るか、何を測るか、どこで止めるかを担当する比率が増える。
 
-**L**: すると、人間の役割は「最後に責任を取る人」だけではない。機械が動く世界の形を、先に決める人でもある。
+**L**: 機械が動く世界の形を先に決めるなら、人間の役割は「最後に責任を取る人」から何に変わる？
 
 **A**: 少し引いて見ると、モデルの能力向上に合わせて周辺の scaffolding が急速に厚くなっている。sandbox、trajectory、メモリ、evaluation、可観測性、permission、approval UI。これ全部、同じ方向を向いている気がする。エージェントengineering は「賢い応答を作る」問題から、「有限の action space で、検証可能な仕事を続けさせる」システム工学へ移っている。たぶん次に差がつくのは、モデルselection より、その小さな OS をどれだけ明示的に設計できるかです。

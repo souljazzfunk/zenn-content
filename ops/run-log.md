@@ -176,3 +176,25 @@
 - writer: not called (confirmation review) / total writer calls 1 / chars 5561 → 5563
 - Result: pass
 - Harness change 候補: 自動置換が出典タイトル内で語を連結しない保護と、3つ以上の値を検出する検査の追加候補
+
+## Run 1 (2026-09-13 10:34 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 6136266c9a51
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,S-02,S-03,S-07]
+- fact: Critical Critical 0 / Must fix Must fix 0 / Nice Nice 0 / unreachable unreachable 0
+- style: Critical Critical 0 / Must fix Must fix 5 / Nice Nice 0
+- writer: not called (autofix confirmation review) / total writer calls 0 / chars 4622 -> 4625
+- Result: continue
+- Harness change 候補: 英語一般名詞の定訳候補を定訳辞書へ追加し article-check.py で混在を検出できるか検討する
+
+## Run 2 (2026-09-13 10:37 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 3ff403db95fe
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [run1:F-01,S-02,S-03,S-07; run2:F-01,F-02]
+- fact: Critical Critical 0 / Must fix Must fix 0 / Nice Nice 0 / unreachable unreachable 0
+- style: Critical Critical 0 / Must fix Must fix 6 / Nice Nice 0
+- writer: not called (confirmation review) / total writer calls 0 / chars 4622 -> 4635
+- Result: pass
+- Harness change 候補: 英語一般名詞の定訳候補を定訳辞書へ追加し article-check.py で混在を検出できるか検討する
