@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-13 11:34 JST / 20260913-tech-watch / Run 6 / stop
+- 2026-09-13 12:56 JST / 20260913-tech-watch / Run 7 / pass
 - check: PASS
-- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 1 / Nice 0
-- writer: not called (writer limit reached) / total writer calls 3 / chars 4097 → 4103 / stop_reason writer 上限3回に到達
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: human edit / addressed [F-01,S-01] / chars 4103 → 4103 / user chose このままにする
 
 ## Completed
 
@@ -18,13 +18,8 @@
 
 ## Needs human decision
 
-- 20260913-tech-watch / run 6 / article_sha: 0b2401e0dffb / 2026-09-13 JST
-  - 残 Critical: 0
-  - 残 Must fix: 1
-  - S-01: 「人の介在 を」「仮想マシン を」「プルリクエスト の」「小さな オペレーティングシステム を」の不要な空白を削除する
-  - Reason: writer 上限3回に到達
-  - Question: 追加修正を許可するか
-  - Options: writer をもう1回許可 / 人が4か所の空白を修正 / Must fix を残したまま公開可にする / このままにする
+- 解決済み（2026-09-13 「人が修正した。このままにする。」）: 20260913-tech-watch / Run 6
+  - 人が F-01 と S-01 を修正。追加の本文修正は行わない
 
 - 解決済み（2026-09-12 「tech watch 09-12 をもう1回レビューして修正して」）: 20260912-tech-watch / Run 4
 - article_sha: 02357e3ca963
@@ -48,7 +43,7 @@
 
 ## Next run
 
-- 20260913-tech-watch は人判断待ち（Needs human decision を参照）
+- なし（20260913-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
