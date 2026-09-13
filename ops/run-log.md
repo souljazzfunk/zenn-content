@@ -198,3 +198,49 @@
 - writer: not called (confirmation review) / total writer calls 0 / chars 4622 -> 4635
 - Result: pass
 - Harness change 候補: 英語一般名詞の定訳候補を定訳辞書へ追加し article-check.py で混在を検出できるか検討する
+
+## Run 3 (2026-09-13 11:24 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 033b394ca294
+- check: FAIL (FAILURE_GLUED_TRANSLATION)
+- autofix: glossary 18 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 1
+- glossary: added [action space → 行動空間, build process → ビルド処理, cost limit → 費用上限, method call → メソッド呼び出し, human intervention → 人の介入, model selection → モデル選択, code generator → コード生成器] / fixed [] / skipped 0
+- writer: changed true / addressed [S-01,S-02,S-03,S-04,S-05,S-06,FAILURE_GLUED_TRANSLATION] / declined [] / chars 4532 → 4104 / stop_reason なし
+- Result: continue
+- Harness change 候補: 定訳置換が codingエージェント等の連結語を生成するため、article-fix.py の単語境界処理を改善する候補
+
+## Run 4 (2026-09-13 11:28 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 6d4031db8ae4
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4104 → 4092 / stop_reason なし
+- Result: continue
+- Harness change 候補: 英語一般名詞句の警告を本文と一覧で区別して検出する article-check.py 改善候補
+
+## Run 5 (2026-09-13 11:31 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 586e7ee688f0
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4092 → 4097 / stop_reason なし
+- Result: continue
+- Harness change 候補: 英語略語（VM/PR/OS/Human-in-the-Loop）を article-check.py で検出する候補
+
+## Run 6 (2026-09-13 11:34 JST) 20260913-tech-watch
+- Trigger: cron（isolated セッションで起動された）
+- article_sha: 0b2401e0dffb
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- glossary: added [action space → 行動空間, build process → ビルド処理, cost limit → 費用上限, method call → メソッド呼び出し, human intervention → 人の介入, model selection → モデル選択, code generator → コード生成器] / fixed [] / skipped 0
+- writer: not called (writer limit reached) / total writer calls 3 / chars 4097 → 4103 / stop_reason writer 上限3回に到達
+- Result: stop
+- Harness change 候補: 日本語置換後の助詞前空白を article-fix.py または article-check.py で自動修正・検出する候補
