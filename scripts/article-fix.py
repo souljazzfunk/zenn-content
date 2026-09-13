@@ -88,6 +88,15 @@ def count_chars(lines):
     return len(re.sub(r"\s+", "", text))
 
 
+JA_SPACE_RE = re.compile(r"(?<=[^\x00-\x7F]) (?=[^\x00-\x7F])")
+
+
+def tighten_japanese_spaces(text):
+    """日本語と日本語の間の半角空白を詰める（「人の介在 を」「仮想マシン を」のような、訳した後に残る空白）。
+    英数字が絡む空白（「2〜3 行」「Anthropic 枠」）は触らない。"""
+    return JA_SPACE_RE.subn("", text)
+
+
 def unescape_backticks(lines):
     n = 0
     out = []
@@ -246,7 +255,8 @@ def main():
 
     main_lines, n1 = unescape_backticks(main_lines)
     main_lines, n2 = move_quote_sources(main_lines)
-    result["markdown"] = n1 + n2
+    main_lines, n3 = transform_prose(main_lines, tighten_japanese_spaces)
+    result["markdown"] = n1 + n2 + n3
 
     gfn, ghits, compound_skipped = glossary_fn(read_pairs(args.rules, "定訳（"), read_items(args.rules, "英語のままにする語"))
     main_lines, result["glossary"] = transform_prose(main_lines, gfn)
