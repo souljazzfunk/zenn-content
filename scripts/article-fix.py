@@ -4,7 +4,7 @@
 使い方:
     python3 scripts/article-fix.py <slug> [--reviews a.json b.json ...] [--rules PATH] [--dry-run] [--json-only]
 
-やること（順番どおり。frontmatter、コードブロック、インラインコード、URL、`>` 引用行、`## 今日の N 件` 以降は触らない）:
+やること（順番どおり。frontmatter、コードブロック、インラインコード、URL、`>` 引用行、`## 今日の N 件` の一覧節（冒頭。次の `## ` 見出しまで）は触らない）:
 1. エスケープされたバッククォート（\\`）を戻す
 2. 引用ブロック末尾の「空の > 行 + > 出典名」をブロック外の「出典: 名前」に移す
 3. writing-rules.md「## 定訳（自動置換）」の `english → 日本語` を単語境界で置換（小文字表記の語だけ。大文字始まりは固有名詞とみなして触らない）
@@ -55,8 +55,12 @@ def read_items(rules_path, heading):
     return items
 
 
+LIST_SENTINEL = "<!-- `TECH-WATCH-LIST-SENTINEL` -->"  # 一覧節の位置を示す仮の行。インラインコードなので置換の対象外
+
+
 def split_article(text):
-    """frontmatter, 本文行, 末尾一覧以降 に分ける。"""
+    """frontmatter, 本文行, 一覧節（「## 今日の N 件」から次の `## ` 見出しの手前まで）に分ける。
+    一覧節は冒頭（導入の直後）にあるので、本文行の中では LIST_SENTINEL 1 行で場所を示す。"""
     fm = ""
     body = text
     if text.startswith("---\n"):
@@ -64,8 +68,18 @@ def split_article(text):
         if end != -1:
             fm, body = text[: end + 5], text[end + 5:]
     lines = body.split("\n")
-    idx = next((i for i, l in enumerate(lines) if FINAL_LIST_RE.match(l)), len(lines))
-    return fm, lines[:idx], lines[idx:]
+    idx = next((i for i, l in enumerate(lines) if FINAL_LIST_RE.match(l)), None)
+    if idx is None:
+        return fm, lines, []
+    end = next((i for i in range(idx + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+    return fm, lines[:idx] + [LIST_SENTINEL] + lines[end:], lines[idx:end]
+
+
+def join_article(fm, main_lines, list_lines):
+    if LIST_SENTINEL in main_lines:
+        i = main_lines.index(LIST_SENTINEL)
+        main_lines = main_lines[:i] + list_lines + main_lines[i + 1:]
+    return fm + "\n".join(main_lines)
 
 
 def count_chars(lines):
@@ -206,8 +220,8 @@ def main():
         print(json.dumps({"changed": False, "error": f"file not found: {path}"}, ensure_ascii=False))
         return 2
     original = path.read_text(encoding="utf-8")
-    fm, main_lines, tail_lines = split_article(original)
-    before = count_chars(main_lines)
+    fm, main_lines, list_lines = split_article(original)
+    before = count_chars([l for l in main_lines if l != LIST_SENTINEL])
     result = {"changed": False, "glossary": 0, "banned": 0, "markdown": 0, "applied": [], "skipped": [],
               "chars_main_before": before, "chars_main_after": before}
     if not Path(args.rules).exists():
@@ -226,8 +240,8 @@ def main():
         main_text, result["applied"], result["skipped"] = apply_reviews(main_text, args.reviews)
     main_lines = main_text.split("\n")
 
-    new_text = fm + "\n".join(main_lines + tail_lines)
-    result["chars_main_after"] = count_chars(main_lines)
+    new_text = join_article(fm, main_lines, list_lines)
+    result["chars_main_after"] = count_chars([l for l in main_lines if l != LIST_SENTINEL])
     result["changed"] = new_text != original
     if result["changed"] and not args.dry_run:
         path.write_text(new_text, encoding="utf-8")

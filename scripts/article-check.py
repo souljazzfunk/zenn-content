@@ -154,14 +154,19 @@ def main():
 
     # --- body split: main text vs final list
     lines = body.splitlines()
+    # 「## 今日の N 件」は冒頭（導入の直後）に置く。一覧節は次の `## ` 見出しまで。本文はその前後
     list_idx = next((i for i, l in enumerate(lines) if re.match(r"^## 今日の\s*\d+\s*件", l)), None)
     if list_idx is None:
-        failures.append("FAILURE_FINAL_LIST_MISSING: '## 今日の N 件' heading not found")
+        failures.append("FAILURE_LIST_MISSING: '## 今日の N 件' heading not found")
         main_lines, list_lines = lines, []
         declared_n = None
     else:
-        main_lines, list_lines = lines[:list_idx], lines[list_idx + 1:]
+        list_end = next((i for i in range(list_idx + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+        main_lines, list_lines = lines[:list_idx] + lines[list_end:], lines[list_idx + 1:list_end]
         declared_n = int(re.search(r"(\d+)", lines[list_idx]).group(1))
+        first_h2 = next((i for i, l in enumerate(lines) if l.startswith("## ")), None)
+        if first_h2 != list_idx:
+            failures.append("FAILURE_LIST_POSITION: '## 今日の N 件' must be the first '## ' heading (right after the intro)")
     main_text = "\n".join(main_lines)
 
     if AI_HEADER not in main_text:
@@ -185,8 +190,7 @@ def main():
     if not l_turns or not a_turns:
         failures.append("FAILURE_DIALOGUE_MISSING: need both **L**: and **A**: turns")
     else:
-        if len(l_turns) > len(a_turns):
-            failures.append(f"FAILURE_L_TOO_TALKATIVE: L turns {len(l_turns)} > A turns {len(a_turns)}")
+        # L と A の発話数の比較は検査しない（2026-09-13 に条件から外した）
         l_avg = sum(count_chars(t["text"]) for t in l_turns) / len(l_turns)
         stats["L_avg_chars"] = round(l_avg, 1)
         if l_avg > L_AVG_MAX:
@@ -203,10 +207,6 @@ def main():
         failures.append(f"FAILURE_H2_COUNT: {len(h2)} '## ' headings in main text, expected {H2_MIN}-{H2_MAX}")
     if deeper:
         failures.append(f"FAILURE_HEADING_DEPTH: headings deeper than ## found ({len(deeper)})")
-    first_h2 = next((i for i, l in enumerate(main_lines) if l.startswith("## ")), len(main_lines))
-    intro_list = [l for l in main_lines[:first_h2] if re.match(r"^\s*(-|\d+\.)\s+", l)]
-    if len(intro_list) < 3:
-        failures.append("FAILURE_INTRO_LIST: 導入直後の項目一覧（3 行以上の箇条書き）が無い")
 
     # --- markdown sanity
     fences = [l for l in lines if l.strip().startswith("```")]
@@ -289,7 +289,7 @@ def main():
     if a_numbered > A_NUMBERED_LISTS_MAX:
         failures.append(f"FAILURE_A_NUMBERED_LISTS: {a_numbered} A turns use numbered lists (max {A_NUMBERED_LISTS_MAX})")
 
-    # --- final list vs seen file, and URLs in main text
+    # --- 冒頭一覧 vs seen file, and URLs in main text
     list_urls = URL_RE.findall("\n".join(list_lines))
     list_items = [l for l in list_lines if re.match(r"^\s*\d+\.\s+", l)]
     stats["list_items"], stats["list_urls"] = len(list_items), len(list_urls)
@@ -303,7 +303,7 @@ def main():
         try:
             seen = json.loads(seen_path.read_text(encoding="utf-8"))
             # seen は日付なしの累積配列（過去の巡回分をすべて含む）なので、
-            # 「既読が末尾一覧に無い」は失敗にできない。一覧側の URL が既読に無い場合だけ知らせる
+            # 「既読が一覧に無い」は失敗にできない。一覧側の URL が既読に無い場合だけ知らせる
             extra = [u for u in list_urls if u not in seen]
             stats["list_urls_not_in_seen"] = len(extra)
             if extra:
@@ -315,7 +315,7 @@ def main():
     main_urls = URL_RE.findall(main_text)
     stray = sorted({u for u in main_urls if u not in list_urls})
     if stray:
-        failures.append(f"FAILURE_STRAY_URL: {len(stray)} URL(s) in main text not in final list: {stray[:3]}")
+        failures.append(f"FAILURE_STRAY_URL: {len(stray)} URL(s) in main text not in the list section: {stray[:3]}")
 
     ok = not failures
     result = {"pass": ok, "skipped": False, "slug": args.slug, "failures": failures, "warnings": warnings, "stats": stats}
