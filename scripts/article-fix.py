@@ -145,26 +145,43 @@ def transform_prose(lines, fn):
     return out, total
 
 
+ENGLISH_WORD = r"[A-Za-z][A-Za-z0-9\-]*"
+# 直前が「英単語 + 空白」、直後が「空白 + 英単語」なら、その語は英語名詞句の一部（tool call, coding agent）。
+# 一部だけ置換すると「道具call」「codingエージェント」のような連結語になるので置換しない。句全体は writer が訳す
+PART_OF_PHRASE_BEFORE = re.compile(ENGLISH_WORD + r" $")
+PART_OF_PHRASE_AFTER = re.compile(r"^ " + ENGLISH_WORD)
+
+
 def glossary_fn(pairs, keep):
     keep_l = {k.lower() for k in keep}
     ordered = sorted(((a, b) for a, b in pairs if a.lower() not in keep_l), key=lambda p: -len(p[0]))
     compiled = [(re.compile(r"(?<![A-Za-z0-9_\-])" + re.escape(a) + r"(?![A-Za-z0-9_\-])"), b) for a, b in ordered]
     hits = {}
+    compound_skipped = {}
 
     def fn(text):
         c = 0
         for rx, b in compiled:
-            text, k = rx.subn("\x00" + b + "\x01", text)
-            if k:
-                c += k
-                hits[rx.pattern] = hits.get(rx.pattern, 0) + k
-        # 置換した日本語と隣の英単語の間の空白は詰める（記事は「Pythonクライアント」のように空白を入れない）
-        text = re.sub(r"(?<=[A-Za-z0-9\x01]) \x00", "\x00", text)
-        text = re.sub(r"\x01 (?=[A-Za-z0-9\x00])", "\x01", text)
+            def sub(m):
+                nonlocal c
+                before, after = text_ref[0][: m.start()], text_ref[0][m.end():]
+                if PART_OF_PHRASE_BEFORE.search(before) or PART_OF_PHRASE_AFTER.match(after):
+                    # 句全体を控える（前後の英単語をつなげた最長の並び）
+                    left = re.search(r"((?:" + ENGLISH_WORD + r" )+)$", before)
+                    right = re.match(r"((?: " + ENGLISH_WORD + r")+)", after)
+                    phrase = ((left.group(1) if left else "") + m.group(0) + (right.group(1) if right else "")).strip()
+                    compound_skipped[phrase] = compound_skipped.get(phrase, 0) + 1
+                    return m.group(0)
+                c += 1
+                hits[rx.pattern] = hits.get(rx.pattern, 0) + 1
+                return "\x00" + b + "\x01"
+            text_ref = [text]
+            text = rx.sub(sub, text)
+        # 置換した日本語と隣の日本語の間の空白だけ詰める（英単語との間は詰めない。連結語を作らないため）
         text = re.sub(r"(?<=[^\x00-\x7F]) \x00", "\x00", text)
         text = re.sub(r"\x01 (?=[^\x00-\x7F])", "\x01", text)
         return text.replace("\x00", "").replace("\x01", ""), c
-    return fn, hits
+    return fn, hits, compound_skipped
 
 
 def banned_fn(pairs):
@@ -231,8 +248,10 @@ def main():
     main_lines, n2 = move_quote_sources(main_lines)
     result["markdown"] = n1 + n2
 
-    gfn, ghits = glossary_fn(read_pairs(args.rules, "定訳（"), read_items(args.rules, "定訳を使わない語"))
+    gfn, ghits, compound_skipped = glossary_fn(read_pairs(args.rules, "定訳（"), read_items(args.rules, "英語のままにする語"))
     main_lines, result["glossary"] = transform_prose(main_lines, gfn)
+    # 英語句の一部なので置換を見送った語句（writer が句ごと訳す）
+    result["compound_skipped"] = [{"phrase": k, "n": v} for k, v in sorted(compound_skipped.items(), key=lambda kv: -kv[1])]
     main_lines, result["banned"] = transform_prose(main_lines, banned_fn(read_pairs(args.rules, "効く")))
 
     main_text = "\n".join(main_lines)
@@ -250,6 +269,8 @@ def main():
         print(f"{'DRY ' if args.dry_run else ''}{'CHANGED' if result['changed'] else 'NO CHANGE'}  {args.slug}  "
               f"glossary={result['glossary']} banned={result['banned']} markdown={result['markdown']} "
               f"applied={result['applied']} chars={before}->{result['chars_main_after']}")
+        for item in result["compound_skipped"]:
+            print(f"  compound (not replaced): {item['phrase']} x{item['n']}")
         for pat, k in sorted(ghits.items(), key=lambda kv: -kv[1]):
             word = re.sub(r"^\(\?<!.*?\)|\(\?!.*?\)$", "", pat).replace("\\", "")
             print(f"  glossary: {word} x{k}")

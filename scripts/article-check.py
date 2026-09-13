@@ -254,19 +254,38 @@ def main():
     for w, n in slang_hits.items():
         warnings.append(f"WARNING_BLOG_SLANG: '{w}' x{n}")
 
-    # --- glossary（定訳のある英語が本文に残っている。article-fix.py で置換される想定。warning）
-    glossary = [i.split("→", 1)[0].strip() for i in (read_list_section(args.rules, "定訳（") or []) if "→" in i]
+    # --- English nouns（方針: 一般名詞は原則すべて日本語。小文字始まりの英単語・英語句が本文に残っていれば warning。
+    #     style reviewer が Must fix に格上げし、writer が文脈で訳す。固有名詞（大文字始まり）と「英語のままにする語」は除く）
+    keep_words = {w.lower() for w in (read_list_section(args.rules, "英語のままにする語") or [])}
     prose = re.sub(r"```.*?```", "", main_text, flags=re.S)
     prose = "\n".join(l for l in prose.splitlines() if not l.startswith(">"))
     prose = re.sub(r"`[^`\n]*`|https?://\S+", "", prose)
-    gl_hits = {}
-    for w in glossary:
-        n = len(re.findall(r"(?<![A-Za-z0-9_\-])" + re.escape(w) + r"(?![A-Za-z0-9_\-])", prose))
-        if n:
-            gl_hits[w] = n
-    stats["glossary"] = sum(gl_hits.values())
-    if gl_hits:
-        warnings.append("WARNING_GLOSSARY: " + ", ".join(f"'{w}' x{n}" for w, n in gl_hits.items()))
+    en_hits = {}
+    for m in re.finditer(r"(?<![A-Za-z0-9_\-])[a-z][a-z0-9\-]*(?: [a-z][a-z0-9\-]*)*(?![A-Za-z0-9_\-])", prose):
+        phrase = m.group(0)
+        words = [w for w in phrase.split(" ") if w.lower() not in keep_words]
+        if not words:
+            continue
+        phrase = " ".join(words)
+        en_hits[phrase] = en_hits.get(phrase, 0) + 1
+    stats["glossary"] = sum(en_hits.values())  # 旧 WARNING_GLOSSARY の後継。名前は run-log の互換のため残す
+    stats["english_nouns"] = stats["glossary"]
+    if en_hits:
+        top = sorted(en_hits.items(), key=lambda kv: -kv[1])
+        warnings.append("WARNING_ENGLISH_NOUN: " + ", ".join(f"'{w}' x{n}" for w, n in top[:40]))
+
+    # --- glued translation（辞書の訳語と英小文字語が空白なしで隣接: 道具call、codingエージェント、モデルtraining。
+    #     置換の副作用で生じる形なので failure。大文字始まり（モデルID）は固有名詞として除外）
+    ja_terms = sorted({i.split("→", 1)[1].strip() for i in (read_list_section(args.rules, "定訳（") or []) if "→" in i}, key=len, reverse=True)
+    ja_terms = [t for t in ja_terms if t and not re.search(r"[A-Za-z]", t)]
+    glued = {}
+    if ja_terms:
+        alt = "|".join(re.escape(t) for t in ja_terms)
+        for m in re.finditer(r"(?:" + alt + r")[a-z][a-z0-9\-]*|(?<![A-Za-z0-9\-])[a-z][a-z0-9\-]*(?:" + alt + r")", prose):
+            glued[m.group(0)] = glued.get(m.group(0), 0) + 1
+    stats["glued"] = sum(glued.values())
+    if glued:
+        failures.append("FAILURE_GLUED_TRANSLATION: " + ", ".join(f"'{w}' x{n}" for w, n in sorted(glued.items(), key=lambda kv: -kv[1])[:20]))
 
     # --- stock phrases（決まり文句が 1 記事に 2 回以上。warning。style reviewer が Must fix に格上げする）
     stock = read_list_section(args.rules, "決まり文句") or []

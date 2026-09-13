@@ -4,7 +4,7 @@
 使い方:
     python3 scripts/ops-record.py --slug S --run N --trigger cron --sha 02357e3ca963 --check PASS \
         --fact "0/0/0/0" --style "0/1/0" --writer "changed true / addressed [S-01] / chars 5044 → 4468" \
-        --result stop --harness "なし" [--decision-file PATH] [--commit "Review stop (run N): title"] [--no-push]
+        --result stop --harness "なし" [--glossary "added [...] / fixed [...]"] [--decision-file PATH] [--commit "Review stop (run N): title"] [--no-push]
 
 - run-log.md の末尾に Run ブロックを追記する（時刻は JST の現在時刻）
 - agent-state.md の `## Last run` を書き換える。--decision-file があれば `## Needs human decision` の先頭にその内容を足す。
@@ -72,6 +72,7 @@ def main():
     ap.add_argument("--autofix", default="", help='article-fix.py の要約 例: "glossary 36 / banned 1 / markdown 11 / applied [S-03]"')
     ap.add_argument("--result", required=True, choices=["pass", "continue", "stop"])
     ap.add_argument("--harness", default="なし")
+    ap.add_argument("--glossary", default="", help='glossary-update.py の要約 例: "added [test suite→テストスイート] / fixed [] / skipped 2"')
     ap.add_argument("--decision-file", default=None)
     ap.add_argument("--commit", default=None)
     ap.add_argument("--no-push", action="store_true")
@@ -86,6 +87,8 @@ def main():
         parts = [x.strip() for x in v.split("/")]
         if len(parts) != len(names):
             return f"{label}: {v}"
+        # "Critical 0 / Must fix 2" のようにラベル付きで渡されても二重にしない
+        parts = [re.sub(r"^(Critical|Must fix|Nice|unreachable)\s*", "", x).strip() for x in parts]
         return f"{label}: " + " / ".join(f"{n} {x}" for n, x in zip(names, parts))
 
     fact_line = fmt("fact", args.fact, ["Critical", "Must fix", "Nice", "unreachable"])
@@ -99,7 +102,10 @@ def main():
     ]
     if args.autofix:
         block.append(f"- autofix: {args.autofix}")
-    block += [f"- {fact_line}", f"- {style_line}", f"- writer: {args.writer}", f"- Result: {args.result}",
+    block += [f"- {fact_line}", f"- {style_line}"]
+    if args.glossary:
+        block.append(f"- glossary: {args.glossary}")
+    block += [f"- writer: {args.writer}", f"- Result: {args.result}",
               f"- Harness change 候補: {args.harness}"]
 
     run_log = REPO / "ops" / "run-log.md"

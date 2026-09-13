@@ -34,5 +34,5 @@
 
 ## 検査
 
-- `python3 scripts/article-check.py <slug>` が外部シグナル。最後の行の JSON を使う。PASS でも reviewer の Critical があれば不合格
+- `python3 scripts/article-check.py <slug>` が外部シグナル。最後の行の JSON を使う。PASS でも reviewer の Critical か Must fix が残っていれば不合格（合格は Critical 0 かつ Must fix 0）
 - 表現ルール（禁止語）は `~/.openclaw/shared/knowledge/writing-rules.md` が正本。ここに二重に書かない
