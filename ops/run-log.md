@@ -299,3 +299,47 @@
 - writer: not called / writer_calls 2
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-15 08:11 JST) 20260915-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0d007097b925
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-02,F-03,F-07,F-08,S-01,S-02]
+- fact: Critical 0 / Must fix 8 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 0
+- writer: changed true / addressed [F-01,F-04,F-05,F-06] / declined [] / chars 4128 → 4166 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-15 08:15 JST) 20260915-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: da3f7c9b13be
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4166 → 4114 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-15 08:18 JST) 20260915-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0e64f200e2e0
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04,F-05,F-06,F-07,F-08]
+- fact: Critical 0 / Must fix 8 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called
+- Result: continue
+- Harness change 候補: fact と style の基準が推測標識の扱いで競合
+
+## Run 4 (2026-09-15 08:19 JST) 20260915-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0e64f200e2e0
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called
+- Result: pass
+- Harness change 候補: fact と style の基準が推測標識の扱いで競合
