@@ -343,3 +343,36 @@
 - writer: not called
 - Result: pass
 - Harness change 候補: fact と style の基準が推測標識の扱いで競合
+
+## Run 1 (2026-09-16 08:13 JST) 20260916-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 80da65792d21
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 1 / Must fix 2 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 0
+- writer: changed true / addressed [S-01,S-02,S-03,FAILURE_LENGTH] / declined [] / chars 3878 → 4046 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-16 08:17 JST) 20260916-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: b86ae4686647
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-02,S-03]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4054 → 4049 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-16 08:19 JST) 20260916-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: b86ae4686647
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called / writer_calls total 2 / chars 4049
+- Result: pass
+- Harness change 候補: なし
