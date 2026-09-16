@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-16 08:19 JST / 20260916-tech-watch / Run 3 / pass
+- 2026-09-16 20:57 JST / 20260916-tech-watch / Run 5 / pass
 - check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
 - style: Critical 0 / Must fix 0 / Nice 0
-- writer: not called / writer_calls total 2 / chars 4049
+- writer: not called / writer_calls total 1 / chars 4013
 
 ## Completed
 
