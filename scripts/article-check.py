@@ -25,7 +25,7 @@ DEFAULT_SEEN = Path(os.path.expanduser("~/.openclaw/workspace/state/tech-watch-s
 
 # 閾値（変えるときは zenn-style.md と合わせる）
 CHARS_MIN, CHARS_MAX = 4000, 7000
-L_AVG_MAX = 120
+L_AVG_MAX = 240
 H2_MIN, H2_MAX = 3, 5
 HEDGE_PER_1000_MAX = 3.0
 A_NUMBERED_LISTS_MAX = 1
