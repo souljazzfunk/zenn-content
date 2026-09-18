@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-18 08:20 JST / 20260918-tech-watch / Run 4 / pass
-- check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 0
-- writer: not called / chars 4097 → 4097
+- 2026-09-19 08:55 JST / 20260919-tech-watch / Run 4 / stop
+- check: FAIL (FAILURE_LENGTH: main text 3929 chars, expected 4000-7000)
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: not called / writer上限3回に到達 / chars 3929 → 3929 / stop_reason 上限到達
 
 ## Completed
 
@@ -18,9 +18,15 @@
 
 ## Needs human decision
 
+- 20260919-tech-watch / run 4 / article_sha: 5ae757c7f93a / 2026-09-19
+  - 残 Critical 0 / 残 Must fix 1
+  - S-01: 一覧10件目のZ.aiを本文で扱っておらず、全掲載項目に触れる構成要件を満たしていない
+  - 機械検査: 本文3929字で下限4000字に71字不足
+  - 停止理由: writer 3回の上限に到達
+  - 質問: writerをもう1回許可してZ.aiへの言及と文字数不足を直す / Z.aiを一覧から外して9件構成にする / Must fixと文字数不足を残したまま公開可にする / このままにする
+
 - 解決済み（2026-09-13 「人が修正した。このままにする。」）: 20260913-tech-watch / Run 6
   - 人が F-01 と S-01 を修正。追加の本文修正は行わない
-
 - 解決済み（2026-09-12 「tech watch 09-12 をもう1回レビューして修正して」）: 20260912-tech-watch / Run 4
 - article_sha: 02357e3ca963
 - Critical: 0
@@ -43,7 +49,7 @@
 
 ## Next run
 
-- なし（20260918-tech-watch は公開可。公開は人が指示する）
+- 20260919-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 

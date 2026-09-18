@@ -468,3 +468,49 @@
 - writer: not called / chars 4097 → 4097
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-19 08:31 JST) 20260919-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 579f8e35685f
+- check: PASS
+- autofix: glossary 1 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04,F-05,F-06,F-07]
+- fact: Critical 5 / Must fix 3 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 4 / Nice 0
+- glossary: added [project instructions → プロジェクト指示] / fixed [] / skipped 0
+- writer: changed true / addressed [F-08,S-01,S-02,S-03,S-04] / declined [] / chars 4547 → 4029 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-19 08:37 JST) 20260919-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0efcdbe32e8d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [F-01,S-01] / declined [] / chars 4029 → 4067 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-19 08:42 JST) 20260919-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 985aef382769
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 2
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [F-01,S-01] / declined [] / chars 4067 → 4032 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-09-19 08:55 JST) 20260919-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 5ae757c7f93a
+- check: FAIL (FAILURE_LENGTH: main text 3929 chars, expected 4000-7000)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: not called / writer上限3回に到達 / chars 3929 → 3929 / stop_reason 上限到達
+- Result: stop
+- Harness change 候補: なし
