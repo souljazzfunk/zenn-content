@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-19 08:55 JST / 20260919-tech-watch / Run 4 / stop
-- check: FAIL (FAILURE_LENGTH: main text 3929 chars, expected 4000-7000)
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 1
-- style: Critical 0 / Must fix 1 / Nice 0
-- writer: not called / writer上限3回に到達 / chars 3929 → 3929 / stop_reason 上限到達
+- 2026-09-20 08:15 JST / 20260920-tech-watch / Run 2 / pass
+- check: PASS
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called / confirmation review / chars 4038
 
 ## Completed
 
@@ -49,7 +49,7 @@
 
 ## Next run
 
-- 20260919-tech-watch は人判断待ち（Needs human decision を参照）
+- なし（20260920-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
