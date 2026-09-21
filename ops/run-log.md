@@ -580,3 +580,36 @@
 - writer: not called / writer_calls 3 reached max / unresolved [F-02,F-03,F-06,F-07,F-08,S-01]
 - Result: stop
 - Harness change 候補: fact reviewer が分析的推論にも出典の直接記述を要求し、style reviewer の掲載項目説明要件と衝突。推論・考察の許容基準を harness で明確化する必要あり
+
+## Run 1 (2026-09-22 08:20 JST) 20260922-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 2a5e5bed07fa
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-04,F-05,F-06,F-07]
+- fact: Critical 4 / Must fix 3 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 3
+- writer: changed true / addressed [F-02,F-03,S-01,S-02,S-03,S-04] / declined [] / chars 4045 → 4010 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-22 08:28 JST) 20260922-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 10b5ec6528fb
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,S-02]
+- fact: Critical 2 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 1 / Must fix 1 / Nice 3
+- writer: changed true / addressed [F-02,S-01,FAILURE_LENGTH] / declined [] / chars 3993 → 4007 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-22 08:31 JST) 20260922-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 10b5ec6528fb
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 3
+- writer: not called / changed false / addressed [] / declined [] / chars 4007 → 4007 / stop_reason なし
+- Result: pass
+- Harness change 候補: なし
