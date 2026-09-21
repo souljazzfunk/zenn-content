@@ -536,3 +536,47 @@
 - writer: not called / confirmation review / chars 4038
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-21 11:59 JST) 20260921-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 9d8dfd15525e
+- check: FAIL (FAILURE_LENGTH: main text 3974 chars, expected 4000-7000)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04,F-05,F-06,F-07,F-08,F-09,F-11,S-02]
+- fact: Critical 8 / Must fix 3 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 3 / Nice 0
+- writer: changed true / addressed [F-10,S-01,S-03,FAILURE_LENGTH] / declined [] / chars 3974 → 4011 / stop_reason なし
+- Result: continue
+- Harness change 候補: 事実レビューが対話内の分析的推論まで出典の直接記述として要求する傾向。推論明示の判定基準を fact reviewer 指示へ追加する余地あり
+
+## Run 2 (2026-09-21 12:04 JST) 20260921-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: efa21f746b8a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-03]
+- fact: Critical 1 / Must fix 2 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [F-02,S-01] / declined [] / chars 4024 → 4110 / stop_reason なし
+- Result: continue
+- Harness change 候補: 事実レビューが分析的推論を出典依存の事実として扱う傾向。推論と事実の境界を reviewer 指示で明確化する余地あり
+
+## Run 3 (2026-09-21 12:09 JST) 20260921-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 66cbce36a84a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [S-01] / declined [] / chars 4038 → 4014 / stop_reason なし
+- Result: continue
+- Harness change 候補: 事実レビューと文体レビューの要求が推論明示を巡って衝突しやすい。分析的発言に求める出典境界を harness で定義する余地あり
+
+## Run 4 (2026-09-21 12:13 JST) 20260921-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 2766f4bcef37
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-04,F-05,S-02]
+- fact: Critical 0 / Must fix 8 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 2 / Nice 1
+- writer: not called / writer_calls 3 reached max / unresolved [F-02,F-03,F-06,F-07,F-08,S-01]
+- Result: stop
+- Harness change 候補: fact reviewer が分析的推論にも出典の直接記述を要求し、style reviewer の掲載項目説明要件と衝突。推論・考察の許容基準を harness で明確化する必要あり

@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-20 08:15 JST / 20260920-tech-watch / Run 2 / pass
+- 2026-09-21 12:13 JST / 20260921-tech-watch / Run 4 / stop
 - check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 0
-- writer: not called / confirmation review / chars 4038
+- fact: Critical 0 / Must fix 8 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 2 / Nice 1
+- writer: not called / writer_calls 3 reached max / unresolved [F-02,F-03,F-06,F-07,F-08,S-01]
 
 ## Completed
 
@@ -18,13 +18,25 @@
 
 ## Needs human decision
 
+- 20260921-tech-watch / run 4 / article_sha: 2766f4bcef37 / 2026-09-21
+  - 残 Critical 0 件
+  - 残 Must fix 6 件
+  - F-02: voxium の証言から導いた「仕様と評価が制約になる」という分析を、筆者の推測として明示する必要がある
+  - F-03: 防御側の情報分離と承認境界に関する段落を、筆者の提案として明示する必要がある
+  - F-06: 認証状態の継続と作業再開の因果を、筆者の考察として明示する必要がある
+  - F-07: 境界条件の修正が運用品質を作るという段落を、筆者の考察として明示する必要がある
+  - F-08: 長期タスクの継続状態と再開設計に関する段落を、筆者の考察として明示する必要がある
+  - S-01: datasette-explain の説明を削ると掲載項目を本文で扱う構成要件を満たせず、出典本文を取得できない事実レビューと文体要件が衝突している
+  - writer 修正上限 3 回に到達
+  - 質問: datasette-explain を掲載から外して別の項目に差し替え、残る分析箇所を推測表現に直すことを許可しますか。それとも、Must fix を残したまま公開可にしますか。
+  - 選択肢: 差し替えと追加修正を許可 / Must fix を残したまま公開可 / このままにする
+
 - 20260919-tech-watch / run 4 / article_sha: 5ae757c7f93a / 2026-09-19
   - 残 Critical 0 / 残 Must fix 1
   - S-01: 一覧10件目のZ.aiを本文で扱っておらず、全掲載項目に触れる構成要件を満たしていない
   - 機械検査: 本文3929字で下限4000字に71字不足
   - 停止理由: writer 3回の上限に到達
   - 質問: writerをもう1回許可してZ.aiへの言及と文字数不足を直す / Z.aiを一覧から外して9件構成にする / Must fixと文字数不足を残したまま公開可にする / このままにする
-
 - 解決済み（2026-09-13 「人が修正した。このままにする。」）: 20260913-tech-watch / Run 6
   - 人が F-01 と S-01 を修正。追加の本文修正は行わない
 - 解決済み（2026-09-12 「tech watch 09-12 をもう1回レビューして修正して」）: 20260912-tech-watch / Run 4
@@ -49,7 +61,7 @@
 
 ## Next run
 
-- なし（20260920-tech-watch は公開可。公開は人が指示する）
+- 20260921-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 
