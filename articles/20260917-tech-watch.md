@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-17: 会話から実行基盤へ"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

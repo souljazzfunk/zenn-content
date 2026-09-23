@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-11: エージェント基盤の製品化"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

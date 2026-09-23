@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-16: エージェント改善ループの実装"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

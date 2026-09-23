@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-12: エージェントを支える基盤"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

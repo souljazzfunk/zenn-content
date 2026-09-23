@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-07: Agent基盤の輪郭"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-10: 仕事を動かすAIの周辺設計"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

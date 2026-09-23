@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-23: モデル競争を支える運用"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

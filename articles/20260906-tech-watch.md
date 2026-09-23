@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-06: Agent基盤の分岐点"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

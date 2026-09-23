@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-09: Agent基盤"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

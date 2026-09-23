@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-15: 評価と運用が主役になる"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

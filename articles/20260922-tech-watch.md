@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-22: エージェント基盤の分離設計"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-20: 実行権限と検証の外周"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-21: AI導入を運用へ移す設計"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

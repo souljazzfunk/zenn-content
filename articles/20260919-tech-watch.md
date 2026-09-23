@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-19: 評価と基盤の設計"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

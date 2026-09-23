@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-08: Agent運用の設計"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

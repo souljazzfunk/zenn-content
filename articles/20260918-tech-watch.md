@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-18: エージェント運用の可視化"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"

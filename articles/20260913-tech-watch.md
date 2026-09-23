@@ -1,7 +1,7 @@
 ---
 title: "Tech Watch 2026-09-13: エージェントを囲う技術"
 emoji: "🎙️"
-type: "idea"
+type: "tech"
 topics:
   - "AI"
   - "Anthropic"
