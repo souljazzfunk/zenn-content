@@ -1,0 +1,13 @@
+{
+  "clean": [],
+  "missing_premise": ["構造"],
+  "no_spec": ["構造"],
+  "quote_clause": ["文法"],
+  "quote_speech": ["文法"],
+  "details_toggle": ["視覚"],
+  "task_list": ["視覚"],
+  "vague_fix": ["用語"],
+  "generic_speaker": ["人名"],
+  "dash": ["表記"],
+  "long_diamond": ["視覚"]
+}

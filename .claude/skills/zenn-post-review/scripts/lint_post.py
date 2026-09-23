@@ -28,6 +28,44 @@ QUOTE_CLAUSE = re.compile(r"「[^」]{6,}」(ように|ような|の領域|と�
 QUOTE_SPEECH = re.compile(r"「[^」]*[、。][^」]*」と(述べ|言っ|話し)")
 GENERIC_SPEAKER = ["講演者", "発表者", "登壇者"]
 VAGUE_FIX = re.compile(r"AIを直")
+SPEC = re.compile(r"<!-- review-spec\n(.*?)-->", re.S)
+
+
+def check_spec(text, lines):
+    """Enforce the article's own review-spec: key concepts must be repeated,
+    introduced before the ideas that depend on them, and present in their section."""
+    m = SPEC.search(text)
+    if not m:
+        return [(0, "構造", "review-spec missing; declare key concepts (see SKILL.md)")]
+    body = text[m.end():]
+    body_lines = body.split("\n")
+    offset = text[:m.end()].count("\n")
+    hits = []
+    for raw in m.group(1).strip().split("\n"):
+        parts = raw.split()
+        if not parts or parts[0] != "concept:" or len(parts) < 2:
+            continue
+        term, opts = parts[1], dict(p.split("=", 1) for p in parts[2:] if "=" in p)
+        n = body.count(term)
+        need = int(opts.get("min", 1))
+        if n < need:
+            hits.append((0, "構造", f"concept '{term}' appears {n}x, needs >= {need}"))
+        dep = opts.get("before")
+        if dep and dep in body:
+            first_t, first_d = body.find(term), body.find(dep)
+            if first_t == -1 or first_t > first_d:
+                ln = offset + body[:first_d].count("\n") + 1
+                hits.append((ln, "構造", f"'{dep}' appears before its premise '{term}'"))
+        sec = opts.get("in")
+        if sec:
+            start = next((i for i, l in enumerate(body_lines) if l.startswith("# " + sec)), None)
+            if start is None:
+                hits.append((0, "構造", f"section '# {sec}' not found for concept '{term}'"))
+            else:
+                end = next((i for i in range(start + 1, len(body_lines)) if body_lines[i].startswith("# ")), len(body_lines))
+                if term not in "\n".join(body_lines[start:end]):
+                    hits.append((offset + start + 1, "構造", f"concept '{term}' missing from section '# {sec}'"))
+    return hits
 
 
 def main():
@@ -57,6 +95,8 @@ def main():
         hits.append((0, "frontmatter", "AI header missing"))
     if "[^1]" not in text:
         hits.append((0, "出典", "no footnote source"))
+
+    hits += check_spec(text, lines)
 
     in_code = False
     for i, line in enumerate(lines, 1):

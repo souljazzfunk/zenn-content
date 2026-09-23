@@ -11,16 +11,18 @@ The rules below come from real corrections on past posts. Each rule names the fa
 
 ## Workflow
 
-1. **Read everything first.** Read the whole article. If it is based on a source (transcript, PDF, artifact, URL), read that source too. You need the source for step 4.
-2. **Run the mechanical lint.**
+1. **Read everything first.** Read the whole article. If it is based on a source (transcript, PDF, artifact, URL), read that source too. You need the source for steps 2 and 5.
+2. **Check or write the review-spec** (section H). If the article has none, derive it from the source: the key concepts, and the premises that later ideas depend on. Show the spec to the user before relying on it.
+3. **Run the mechanical lint.**
    ```bash
    python3 .claude/skills/zenn-post-review/scripts/lint_post.py <slug>
    ```
-   It reports dashes, banned words, hedges, slang, `:::details` toggles, task lists, generic speaker labels, quote-clause suspects, and frontmatter problems. Treat every hit as a finding to confirm or dismiss, not as proof.
-3. **Check the mermaid diagrams render.** Run `python3 .claude/skills/zenn-post-review/scripts/mermaid_page.py <slug> <scratchpad>`, serve the scratchpad directory with `python3 -m http.server` in the background, open the page in the browser pane, and read the tab title (`m0:ok | m1:ERR ...`). Then take one screenshot to catch layout problems (huge diamond nodes, unreadable fan-outs). Stop the server afterwards.
-4. **Run the judgment checks** (sections A to G below) by reading the article.
-5. **Report** the findings (format below). Change nothing unless the user asked for fixes.
-6. **If asked to fix:** apply the fixes, re-run lint and the mermaid check, then show the user a before/after table. Only commit if the user asks. Run `git pull --rebase` before committing, commit only, and leave the push to the user.
+   It reports review-spec violations, dashes, banned words, hedges, slang, `:::details` toggles, task lists, generic speaker labels, quote-clause suspects, and frontmatter problems. Treat every hit as a finding to confirm or dismiss, not as proof.
+4. **Check the mermaid diagrams render.** Run `python3 .claude/skills/zenn-post-review/scripts/mermaid_page.py <slug> <scratchpad>`, serve the scratchpad directory with `python3 -m http.server` in the background, open the page in the browser pane, and read the tab title (`m0:ok | m1:ERR ...`). Then take one screenshot to catch layout problems (huge diamond nodes, unreadable fan-outs). Stop the server afterwards.
+5. **Run the judgment checks** (sections A to G below) by reading the article.
+6. **Report** the findings (format below). Change nothing unless the user asked for fixes.
+7. **If asked to fix:** apply the fixes, re-run lint and the mermaid check, then show the user a before/after table. Only commit if the user asks. Run `git pull --rebase` before committing, commit only, and leave the push to the user.
+8. **Learn from every user correction** (section I). This step is mandatory, not optional polish.
 
 ## A. Structure: recursive pyramid
 
@@ -75,6 +77,44 @@ The rules below come from real corrections on past posts. Each rule names the fa
 - Frontmatter: `type: "tech"` unless the user says otherwise, 1 to 5 `topics`, and `published: false`. Only the human flips `published`.
 - The body starts with `#### AIが書きました🤖` and the standard disclosure line.
 - Touch only the article under review. Never edit other articles, `books/`, or `.git/`.
+
+## H. review-spec: make the article's logic machine-checkable
+
+Plain lint cannot tell that a premise is missing, because it does not know which ideas the article depends on. The spec writes that knowledge into the article itself (Lauren's step 1: the codebase is the memory), so lint can enforce it (step 2). Place it right after the frontmatter. Zenn does not render HTML comments.
+
+```markdown
+<!-- review-spec
+concept: 信頼 min=5 in=結論
+concept: 近道 min=3 before=窮屈 in=③
+-->
+```
+
+- `concept: <term>`: a key concept of the article, written exactly as it appears in the body.
+- `min=N`: the term must appear at least N times. A key idea mentioned once was probably dropped somewhere.
+- `before=<term>`: this concept is the **premise** of `<term>` and must appear first. Example: agents take shortcuts (近道) is the reason Dune is strict (窮屈). Presenting 窮屈 without 近道 leaves the reader with a conclusion and no reason.
+- `in=<heading prefix>`: the term must appear inside the section whose `# ` heading starts with this prefix (`結論`, `②`, `まとめ`).
+
+How to write the spec: for each pillar, ask "what does the source say is the **reason** behind this recommendation?" That reason is a concept with a `before=` edge to the recommendation. Also add the top conclusion's key term with `in=結論` and `in=まとめ`.
+
+## I. Learning loop: promote every correction up the ladder
+
+Treat each user correction the way Lauren treats each agent correction. Do not just fix the sentence. Ask where on the five-step ladder the fix belongs, and put it at the **highest step that works**:
+
+| Step | Where it goes in this skill | Example from past corrections |
+|:-:|---|---|
+| 1 | The article's `review-spec` (structure that makes the mistake visible) | Premise 近道 dropped before 窮屈 |
+| 2 | A lint rule in `lint_post.py`, **plus** a fixture in `tests/fixtures/` and an entry in `tests/expected.json` | Quote used as a clause, `:::details`, 講演者, AIを直す |
+| 3 | A rule in sections A to G of this file | Title must carry the requested theme |
+| 4 | A worked example in this file | Before/after tables in the report |
+| 5 | Nothing written down: the user catches it again next time | Avoid ending here |
+
+After changing lint, run the regression tests, which serve as the skill's CI. Every fixture must pass:
+
+```bash
+python3 .claude/skills/zenn-post-review/scripts/test_lint.py
+```
+
+Keep one paved path, as a gardener would: when a new lint rule makes a prose rule in A to G redundant, shorten the prose rule to a pointer to the lint rule instead of keeping both.
 
 ## Report format
 
