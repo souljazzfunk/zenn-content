@@ -108,7 +108,7 @@ flowchart TD
 Laurenが「一つだけ持ち帰るなら、このスライド」と述べた図です。
 
 ```mermaid
-flowchart TD
+flowchart BT
     S1["1️⃣ 資料そのものを直す"]
     S2["2️⃣ 機械で止める"]
     S3["3️⃣ いつも読む指示"]
