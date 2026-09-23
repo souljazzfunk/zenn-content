@@ -30,6 +30,8 @@ GENERIC_SPEAKER = ["講演者", "発表者", "登壇者"]
 VAGUE_FIX = re.compile(r"AIを直")
 # unnatural coinages caught in past reviews -> natural wording
 UNNATURAL = {"任せて並べる": "並列で任せる"}
+# circled digits and keycap emoji: use plain "1." numbering
+SPECIAL_NUM = re.compile(r"[\u2460-\u2473\u2776-\u277f]|[0-9]\ufe0f?\u20e3")
 SPECS = Path(__file__).resolve().parents[1] / "specs"
 
 
@@ -115,6 +117,8 @@ def main():
             hits.append((i, "表記", "em/en dash"))
         if "<!--" in line and not in_code:
             hits.append((i, "視覚", "HTML comment: Zenn renders it as visible text"))
+        if SPECIAL_NUM.search(line):
+            hits.append((i, "表記", "special digit (①, 1️⃣); use plain 1. 2. 3."))
         if line.startswith(":::details"):
             hits.append((i, "視覚", ":::details toggle; make it a ### heading"))
         if re.match(r"\s*- \[[ x]\]", line):

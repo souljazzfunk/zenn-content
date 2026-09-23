@@ -62,6 +62,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
   - `:::details` toggles. Make them `###` headings with visible text.
   - `- [ ]` task lists (Zenn does not reliably render them). Use a numbered list.
   - HTML comments `<!-- -->`. Zenn renders them as visible text (lint rule + `html_comment` fixture).
+  - Special digits such as circled numbers (①②③) and keycap emoji (1️⃣). Plain `1.` `2.` `3.` is enough, in headings, tables and diagram labels (lint rule + `special_digit` fixture).
 - In mermaid:
   - Use `classDef` colors with explicit `color:`.
   - Keep node labels short (use `<br/>` for a second line).
@@ -88,13 +89,13 @@ The spec is a **sidecar file**, `.claude/skills/zenn-post-review/specs/<slug>.sp
 
 ```text
 concept: 信頼 min=5 in=結論
-concept: 近道 min=3 before=窮屈 in=③
+concept: 近道 min=3 before=窮屈 in=3.
 ```
 
 - `concept: <term>`: a key concept of the article, written exactly as it appears in the body.
 - `min=N`: the term must appear at least N times. A key idea mentioned once was probably dropped somewhere.
 - `before=<term>`: this concept is the **premise** of `<term>` and must appear first. Example: agents take shortcuts (近道) is the reason Dune is strict (窮屈). Presenting 窮屈 without 近道 leaves the reader with a conclusion and no reason.
-- `in=<heading prefix>`: the term must appear inside the section whose `# ` heading starts with this prefix (`結論`, `②`, `まとめ`).
+- `in=<heading prefix>`: the term must appear inside the section whose `# ` heading starts with this prefix (`結論`, `2.`, `まとめ`).
 
 How to write the spec: for each pillar, ask "what does the source say is the **reason** behind this recommendation?" That reason is a concept with a `before=` edge to the recommendation. Also add the top conclusion's key term with `in=結論` and `in=まとめ`.
 
