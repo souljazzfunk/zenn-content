@@ -7,10 +7,6 @@ topics:
 published: false
 ---
 
-<!-- review-spec
-concept: 信頼 min=1 in=結論
--->
-
 #### AIが書きました🤖
 この記事は、AIが書いたものを人間が確認してから投稿しています。
 

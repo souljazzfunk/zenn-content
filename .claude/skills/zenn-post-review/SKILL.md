@@ -12,7 +12,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
 ## Workflow
 
 1. **Read everything first.** Read the whole article. If it is based on a source (transcript, PDF, artifact, URL), read that source too. You need the source for steps 2 and 5.
-2. **Check or write the review-spec** (section H). If the article has none, derive it from the source: the key concepts, and the premises that later ideas depend on. Show the spec to the user before relying on it.
+2. **Check or write the review-spec** (section H), `specs/<slug>.spec`. If it does not exist, derive it from the source: the key concepts, and the premises that later ideas depend on. Show the spec to the user before relying on it.
 3. **Run the mechanical lint.**
    ```bash
    python3 .claude/skills/zenn-post-review/scripts/lint_post.py <slug>
@@ -60,6 +60,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
 - **Not allowed:**
   - `:::details` toggles. Make them `###` headings with visible text.
   - `- [ ]` task lists (Zenn does not reliably render them). Use a numbered list.
+  - HTML comments `<!-- -->`. Zenn renders them as visible text (lint rule + `html_comment` fixture).
 - In mermaid:
   - Use `classDef` colors with explicit `color:`.
   - Keep node labels short (use `<br/>` for a second line).
@@ -80,13 +81,13 @@ The rules below come from real corrections on past posts. Each rule names the fa
 
 ## H. review-spec: make the article's logic machine-checkable
 
-Plain lint cannot tell that a premise is missing, because it does not know which ideas the article depends on. The spec writes that knowledge into the article itself (Lauren's step 1: the codebase is the memory), so lint can enforce it (step 2). Place it right after the frontmatter. Zenn does not render HTML comments.
+Plain lint cannot tell that a premise is missing, because it does not know which ideas the article depends on. The spec writes that knowledge down in the repo (Lauren's step 1: the codebase is the memory), so lint can enforce it (step 2).
 
-```markdown
-<!-- review-spec
+The spec is a **sidecar file**, `.claude/skills/zenn-post-review/specs/<slug>.spec`. Never put it inside the article: Zenn renders HTML comments as visible text, and lint flags any `<!--` in an article.
+
+```text
 concept: 信頼 min=5 in=結論
 concept: 近道 min=3 before=窮屈 in=③
--->
 ```
 
 - `concept: <term>`: a key concept of the article, written exactly as it appears in the body.
@@ -102,7 +103,7 @@ Treat each user correction the way Lauren treats each agent correction. Do not j
 
 | Step | Where it goes in this skill | Example from past corrections |
 |:-:|---|---|
-| 1 | The article's `review-spec` (structure that makes the mistake visible) | Premise 近道 dropped before 窮屈 |
+| 1 | The article's spec file in `specs/` (structure that makes the mistake visible) | Premise 近道 dropped before 窮屈 |
 | 2 | A lint rule in `lint_post.py`, **plus** a fixture in `tests/fixtures/` and an entry in `tests/expected.json` | Quote used as a clause, `:::details`, 講演者, AIを直す |
 | 3 | A rule in sections A to G of this file | Title must carry the requested theme |
 | 4 | A worked example in this file | Before/after tables in the report |

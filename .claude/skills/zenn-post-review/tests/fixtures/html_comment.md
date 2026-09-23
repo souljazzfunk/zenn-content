@@ -14,5 +14,7 @@ published: false
 
 信頼を積み上げます。
 
-信頼は環境でつくる — これが結論です。
+Laurenによれば、環境を整えると信頼が増えます。
+
+<!-- メモ -->
 [^1]: Source: https://example.com

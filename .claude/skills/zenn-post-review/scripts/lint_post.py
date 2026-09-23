@@ -28,20 +28,27 @@ QUOTE_CLAUSE = re.compile(r"「[^」]{6,}」(ように|ような|の領域|と�
 QUOTE_SPEECH = re.compile(r"「[^」]*[、。][^」]*」と(述べ|言っ|話し)")
 GENERIC_SPEAKER = ["講演者", "発表者", "登壇者"]
 VAGUE_FIX = re.compile(r"AIを直")
-SPEC = re.compile(r"<!-- review-spec\n(.*?)-->", re.S)
+SPECS = Path(__file__).resolve().parents[1] / "specs"
 
 
-def check_spec(text, lines):
-    """Enforce the article's own review-spec: key concepts must be repeated,
-    introduced before the ideas that depend on them, and present in their section."""
-    m = SPEC.search(text)
-    if not m:
-        return [(0, "構造", "review-spec missing; declare key concepts (see SKILL.md)")]
-    body = text[m.end():]
+def spec_path(article):
+    """articles/<slug>.md -> specs/<slug>.spec; any other file -> sibling <stem>.spec."""
+    if article.parent.name == "articles":
+        return SPECS / f"{article.stem}.spec"
+    return article.with_suffix(".spec")
+
+
+def check_spec(text, spec_file):
+    """Enforce the article's review-spec (a sidecar file, because Zenn renders
+    HTML comments): key concepts must be repeated, introduced before the ideas
+    that depend on them, and present in their section."""
+    if not spec_file.exists():
+        return [(0, "構造", f"review-spec missing: create {spec_file} (see SKILL.md section H)")]
+    body = text
     body_lines = body.split("\n")
-    offset = text[:m.end()].count("\n")
+    offset = 0
     hits = []
-    for raw in m.group(1).strip().split("\n"):
+    for raw in spec_file.read_text().strip().split("\n"):
         parts = raw.split()
         if not parts or parts[0] != "concept:" or len(parts) < 2:
             continue
@@ -96,7 +103,7 @@ def main():
     if "[^1]" not in text:
         hits.append((0, "出典", "no footnote source"))
 
-    hits += check_spec(text, lines)
+    hits += check_spec(text, spec_path(path))
 
     in_code = False
     for i, line in enumerate(lines, 1):
@@ -104,6 +111,8 @@ def main():
             in_code = not in_code
         if "—" in line or "–" in line:
             hits.append((i, "表記", "em/en dash"))
+        if "<!--" in line and not in_code:
+            hits.append((i, "視覚", "HTML comment: Zenn renders it as visible text"))
         if line.startswith(":::details"):
             hits.append((i, "視覚", ":::details toggle; make it a ### heading"))
         if re.match(r"\s*- \[[ x]\]", line):
