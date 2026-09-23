@@ -28,6 +28,8 @@ QUOTE_CLAUSE = re.compile(r"「[^」]{6,}」(ように|ような|の領域|と�
 QUOTE_SPEECH = re.compile(r"「[^」]*[、。][^」]*」と(述べ|言っ|話し)")
 GENERIC_SPEAKER = ["講演者", "発表者", "登壇者"]
 VAGUE_FIX = re.compile(r"AIを直")
+# unnatural coinages caught in past reviews -> natural wording
+UNNATURAL = {"任せて並べる": "並列で任せる"}
 SPECS = Path(__file__).resolve().parents[1] / "specs"
 
 
@@ -120,6 +122,9 @@ def main():
         if in_code:
             if re.search(r'\{"[^"]{12,}"\}', line):
                 hits.append((i, "視覚", "mermaid diamond with long label renders huge"))
+            for w, fix in UNNATURAL.items():
+                if w in line:
+                    hits.append((i, "用語", f"unnatural '{w}'; use '{fix}'"))
             if VAGUE_FIX.search(line):
                 hits.append((i, "用語", "diagram says AIを直す; name the real target (エージェントの誤り)"))
             continue
@@ -135,6 +140,9 @@ def main():
         for w in GENERIC_SPEAKER:
             if w in line:
                 hits.append((i, "人名", f"generic label '{w}'; use the person's name"))
+        for w, fix in UNNATURAL.items():
+            if w in line:
+                hits.append((i, "用語", f"unnatural '{w}'; use '{fix}'"))
         if VAGUE_FIX.search(line):
             hits.append((i, "用語", "AIを直す; name the real target (エージェントの誤り)"))
         for m in QUOTE_CLAUSE.finditer(line):

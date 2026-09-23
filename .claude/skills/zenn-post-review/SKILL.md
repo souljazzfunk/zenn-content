@@ -43,6 +43,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
 
 - **Name the real object of the action.** Correcting an agent's output is not "fixing the AI": ❌ `AIを直したくなったら` ✅ `エージェントの誤りを直すときは`. Check headings, the conclusion, まとめ, and diagram labels. The same wrong word often appears in all four.
 - One concept, one term. Do not introduce a synonym for something already named.
+- Use established Japanese, not literal coinages. ❌ `任せて並べる` ✅ `並列で任せる`. Add each new case to `UNNATURAL` in lint with a fixture.
 - **Directional words must match the figures.** If the text says `上の段ほど確実`, step 1 must appear at the top of the diagram (use `flowchart BT` when the edges run from 5 to 1). The same applies to 左/右, 前/後, and numbered order.
 
 ## D. People and sources
