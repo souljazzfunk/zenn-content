@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-24 08:32 JST / 20260924-tech-watch / Run 4 / pass
+- 2026-09-25 08:21 JST / 20260925-tech-watch / Run 2 / stop
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 1
-- writer: changed true / addressed [F-01,F-02] / declined [] / chars 4234 → 4237 / stop_reason なし
+- style: Critical 0 / Must fix 2 / Nice 2
+- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason codex app-server request timed out
 
 ## Completed
 
@@ -17,6 +17,14 @@
 - [ ] Phase 5 Scheduled: tech-watch ジョブに組み込み（手動で 3 日連続クリーンが条件）
 
 ## Needs human decision
+
+- 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
+  - 残 Critical 0 件
+  - 残 Must fix 1 件
+  - S-02: 下書きモデル、対象モデル、比率の三つの値を文中ではなく表へ移す必要がある
+  - writer 失敗: codex app-server request timed out / CODEX_APP_SERVER_LOCAL_REQUEST_CANCELLED
+  - 質問: writer をもう一度許可して S-02 の表形式への修正を行いますか。それとも、Must fix を残したまま公開可にしますか。
+  - 選択肢: writer をもう1回許可 / Must fix を残したまま公開可 / このままにする
 
 - 20260921-tech-watch / run 4 / article_sha: 2766f4bcef37 / 2026-09-21
   - 残 Critical 0 件
@@ -30,7 +38,6 @@
   - writer 修正上限 3 回に到達
   - 質問: datasette-explain を掲載から外して別の項目に差し替え、残る分析箇所を推測表現に直すことを許可しますか。それとも、Must fix を残したまま公開可にしますか。
   - 選択肢: 差し替えと追加修正を許可 / Must fix を残したまま公開可 / このままにする
-
 - 20260919-tech-watch / run 4 / article_sha: 5ae757c7f93a / 2026-09-19
   - 残 Critical 0 / 残 Must fix 1
   - S-01: 一覧10件目のZ.aiを本文で扱っておらず、全掲載項目に触れる構成要件を満たしていない
@@ -61,7 +68,7 @@
 
 ## Next run
 
-- なし（20260924-tech-watch は公開可。公開は人が指示する）
+- 20260925-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 

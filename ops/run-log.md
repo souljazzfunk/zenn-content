@@ -683,3 +683,26 @@
 - writer: changed true / addressed [F-01,F-02] / declined [] / chars 4234 → 4237 / stop_reason なし
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-25 08:16 JST) 20260925-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 64f747d3ba84
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 0 / Must fix 3 / Nice 0 / unreachable 0
+- style: 無効: Queued subagent registry persistence failed
+- writer: not called
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-25 08:21 JST) 20260925-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0126d75d9257
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 2
+- glossary: added [chief scientific advisor → 最高科学顧問] / fixed [] / skipped 0
+- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason codex app-server request timed out
+- Result: stop
+- Harness change 候補: なし
