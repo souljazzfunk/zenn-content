@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-25 08:21 JST / 20260925-tech-watch / Run 2 / stop
+- 2026-09-25 08:28 JST / 20260925-tech-watch / Run 2 / stop
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 2 / Nice 2
-- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason codex app-server request timed out
+- style: Critical 0 / Must fix 1 / Nice 2
+- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason prepared model runtime publication was superseded
 
 ## Completed
 
@@ -19,13 +19,21 @@
 ## Needs human decision
 
 - 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
+  - 前回の判断「Writer Approved」は解決済み（2026-09-25）
+  - 残 Critical 0 件
+  - 残 Must fix 1 件
+  - S-02: 下書きモデル、対象モデル、比率の三つの値を文中ではなく表へ移す必要がある
+  - writer 失敗: prepared model runtime publication was superseded
+  - 質問: writer の実行基盤エラー後に、もう一度実行を許可しますか。
+  - 選択肢: writer をもう1回許可 / Must fix を残したまま公開可 / このままにする
+
+- 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
   - 残 Critical 0 件
   - 残 Must fix 1 件
   - S-02: 下書きモデル、対象モデル、比率の三つの値を文中ではなく表へ移す必要がある
   - writer 失敗: codex app-server request timed out / CODEX_APP_SERVER_LOCAL_REQUEST_CANCELLED
   - 質問: writer をもう一度許可して S-02 の表形式への修正を行いますか。それとも、Must fix を残したまま公開可にしますか。
   - 選択肢: writer をもう1回許可 / Must fix を残したまま公開可 / このままにする
-
 - 20260921-tech-watch / run 4 / article_sha: 2766f4bcef37 / 2026-09-21
   - 残 Critical 0 件
   - 残 Must fix 6 件

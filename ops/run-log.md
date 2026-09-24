@@ -706,3 +706,14 @@
 - writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason codex app-server request timed out
 - Result: stop
 - Harness change 候補: なし
+
+## Run 2 (2026-09-25 08:28 JST) 20260925-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 0126d75d9257
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 2
+- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason prepared model runtime publication was superseded
+- Result: stop
+- Harness change 候補: なし
