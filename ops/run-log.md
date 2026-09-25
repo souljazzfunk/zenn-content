@@ -717,3 +717,26 @@
 - writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason prepared model runtime publication was superseded
 - Result: stop
 - Harness change 候補: なし
+
+## Run 2 (2026-09-25 09:30 JST) 20260925-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 0126d75d9257
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 2
+- writer: changed true / addressed [S-02] / declined [] / chars 4295 → 4317 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-25 09:33 JST) 20260925-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: ee18c634fc53
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- glossary: added [] / fixed [] / skipped 0
+- writer: not called in confirmation / prior retry changed true / addressed [S-02] / chars 4295 → 4317
+- Result: pass
+- Harness change 候補: なし

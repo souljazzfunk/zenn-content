@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-25 08:28 JST / 20260925-tech-watch / Run 2 / stop
+- 2026-09-25 09:33 JST / 20260925-tech-watch / Run 3 / pass
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 1 / Nice 2
-- writer: changed false / addressed [] / declined [S-02] / chars 4295 → 4295 / stop_reason prepared model runtime publication was superseded
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called in confirmation / prior retry changed true / addressed [S-02] / chars 4295 → 4317
 
 ## Completed
 
@@ -76,7 +76,7 @@
 
 ## Next run
 
-- 20260925-tech-watch は人判断待ち（Needs human decision を参照）
+- なし（20260925-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
