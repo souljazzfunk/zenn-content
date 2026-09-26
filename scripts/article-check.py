@@ -40,6 +40,7 @@ AI_HEADER = "#### AIが書きました🤖"
 ENGLISH_ADJ = ["interesting", "robust", "obedient", "legit", "scalable", "cool", "nice", "crazy", "tricky", "elegant", "clever", "smart", "huge", "subtle", "weird", "fragile", "brittle", "naive", "safe", "unsafe", "fast", "slow", "cheap", "expensive", "powerful", "impressive", "boring", "exciting", "surprising", "reasonable", "obvious", "hard", "easy", "simple", "complex"]
 ENGLISH_PREDICATE_RE = re.compile(r"\b(" + "|".join(ENGLISH_ADJ) + r")\s*(です|でした|ですね|ですよ|だ[。、とねな]|な[のん]?\b|に見え|すぎる|かな)")
 SPEAKER_RE = re.compile(r"^\*\*([^*]+)\*\*:\s*(.*)$")
+LIST_ITEM_RE = re.compile(r"^(?:[-*+]\s+|\d+[.)]\s+)")
 URL_RE = re.compile(r"https?://[^\s)>\]」』]+")
 
 
@@ -96,6 +97,56 @@ def split_turns(lines):
     if cur:
         turns.append(cur)
     return turns
+
+
+def unlabeled_dialogue_paragraphs(lines):
+    """対話開始後にある、話者ラベルのない本文段落を返す。
+
+    1 ラベル 1 段落を必須とする一方、見出し・表・箇条書き・引用・
+    fenced code・directive は直前の発話に属する構造ブロックとして除外する。
+    """
+    blocks = []
+    current = []
+    protected = False
+    in_fence = False
+    in_directive = False
+
+    for line in lines + [""]:
+        stripped = line.strip()
+        if not stripped and not in_fence and not in_directive:
+            if current:
+                blocks.append((current, protected))
+                current, protected = [], False
+            continue
+
+        if stripped.startswith("```"):
+            protected = True
+            in_fence = not in_fence
+        elif re.match(r"^:::[A-Za-z]", stripped):
+            protected = True
+            in_directive = True
+        elif in_directive and stripped == ":::":
+            protected = True
+            in_directive = False
+        elif in_fence or in_directive:
+            protected = True
+        current.append(line)
+
+    unlabeled = []
+    dialogue_started = False
+    for block, protected in blocks:
+        first = block[0].lstrip()
+        if SPEAKER_RE.match(first):
+            dialogue_started = True
+            continue
+        structural = (
+            protected
+            or first.startswith(("#", "|", ">"))
+            or bool(LIST_ITEM_RE.match(first))
+        )
+        if dialogue_started and not structural:
+            unlabeled.append("\n".join(block))
+    return unlabeled
 
 
 def count_chars(s):
@@ -184,6 +235,14 @@ def main():
     bad_speakers = [s for s in speakers if s not in ("L", "A")]
     if bad_speakers:
         failures.append(f"FAILURE_SPEAKER_LABELS: unexpected labels {bad_speakers}")
+    unlabeled = unlabeled_dialogue_paragraphs(main_lines)
+    stats["unlabeled_dialogue_paragraphs"] = len(unlabeled)
+    if unlabeled:
+        failures.append(
+            "FAILURE_SPEAKER_LABELS: "
+            f"{len(unlabeled)} unlabeled dialogue paragraph(s); "
+            "every prose paragraph needs **L**: or **A**:"
+        )
     l_turns = [t for t in turns if t["speaker"] == "L"]
     a_turns = [t for t in turns if t["speaker"] == "A"]
     stats["turns_L"], stats["turns_A"] = len(l_turns), len(a_turns)
