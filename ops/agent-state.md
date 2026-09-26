@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-26 12:01 JST / 20260926-tech-watch / Run 3 / pass
+- 2026-09-27 08:17 JST / 20260927-tech-watch / Run 2 / pass
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
 - style: Critical 0 / Must fix 0 / Nice 2
-- writer: not called
+- writer: not called in run 2 / total writer calls 1
 
 ## Completed
 
@@ -76,7 +76,7 @@
 
 ## Next run
 
-- なし（20260926-tech-watch は公開可。公開は人が指示する）
+- なし（20260927-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 
