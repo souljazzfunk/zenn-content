@@ -796,3 +796,36 @@
 - writer: not called in run 2 / total writer calls 1
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-28 08:15 JST) 20260928-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: fc3a3ac3d168
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,S-04]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 1
+- writer: changed true / addressed [S-01,S-02,S-03] / declined [] / chars 4107 → 4110 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-09-28 08:17 JST) 20260928-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 452d0eeaf40d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-09-28 08:19 JST) 20260928-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 452d0eeaf40d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called
+- Result: pass
+- Harness change 候補: なし
