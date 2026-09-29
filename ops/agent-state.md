@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-29 08:18 JST / 20260929-tech-watch / Run 2 / pass
+- 2026-09-30 08:32 JST / 20260930-tech-watch / Run 1 / stop
 - check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 1
-- style: Critical 0 / Must fix 0 / Nice 2
-- writer: not called in run 2 / total writer calls 1
+- fact: Critical 2 / Must fix 2 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 2
+- writer: changed false / addressed [] / declined [S-01,S-02,S-03] / chars 4260 → 4260 / stop_reason needs-unsupported-fact
 
 ## Completed
 
@@ -18,6 +18,15 @@
 
 ## Needs human decision
 
+- 20260930-tech-watch / run 1 / article_sha: e630afb29e9d / 2026-09-30
+  - 残 Critical 0 件
+  - 残 Must fix 3 件
+  - S-01: A の説明が「新しいのは」「これで」の定型反復になり、項目を順番に読み上げる構成になっている
+  - S-02: L の発言が短すぎ、自分の見方と具体的な問いを置く人物像から外れている
+  - S-03: Anthropic Frontier Red Team の重要な原文引用と出典名が本文にない
+  - writer stop_reason: needs-unsupported-fact（S-03 の引用原文が提供資料に含まれず、出典外の文を補う必要があるため変更なし）
+  - 質問: 元記事の原文引用を取得して3件すべて直す / S-01とS-02だけ直してS-03を残す / Must fixを残したまま公開可にする / このままにする、のどれにしますか
+
 - 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
   - 前回の判断「Writer Approved」は解決済み（2026-09-25）
   - 残 Critical 0 件
@@ -26,7 +35,6 @@
   - writer 失敗: prepared model runtime publication was superseded
   - 質問: writer の実行基盤エラー後に、もう一度実行を許可しますか。
   - 選択肢: writer をもう1回許可 / Must fix を残したまま公開可 / このままにする
-
 - 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
   - 残 Critical 0 件
   - 残 Must fix 1 件
@@ -76,7 +84,7 @@
 
 ## Next run
 
-- なし（20260929-tech-watch は公開可。公開は人が指示する）
+- 20260930-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 

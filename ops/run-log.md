@@ -851,3 +851,15 @@
 - writer: not called in run 2 / total writer calls 1
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-09-30 08:32 JST) 20260930-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e630afb29e9d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04]
+- fact: Critical 2 / Must fix 2 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 2
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed false / addressed [] / declined [S-01,S-02,S-03] / chars 4260 → 4260 / stop_reason needs-unsupported-fact
+- Result: stop
+- Harness change 候補: なし
