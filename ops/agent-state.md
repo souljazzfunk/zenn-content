@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-09-30 08:32 JST / 20260930-tech-watch / Run 1 / stop
+- 2026-09-30 10:47 JST / 20260930-tech-watch / Run 3 / stop
 - check: PASS
-- fact: Critical 2 / Must fix 2 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 3 / Nice 2
-- writer: changed false / addressed [] / declined [S-01,S-02,S-03] / chars 4260 → 4260 / stop_reason needs-unsupported-fact
+- fact: Critical 0 / Must fix 2 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: not called in run 3 / total writer calls 2 / upper limit reached
 
 ## Completed
 
@@ -18,6 +18,14 @@
 
 ## Needs human decision
 
+- 20260930-tech-watch / run 3 / article_sha: f5eab27286ca / 2026-09-30
+  - 前回の判断「全部直して」は解決済み（2026-09-30）
+  - 残 Critical 0 件
+  - 残 Must fix 1 件
+  - S-01: 本文で初出の技術キーワード6語（Software 3.0、Software 1.0、情報経路のアクセス制御、状態機械、march of nines、実演から運用への距離）が太字になっていない
+  - writer stop_reason: 既定の writer 上限2回に到達。新たに出た事実指摘2件は自動修正済み
+  - 質問: writer 上限を1回増やしてS-01を直す / Must fixを残したまま公開可にする / このままにする、のどれにしますか
+
 - 20260930-tech-watch / run 1 / article_sha: e630afb29e9d / 2026-09-30
   - 残 Critical 0 件
   - 残 Must fix 3 件
@@ -26,7 +34,6 @@
   - S-03: Anthropic Frontier Red Team の重要な原文引用と出典名が本文にない
   - writer stop_reason: needs-unsupported-fact（S-03 の引用原文が提供資料に含まれず、出典外の文を補う必要があるため変更なし）
   - 質問: 元記事の原文引用を取得して3件すべて直す / S-01とS-02だけ直してS-03を残す / Must fixを残したまま公開可にする / このままにする、のどれにしますか
-
 - 20260925-tech-watch / run 2 / article_sha: 0126d75d9257 / 2026-09-25
   - 前回の判断「Writer Approved」は解決済み（2026-09-25）
   - 残 Critical 0 件
