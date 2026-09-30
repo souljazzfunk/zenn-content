@@ -896,3 +896,36 @@
 - writer: not called in run 3 / total writer calls 2 / upper limit reached
 - Result: stop
 - Harness change 候補: なし
+
+## Run 1 (2026-10-01 08:12 JST) 20261001-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e80fd490ef0c
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 1 / Must fix 2 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 3
+- writer: changed true / addressed [S-01,S-02,S-03,S-04] / declined [] / chars 4125 → 4205 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-01 08:16 JST) 20261001-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0d9e2b7b4357
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-03]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 0
+- writer: changed true / addressed [S-01,S-02,S-04] / declined [] / chars 4210 → 4302 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-01 08:18 JST) 20261001-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 0d9e2b7b4357
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called / cumulative writer calls 2 / chars 4302
+- Result: pass
+- Harness change 候補: なし
