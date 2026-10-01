@@ -929,3 +929,36 @@
 - writer: not called / cumulative writer calls 2 / chars 4302
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-02 08:20 JST) 20261002-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 1adf24ca5024
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 2
+- writer: changed true / addressed [S-01,S-02,S-03,S-04,S-05] / declined [] / chars 4035 → 4029 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-02 08:23 JST) 20261002-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 2dc756c4301b
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called / confirmation review after autofix
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-02 08:25 JST) 20261002-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 2dc756c4301b
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called / confirmation review passed / total writer calls 1
+- Result: pass
+- Harness change 候補: なし
