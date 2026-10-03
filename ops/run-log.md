@@ -973,3 +973,25 @@
 - writer: not called / chars 4292
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-04 08:18 JST) 20261004-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e08846f784a7
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-04 08:21 JST) 20261004-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 5f2c71b97de3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called / chars 4071 → 4066
+- Result: pass
+- Harness change 候補: なし
