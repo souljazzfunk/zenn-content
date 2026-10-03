@@ -64,5 +64,37 @@ class SpeakerLabelTest(unittest.TestCase):
         self.assertEqual([], ARTICLE_CHECK.unlabeled_dialogue_paragraphs(lines))
 
 
+class MarkdownSignalTest(unittest.TestCase):
+    def test_raw_escape_outside_code_is_detected(self):
+        text = "**A**: 前半。\\n\\n**L**: 後半。\n```text\n\\n\\t\n```\n`\\n`"
+        self.assertEqual(["\\n", "\\n"], ARTICLE_CHECK.raw_escape_sequences(text))
+
+    def test_numeric_density_flags_three_values_in_prose(self):
+        lines = ["**A**: 成功率は 90%、99%、99.9% と段階的に上がった。"]
+        self.assertEqual(1, len(ARTICLE_CHECK.numeric_density_candidates(lines)))
+
+    def test_numeric_density_ignores_structures_dates_urls_and_code(self):
+        lines = [
+            "**A**: 2026-10-03 に公開した。",
+            "| 1 | 2 | 3 |",
+            "- 1、2、3",
+            "> 1、2、3",
+            "```text", "1 2 3", "```",
+            "**A**: https://example.com/1/2/3 を参照した。",
+        ]
+        self.assertEqual([], ARTICLE_CHECK.numeric_density_candidates(lines))
+
+    def test_numeric_density_treats_compound_values_as_single_values(self):
+        lines = [
+            "**A**: 1万6000人が100万件を処理した。",
+            "**L**: 9×9数独を約15秒で解いた。",
+            "**A**: 料金は5分の1である。",
+            "**A**: Claude Fable 5.1 は62点で、費用を36%減らした。",
+            "**A**: SWE-2 はSWE-1.7より127から53へ減らした。",
+            "**A**: HTML 5 Canvasへ3枚を描いた。",
+        ]
+        self.assertEqual([], ARTICLE_CHECK.numeric_density_candidates(lines))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

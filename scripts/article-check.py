@@ -153,6 +153,72 @@ def count_chars(s):
     return len(re.sub(r"\s+", "", s))
 
 
+def without_code(text):
+    """fenced code とインラインコードを除いた本文を返す。"""
+    text = re.sub(r"```.*?```", "", text, flags=re.S)
+    return re.sub(r"`[^`\n]*`", "", text)
+
+
+def raw_escape_sequences(text):
+    """コード外に残った生の `\\n` / `\\t` を返す。"""
+    return re.findall(r"\\[nt]", without_code(text))
+
+
+def numeric_density_candidates(lines):
+    """構造ブロック外で、独立した数値を 3 個以上含む本文文を返す。"""
+    prose_lines = []
+    in_fence = False
+    in_directive = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if re.match(r"^:::[A-Za-z]", stripped):
+            in_directive = True
+            continue
+        if in_directive:
+            if stripped == ":::":
+                in_directive = False
+            continue
+        if (
+            not stripped
+            or stripped.startswith(("#", "|", ">"))
+            or LIST_ITEM_RE.match(stripped)
+        ):
+            continue
+        prose_lines.append(stripped)
+
+    prose = "\n".join(prose_lines)
+    prose = re.sub(r"`[^`\n]*`|https?://\S+", "", prose)
+    # 日付・製品の版番号は比較値として数えない。
+    prose = re.sub(r"(?<!\d)\d{4}(?:[-/.年]\d{1,2})(?:[-/.月]\d{1,2}日?)?", "<DATE>", prose)
+    prose = re.sub(
+        r"\b([A-Za-z][A-Za-z0-9-]*)\s+\d+(?:\.\d+)+(?!\s*[%％])",
+        r"\1 <VERSION>",
+        prose,
+    )
+    prose = re.sub(r"\b([A-Z]{2,})\s+\d+(?=\s+[A-Z])", r"\1 <VERSION>", prose)
+    number_re = re.compile(
+        r"(?<![A-Za-z0-9_.-])(?:"
+        r"\d+(?:[.,]\d+)*\s*分の\s*\d+(?:[.,]\d+)*"
+        r"|\d+\s*[×xX]\s*\d+"
+        r"|\d+(?:[万億兆]\d*)*(?:[.,]\d+)*(?:%|％)?"
+        r")(?![A-Za-z0-9_.])"
+    )
+    candidates = []
+    for sentence in re.split(r"(?<=[。！？!?])|\n", prose):
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        values = number_re.findall(sentence)
+        if len(values) >= 3:
+            candidates.append((len(values), sentence[:160]))
+    return candidates
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("slug")
@@ -287,6 +353,18 @@ def main():
             block = []
     if table_issues:
         failures.append(f"FAILURE_TABLE_COLUMNS: {table_issues} table(s) with uneven columns")
+
+    # --- raw escape sequences（コード例以外の `\\n` / `\\t` は段落や字下げの破損）
+    raw_escapes = raw_escape_sequences(body)
+    stats["raw_escapes"] = len(raw_escapes)
+    if raw_escapes:
+        failures.append(f"FAILURE_RAW_ESCAPE: {len(raw_escapes)} raw escape sequence(s)")
+
+    # --- numeric density（比較かどうかの最終判断は style reviewer に残す）
+    numeric_dense = numeric_density_candidates(main_lines)
+    stats["numeric_density"] = len(numeric_dense)
+    for count, excerpt in numeric_dense:
+        warnings.append(f"WARNING_NUMERIC_DENSITY: {count} values in prose sentence: {excerpt}")
 
     # --- banned words（禁止語は failure。動詞「効く」の活用形もここに含まれる）
     for w in banned:
