@@ -995,3 +995,25 @@
 - writer: not called / chars 4071 → 4066
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-05 08:21 JST) 20261005-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: af2dbd3c4fc3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 4
+- writer: changed true / addressed [S-01,S-02,S-03] / declined [] / chars 4217 → 4283 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-05 08:23 JST) 20261005-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: af2dbd3c4fc3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 4
+- writer: not called / chars 4283
+- Result: pass
+- Harness change 候補: なし
