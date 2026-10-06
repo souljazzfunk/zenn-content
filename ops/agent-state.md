@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-10-05 08:23 JST / 20261005-tech-watch / Run 2 / pass
+- 2026-10-06 09:27 JST / 20261006-tech-watch / Run 3 / stop
 - check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 4
-- writer: not called / chars 4283
+- fact: Critical 0 / Must fix 2 / Nice 0 / unreachable 2
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called / cumulative writer calls 2 / upper limit reached / chars 4001
 
 ## Completed
 
@@ -18,6 +18,14 @@
 
 ## Needs human decision
 
+- 20261006-tech-watch / run 3 / article_sha: 184e67be2446 / 2026-10-06
+  - 残 Critical 0 件
+  - 残 Must fix 2 件
+  - F-01: Graph Engineering の実行グラフ（ノード、遷移、共有状態、分岐、並列実行、人の承認、再開）の説明は、出典本文を取得できず確認できない
+  - F-02: 最小限の創作状態の保持項目、5〜10回の試行、比較指標は、出典本文を取得できず確認できない
+  - writer stop_reason: writer 上限2回に到達。文体要件を満たすため再追加した2項目が、事実レビューで未確認となった
+  - 質問: 未確認の2件を掲載対象から外して8件にする / 読める出典本文を提供して再レビューする / Must fixを残したまま公開可にする / このままにする、のどれにしますか
+
 - 20260930-tech-watch / run 3 / article_sha: f5eab27286ca / 2026-09-30
   - 前回の判断「全部直して」は解決済み（2026-09-30）
   - 残 Critical 0 件
@@ -25,7 +33,6 @@
   - S-01: 本文で初出の技術キーワード6語（Software 3.0、Software 1.0、情報経路のアクセス制御、状態機械、march of nines、実演から運用への距離）が太字になっていない
   - writer stop_reason: 既定の writer 上限2回に到達。新たに出た事実指摘2件は自動修正済み
   - 質問: writer 上限を1回増やしてS-01を直す / Must fixを残したまま公開可にする / このままにする、のどれにしますか
-
 - 20260930-tech-watch / run 1 / article_sha: e630afb29e9d / 2026-09-30
   - 残 Critical 0 件
   - 残 Must fix 3 件
@@ -91,7 +98,7 @@
 
 ## Next run
 
-- なし（20261005-tech-watch は公開可。公開は人が指示する）
+- 20261006-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 

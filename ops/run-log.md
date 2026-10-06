@@ -1017,3 +1017,36 @@
 - writer: not called / chars 4283
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-06 09:18 JST) 20261006-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 2faed42c857f
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-05,F-06,S-03]
+- fact: Critical 0 / Must fix 6 / Nice 0 / unreachable 2
+- style: Critical 0 / Must fix 3 / Nice 1
+- writer: changed true / addressed [F-01,F-02,F-03,F-04,S-01,S-02,S-04] / declined [] / chars 4231 → 4018 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-06 09:24 JST) 20261006-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 184e67be2446
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: changed true / addressed [S-01] / declined [] / chars 4018 → 4001 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-06 09:27 JST) 20261006-tech-watch
+- Trigger: telegram（人の指示）
+- article_sha: 184e67be2446
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 2 / Nice 0 / unreachable 2
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: not called / cumulative writer calls 2 / upper limit reached / chars 4001
+- Result: stop
+- Harness change 候補: 出典本文を取得できない掲載項目を一覧から除外する規則の明文化候補
