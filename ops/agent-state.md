@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-10-06 09:27 JST / 20261006-tech-watch / Run 3 / stop
+- 2026-10-07 08:22 JST / 20261007-tech-watch / Run 5 / pass
 - check: PASS
-- fact: Critical 0 / Must fix 2 / Nice 0 / unreachable 2
-- style: Critical 0 / Must fix 0 / Nice 0
-- writer: not called / cumulative writer calls 2 / upper limit reached / chars 4001
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: not called / total writer_calls 3 / chars 4126
 
 ## Completed
 
@@ -98,7 +98,7 @@
 
 ## Next run
 
-- 20261006-tech-watch は人判断待ち（Needs human decision を参照）
+- なし（20261007-tech-watch は公開可。公開は人が指示する）
 
 ## Human read
 

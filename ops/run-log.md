@@ -1050,3 +1050,58 @@
 - writer: not called / cumulative writer calls 2 / upper limit reached / chars 4001
 - Result: stop
 - Harness change 候補: 出典本文を取得できない掲載項目を一覧から除外する規則の明文化候補
+
+## Run 1 (2026-10-07 08:11 JST) 20261007-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 83f6832f87de
+- check: FAIL (FAILURE_LENGTH: main text 3967 chars, expected 4000-7000)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 1 / Must fix 2 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [S-01,FAILURE_LENGTH] / declined [] / chars 3967 → 4007 / stop_reason なし
+- Result: continue
+- Harness change 候補: article-check.py の数値密度検査がモデル名 Mistral Large 4 の 4 を比較値として数える
+
+## Run 2 (2026-10-07 08:15 JST) 20261007-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: aec4bdaef1b4
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 1
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [F-01,S-01] / declined [] / chars 4007 → 4094 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-07 08:17 JST) 20261007-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: d8700f3f1dc8
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: not called / total writer_calls 2 / chars 4094
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-10-07 08:20 JST) 20261007-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 4c8df2ea653b
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [S-01,S-02] / declined [] / chars 4094 → 4126 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 5 (2026-10-07 08:22 JST) 20261007-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 7511d668fca9
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [S-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 0
+- writer: not called / total writer_calls 3 / chars 4126
+- Result: pass
+- Harness change 候補: article-check.py の数値密度検査がモデル名 Mistral Large 4 の 4 を比較値として数える
