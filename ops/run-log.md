@@ -1105,3 +1105,39 @@
 - writer: not called / total writer_calls 3 / chars 4126
 - Result: pass
 - Harness change 候補: article-check.py の数値密度検査がモデル名 Mistral Large 4 の 4 を比較値として数える
+
+## Run 1 (2026-10-08 08:08 JST) 20261008-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 9089bfa81af6
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,S-03]
+- fact: Critical 0 / Must fix 1 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 0
+- glossary: added [] / fixed [] / skipped 1
+- writer: changed true / addressed [S-01,S-02] / declined [] / chars 4504 → 4466 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-08 08:10 JST) 20261008-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 50d34ad2c458
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 1 / applied [S-02]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 0
+- glossary: added [] / fixed [] / skipped 1
+- writer: changed true / addressed [S-01] / declined [] / chars 4470 → 4471 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-08 08:11 JST) 20261008-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 50d34ad2c458
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: not called / chars 4471
+- Result: pass
+- Harness change 候補: なし
