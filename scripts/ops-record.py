@@ -11,7 +11,9 @@
   `## Next run` は result=stop なら「<slug> は人判断待ち」、pass なら「なし（<slug> は公開可）」、continue なら「<slug> の次の Run」
 - --publish があれば（result=pass のときだけ有効）commit の前に記事 frontmatter の `published: false` を `true` にする。既に true なら何もしない
 - --commit があれば articles/<slug>.md と ops/ を add して commit し、--no-push が無ければ push する
-- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "committed": "<sha>|null", "pushed": bool, "error": "..."}
+- --publish で push まで成功したら、~/.openclaw/workspace/scripts/zenn-published.py <slug> --wait 180 で記事ページを未ログインで取得し、
+  結果を `live` に入れる（true: 読める / false: 読めない / null: 判定不能）。公開の成否はこの値で判断する
+- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "committed": "<sha>|null", "pushed": bool, "live": bool|null, "error": "..."}
 標準ライブラリのみ。
 """
 import argparse
@@ -60,6 +62,17 @@ def git(args, check=True):
     return subprocess.run(["git", "-C", str(REPO)] + args, capture_output=True, text=True, check=check)
 
 
+def verify_live(slug):
+    """記事ページを未ログインで取得して公開を確かめる。push 成功や frontmatter は公開の証拠にしない。"""
+    script = Path.home() / ".openclaw/workspace/scripts/zenn-published.py"
+    r = subprocess.run(["python3", str(script), slug, "--wait", "180"], capture_output=True, text=True)
+    try:
+        res = json.loads(r.stdout.strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return None, (r.stdout + r.stderr).strip()[-300:]
+    return res.get("published"), res
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--slug", required=True)
@@ -80,7 +93,7 @@ def main():
     ap.add_argument("--no-push", action="store_true")
     args = ap.parse_args()
 
-    out = {"run_log": False, "agent_state": False, "published_set": False, "committed": None, "pushed": False}
+    out = {"run_log": False, "agent_state": False, "published_set": False, "committed": None, "pushed": False, "live": None}
     if args.publish and args.result != "pass":
         out["error"] = "--publish は --result pass のときだけ使える"
         print(json.dumps(out, ensure_ascii=False))
@@ -128,7 +141,7 @@ def main():
         dec = Path(args.decision_file).read_text(encoding="utf-8").rstrip("\n").split("\n")
         s = prepend_to_section(s, "Needs human decision", dec)
     nxt = {"stop": f"- {args.slug} は人判断待ち（Needs human decision を参照）",
-           "pass": (f"- なし（{args.slug} はレビュー合格で公開した）" if args.publish
+           "pass": (f"- なし（{args.slug} はレビュー合格で公開処理をした。公開の確認は ops-record の live と zenn-live-watch）" if args.publish
                     else f"- なし（{args.slug} はレビュー合格。公開しなかった）"),
            "continue": f"- {args.slug} の Run {args.run + 1}（進行中）"}[args.result]
     s = replace_section(s, "Next run", [nxt])
@@ -157,6 +170,8 @@ def main():
                     out["pushed"] = r.returncode == 0
                     if r.returncode != 0:
                         out["error"] = (r.stdout + r.stderr).strip()[-400:]
+                    elif args.publish:
+                        out["live"], out["live_check"] = verify_live(args.slug)
         except subprocess.CalledProcessError as e:
             out["error"] = (e.stdout + e.stderr).strip()[-400:]
     print(json.dumps(out, ensure_ascii=False))
