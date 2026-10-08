@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-10-09 06:10 JST / 20261009-tech-watch / Run 1 / stop
-- check: FAIL (FAILURE_LENGTH: main text 3398 chars, expected 4000-7000)
-- fact: Critical 2 / Must fix 4 / Nice 1 / unreachable 0
-- style: Critical 0 / Must fix 3 / Nice 2
-- writer: changed false / addressed [] / declined [S-01,S-02,FAILURE_LENGTH] / chars 3398 → 3398 / stop_reason conflicting-findings
+- 2026-10-09 08:34 JST / 20261009-tech-watch / Run 3 / pass
+- check: PASS
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called / chars 4336
 
 ## Completed
 
@@ -18,15 +18,7 @@
 
 ## Needs human decision
 
-- 20261009-tech-watch / run 1 / article_sha: ac442adfadcd / 2026-10-09 JST
-  - 残 Critical 0 件
-  - 残 Must fix 2 件
-  - S-01: 導入が判断器・フック・利用規約を列挙して全体を総括しているため、一つの具体的な挙動から始める必要がある
-  - S-02: L の問いだけの一文が複数あり、観察や仮説を添えた2文以上へ直す必要がある
-  - 機械検査: 本文 3398 字で、下限 4000 字に 602 字不足
-  - writer stop_reason: conflicting-findings（4000字以上という検査条件と、3398字の1.05倍以下という増加上限を同時に満たせない）
-  - 人への質問: 本文を4000字以上にするため、5%を超える加筆を許可しますか
-  - 選択肢: 5%超の加筆を許可 / 機械検査の文字数不足を残す / このまま下書きにする
+- 解決済み（2026-10-09 5%超の加筆を許可）
 
 - 20261006-tech-watch / run 3 / article_sha: 184e67be2446 / 2026-10-06
   - 残 Critical 0 件
@@ -107,7 +99,7 @@
 
 ## Next run
 
-- 20261009-tech-watch は人判断待ち（Needs human decision を参照）
+- なし（20261009-tech-watch はレビュー合格で公開処理をした。公開の確認は ops-record の live と zenn-live-watch）
 
 ## Human read
 
