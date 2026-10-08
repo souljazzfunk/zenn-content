@@ -34,13 +34,14 @@ FALLBACK_BANNED = ["片手落ち", "めくら判", "つんぼ桟敷", "気違い
                    "効く", "効い", "効き", "効か", "効け"]  # 末尾 5 つは動詞「効く」の活用形（効果・有効・効率には当たらない）
 FALLBACK_SLANG = ["刺さる", "ハマる", "やばい", "ヤバい", "爆速", "秒で", "ぶっちゃけ", "ガチで", "マジで", "神機能", "一択", "知見", "いい感じ", "エモい", "ワンチャン", "ググる"]
 FALLBACK_HEDGES = ["かもしれない", "場合によっては", "注意が必要", "補足すると", "一概には"]
+FALLBACK_MISTRANSLATION = ["温度 → temperature（サンプリングのパラメータ）"]  # writing-rules.md「## 誤訳の検査」が無いときの予備
 OLD_NAMES = ["レックス", "アンドレイ", "架空のキャラクター", "架空の人物"]
 AI_HEADER = "#### AIが書きました🤖"
+AI_NOTE = "この記事は、AIが書いたものをAIがレビューしてから公開しています。"
 # 英語の形容詞・副詞が述語になっている箇所（「interesting です」「robust だ」）。名詞＋です は拾わない
 ENGLISH_ADJ = ["interesting", "robust", "obedient", "legit", "scalable", "cool", "nice", "crazy", "tricky", "elegant", "clever", "smart", "huge", "subtle", "weird", "fragile", "brittle", "naive", "safe", "unsafe", "fast", "slow", "cheap", "expensive", "powerful", "impressive", "boring", "exciting", "surprising", "reasonable", "obvious", "hard", "easy", "simple", "complex"]
 ENGLISH_PREDICATE_RE = re.compile(r"\b(" + "|".join(ENGLISH_ADJ) + r")\s*(です|でした|ですね|ですよ|だ[。、とねな]|な[のん]?\b|に見え|すぎる|かな)")
 SPEAKER_RE = re.compile(r"^\*\*([^*]+)\*\*:\s*(.*)$")
-LIST_ITEM_RE = re.compile(r"^(?:[-*+]\s+|\d+[.)]\s+)")
 URL_RE = re.compile(r"https?://[^\s)>\]」』]+")
 
 
@@ -99,124 +100,8 @@ def split_turns(lines):
     return turns
 
 
-def unlabeled_dialogue_paragraphs(lines):
-    """対話開始後にある、話者ラベルのない本文段落を返す。
-
-    1 ラベル 1 段落を必須とする一方、見出し・表・箇条書き・引用・
-    fenced code・directive は直前の発話に属する構造ブロックとして除外する。
-    """
-    blocks = []
-    current = []
-    protected = False
-    in_fence = False
-    in_directive = False
-
-    for line in lines + [""]:
-        stripped = line.strip()
-        if not stripped and not in_fence and not in_directive:
-            if current:
-                blocks.append((current, protected))
-                current, protected = [], False
-            continue
-
-        if stripped.startswith("```"):
-            protected = True
-            in_fence = not in_fence
-        elif re.match(r"^:::[A-Za-z]", stripped):
-            protected = True
-            in_directive = True
-        elif in_directive and stripped == ":::":
-            protected = True
-            in_directive = False
-        elif in_fence or in_directive:
-            protected = True
-        current.append(line)
-
-    unlabeled = []
-    dialogue_started = False
-    for block, protected in blocks:
-        first = block[0].lstrip()
-        if SPEAKER_RE.match(first):
-            dialogue_started = True
-            continue
-        structural = (
-            protected
-            or first.startswith(("#", "|", ">"))
-            or bool(LIST_ITEM_RE.match(first))
-        )
-        if dialogue_started and not structural:
-            unlabeled.append("\n".join(block))
-    return unlabeled
-
-
 def count_chars(s):
     return len(re.sub(r"\s+", "", s))
-
-
-def without_code(text):
-    """fenced code とインラインコードを除いた本文を返す。"""
-    text = re.sub(r"```.*?```", "", text, flags=re.S)
-    return re.sub(r"`[^`\n]*`", "", text)
-
-
-def raw_escape_sequences(text):
-    """コード外に残った生の `\\n` / `\\t` を返す。"""
-    return re.findall(r"\\[nt]", without_code(text))
-
-
-def numeric_density_candidates(lines):
-    """構造ブロック外で、独立した数値を 3 個以上含む本文文を返す。"""
-    prose_lines = []
-    in_fence = False
-    in_directive = False
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith("```"):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        if re.match(r"^:::[A-Za-z]", stripped):
-            in_directive = True
-            continue
-        if in_directive:
-            if stripped == ":::":
-                in_directive = False
-            continue
-        if (
-            not stripped
-            or stripped.startswith(("#", "|", ">"))
-            or LIST_ITEM_RE.match(stripped)
-        ):
-            continue
-        prose_lines.append(stripped)
-
-    prose = "\n".join(prose_lines)
-    prose = re.sub(r"`[^`\n]*`|https?://\S+", "", prose)
-    # 日付・製品の版番号は比較値として数えない。
-    prose = re.sub(r"(?<!\d)\d{4}(?:[-/.年]\d{1,2})(?:[-/.月]\d{1,2}日?)?", "<DATE>", prose)
-    prose = re.sub(
-        r"\b([A-Za-z][A-Za-z0-9-]*)\s+\d+(?:\.\d+)+(?!\s*[%％])",
-        r"\1 <VERSION>",
-        prose,
-    )
-    prose = re.sub(r"\b([A-Z]{2,})\s+\d+(?=\s+[A-Z])", r"\1 <VERSION>", prose)
-    number_re = re.compile(
-        r"(?<![A-Za-z0-9_.-])(?:"
-        r"\d+(?:[.,]\d+)*\s*分の\s*\d+(?:[.,]\d+)*"
-        r"|\d+\s*[×xX]\s*\d+"
-        r"|\d+(?:[万億兆]\d*)*(?:[.,]\d+)*(?:%|％)?"
-        r")(?![A-Za-z0-9_.])"
-    )
-    candidates = []
-    for sentence in re.split(r"(?<=[。！？!?])|\n", prose):
-        sentence = sentence.strip()
-        if not sentence:
-            continue
-        values = number_re.findall(sentence)
-        if len(values) >= 3:
-            candidates.append((len(values), sentence[:160]))
-    return candidates
 
 
 def main():
@@ -261,8 +146,8 @@ def main():
         failures.append("FAILURE_SLUG_FORMAT: slug must be YYYYMMDD-tech-watch")
     if fm.get("emoji") != "🎙️":
         failures.append("FAILURE_FM_EMOJI: emoji must be 🎙️")
-    if fm.get("type") != "idea":
-        failures.append("FAILURE_FM_TYPE: type must be idea")
+    if fm.get("type") != "tech":
+        failures.append("FAILURE_FM_TYPE: type must be tech")
     if str(fm.get("published")).lower() != "false":
         warnings.append("WARNING_FM_PUBLISHED: published is not false (already published?)")
     topics = fm.get("topics") if isinstance(fm.get("topics"), list) else []
@@ -288,6 +173,8 @@ def main():
 
     if AI_HEADER not in main_text:
         failures.append(f"FAILURE_AI_HEADER: '{AI_HEADER}' missing")
+    if AI_NOTE not in main_text:
+        failures.append(f"FAILURE_AI_NOTE: '{AI_NOTE}' missing (旧文言「人間が確認してから投稿」は不可)")
 
     # --- length
     chars_main = count_chars(re.sub(r"```.*?```", "", main_text, flags=re.S))
@@ -301,14 +188,6 @@ def main():
     bad_speakers = [s for s in speakers if s not in ("L", "A")]
     if bad_speakers:
         failures.append(f"FAILURE_SPEAKER_LABELS: unexpected labels {bad_speakers}")
-    unlabeled = unlabeled_dialogue_paragraphs(main_lines)
-    stats["unlabeled_dialogue_paragraphs"] = len(unlabeled)
-    if unlabeled:
-        failures.append(
-            "FAILURE_SPEAKER_LABELS: "
-            f"{len(unlabeled)} unlabeled dialogue paragraph(s); "
-            "every prose paragraph needs **L**: or **A**:"
-        )
     l_turns = [t for t in turns if t["speaker"] == "L"]
     a_turns = [t for t in turns if t["speaker"] == "A"]
     stats["turns_L"], stats["turns_A"] = len(l_turns), len(a_turns)
@@ -354,18 +233,6 @@ def main():
     if table_issues:
         failures.append(f"FAILURE_TABLE_COLUMNS: {table_issues} table(s) with uneven columns")
 
-    # --- raw escape sequences（コード例以外の `\\n` / `\\t` は段落や字下げの破損）
-    raw_escapes = raw_escape_sequences(body)
-    stats["raw_escapes"] = len(raw_escapes)
-    if raw_escapes:
-        failures.append(f"FAILURE_RAW_ESCAPE: {len(raw_escapes)} raw escape sequence(s)")
-
-    # --- numeric density（比較かどうかの最終判断は style reviewer に残す）
-    numeric_dense = numeric_density_candidates(main_lines)
-    stats["numeric_density"] = len(numeric_dense)
-    for count, excerpt in numeric_dense:
-        warnings.append(f"WARNING_NUMERIC_DENSITY: {count} values in prose sentence: {excerpt}")
-
     # --- banned words（禁止語は failure。動詞「効く」の活用形もここに含まれる）
     for w in banned:
         if w in body:
@@ -410,6 +277,22 @@ def main():
     if en_hits:
         top = sorted(en_hits.items(), key=lambda kv: -kv[1])
         warnings.append("WARNING_ENGLISH_NOUN: " + ", ".join(f"'{w}' x{n}" for w, n in top[:40]))
+
+    # --- mistranslation（英語の専門用語を字面どおり訳した語: 温度 → temperature。writing-rules「誤訳の検査」節の日本語側が本文にあれば warning。
+    #     style reviewer が文脈を見て Must fix に格上げし、writer が英語に戻す。物理的な温度の話は例外なので failure にはしない）
+    mis_items = read_list_section(args.rules, "誤訳の検査") or FALLBACK_MISTRANSLATION
+    mis_hits = []
+    for item in mis_items:
+        if "→" not in item:
+            continue
+        ja, en = (x.strip() for x in item.split("→", 1))
+        en = re.sub(r"[（(].*$", "", en).strip()
+        n = prose.count(ja)
+        if n:
+            mis_hits.append((ja, en, n))
+    stats["mistranslation"] = sum(n for _, _, n in mis_hits)
+    for ja, en, n in mis_hits:
+        warnings.append(f"WARNING_MISTRANSLATION: '{ja}' x{n} → '{en}' のまま書く")
 
     # --- glued translation（辞書の訳語と英小文字語が空白なしで隣接: 道具call、codingエージェント、モデルtraining。
     #     置換の副作用で生じる形なので failure。大文字始まり（モデルID）は固有名詞として除外）

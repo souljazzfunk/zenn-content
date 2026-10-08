@@ -27,7 +27,7 @@
 
 ## Safety
 
-- `published` と `published_at` は人の Telegram 指示（zenn-publish ルール）でだけ変える。レビューループの中では触らない
+- `published` を `true` にするのは、レビュー合格時の `ops-record.py --publish`（main）と、人の Telegram 指示（zenn-publish ルール）だけ。writer と reviewer は触らない。`published_at` は人の指示でだけ変える
 - git の commit / push は main だけが行う。writer と reviewer は行わない
 - 他人の所有パスを直さない。気付いたことは自分の出力（JSON の `notes`）に書いて main に渡す
 - `articles/` の他の記事、`books/`、`.git/` を触らない

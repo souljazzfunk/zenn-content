@@ -4,13 +4,14 @@
 使い方:
     python3 scripts/ops-record.py --slug S --run N --trigger cron --sha 02357e3ca963 --check PASS \
         --fact "0/0/0/0" --style "0/1/0" --writer "changed true / addressed [S-01] / chars 5044 → 4468" \
-        --result stop --harness "なし" [--glossary "added [...] / fixed [...]"] [--decision-file PATH] [--commit "Review stop (run N): title"] [--no-push]
+        --result stop --harness "なし" [--glossary "added [...] / fixed [...]"] [--decision-file PATH] [--commit "Review stop (run N): title"] [--publish] [--no-push]
 
 - run-log.md の末尾に Run ブロックを追記する（時刻は JST の現在時刻）
 - agent-state.md の `## Last run` を書き換える。--decision-file があれば `## Needs human decision` の先頭にその内容を足す。
   `## Next run` は result=stop なら「<slug> は人判断待ち」、pass なら「なし（<slug> は公開可）」、continue なら「<slug> の次の Run」
+- --publish があれば（result=pass のときだけ有効）commit の前に記事 frontmatter の `published: false` を `true` にする。既に true なら何もしない
 - --commit があれば articles/<slug>.md と ops/ を add して commit し、--no-push が無ければ push する
-- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "committed": "<sha>|null", "pushed": bool, "error": "..."}
+- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "committed": "<sha>|null", "pushed": bool, "error": "..."}
 標準ライブラリのみ。
 """
 import argparse
@@ -75,10 +76,15 @@ def main():
     ap.add_argument("--glossary", default="", help='glossary-update.py の要約 例: "added [test suite→テストスイート] / fixed [] / skipped 2"')
     ap.add_argument("--decision-file", default=None)
     ap.add_argument("--commit", default=None)
+    ap.add_argument("--publish", action="store_true", help="result=pass のとき published: false → true にしてから commit する")
     ap.add_argument("--no-push", action="store_true")
     args = ap.parse_args()
 
-    out = {"run_log": False, "agent_state": False, "committed": None, "pushed": False}
+    out = {"run_log": False, "agent_state": False, "published_set": False, "committed": None, "pushed": False}
+    if args.publish and args.result != "pass":
+        out["error"] = "--publish は --result pass のときだけ使える"
+        print(json.dumps(out, ensure_ascii=False))
+        return 2
     now = datetime.datetime.now(JST).strftime("%Y-%m-%d %H:%M JST")
 
     def fmt(label, v, names):
@@ -122,11 +128,21 @@ def main():
         dec = Path(args.decision_file).read_text(encoding="utf-8").rstrip("\n").split("\n")
         s = prepend_to_section(s, "Needs human decision", dec)
     nxt = {"stop": f"- {args.slug} は人判断待ち（Needs human decision を参照）",
-           "pass": f"- なし（{args.slug} は公開可。公開は人が指示する）",
+           "pass": (f"- なし（{args.slug} はレビュー合格で公開した）" if args.publish
+                    else f"- なし（{args.slug} はレビュー合格。公開しなかった）"),
            "continue": f"- {args.slug} の Run {args.run + 1}（進行中）"}[args.result]
     s = replace_section(s, "Next run", [nxt])
     state.write_text(s, encoding="utf-8")
     out["agent_state"] = True
+
+    if args.publish:
+        art = REPO / "articles" / f"{args.slug}.md"
+        a = art.read_text(encoding="utf-8")
+        m = re.match(r"^---\n(.*?)\n---\n", a, flags=re.S)
+        if m and re.search(r"^published:\s*false\s*$", m.group(1), flags=re.M):
+            fm = re.sub(r"^published:\s*false\s*$", "published: true", m.group(1), count=1, flags=re.M)
+            art.write_text("---\n" + fm + "\n---\n" + a[m.end():], encoding="utf-8")
+            out["published_set"] = True
 
     if args.commit:
         try:
