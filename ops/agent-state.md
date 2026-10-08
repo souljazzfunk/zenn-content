@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-10-08 08:11 JST / 20261008-tech-watch / Run 3 / pass
-- check: PASS
-- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 0
-- writer: not called / chars 4471
+- 2026-10-09 06:10 JST / 20261009-tech-watch / Run 1 / stop
+- check: FAIL (FAILURE_LENGTH: main text 3398 chars, expected 4000-7000)
+- fact: Critical 2 / Must fix 4 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 2
+- writer: changed false / addressed [] / declined [S-01,S-02,FAILURE_LENGTH] / chars 3398 → 3398 / stop_reason conflicting-findings
 
 ## Completed
 
@@ -18,6 +18,16 @@
 
 ## Needs human decision
 
+- 20261009-tech-watch / run 1 / article_sha: ac442adfadcd / 2026-10-09 JST
+  - 残 Critical 0 件
+  - 残 Must fix 2 件
+  - S-01: 導入が判断器・フック・利用規約を列挙して全体を総括しているため、一つの具体的な挙動から始める必要がある
+  - S-02: L の問いだけの一文が複数あり、観察や仮説を添えた2文以上へ直す必要がある
+  - 機械検査: 本文 3398 字で、下限 4000 字に 602 字不足
+  - writer stop_reason: conflicting-findings（4000字以上という検査条件と、3398字の1.05倍以下という増加上限を同時に満たせない）
+  - 人への質問: 本文を4000字以上にするため、5%を超える加筆を許可しますか
+  - 選択肢: 5%超の加筆を許可 / 機械検査の文字数不足を残す / このまま下書きにする
+
 - 20261006-tech-watch / run 3 / article_sha: 184e67be2446 / 2026-10-06
   - 残 Critical 0 件
   - 残 Must fix 2 件
@@ -25,7 +35,6 @@
   - F-02: 最小限の創作状態の保持項目、5〜10回の試行、比較指標は、出典本文を取得できず確認できない
   - writer stop_reason: writer 上限2回に到達。文体要件を満たすため再追加した2項目が、事実レビューで未確認となった
   - 質問: 未確認の2件を掲載対象から外して8件にする / 読める出典本文を提供して再レビューする / Must fixを残したまま公開可にする / このままにする、のどれにしますか
-
 - 20260930-tech-watch / run 3 / article_sha: f5eab27286ca / 2026-09-30
   - 前回の判断「全部直して」は解決済み（2026-09-30）
   - 残 Critical 0 件
@@ -98,7 +107,7 @@
 
 ## Next run
 
-- なし（20261008-tech-watch は公開可。公開は人が指示する）
+- 20261009-tech-watch は人判断待ち（Needs human decision を参照）
 
 ## Human read
 

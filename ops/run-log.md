@@ -1141,3 +1141,14 @@
 - writer: not called / chars 4471
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-09 06:10 JST) 20261009-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: ac442adfadcd
+- check: FAIL (FAILURE_LENGTH: main text 3398 chars, expected 4000-7000)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04,F-05,F-06,S-03]
+- fact: Critical 2 / Must fix 4 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 2
+- writer: changed false / addressed [] / declined [S-01,S-02,FAILURE_LENGTH] / chars 3398 → 3398 / stop_reason conflicting-findings
+- Result: stop
+- Harness change 候補: 文字数下限未満の新規ドラフトでは writer の5%増加上限と機械検査が矛盾する。初稿段階の不足時に適用する増加上限の見直しが必要
