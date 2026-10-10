@@ -1,6 +1,6 @@
 ---
 title: "Tech Watch 2026-10-06: AIの境界と引き継ぎ"
-emoji: "🎙️"
+emoji: "🛡️"
 type: "tech"
 topics:
   - "AI"

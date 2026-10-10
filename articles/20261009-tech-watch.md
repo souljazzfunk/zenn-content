@@ -1,6 +1,6 @@
 ---
 title: "Tech Watch 2026-10-09: 判断を速く、境界を固く"
-emoji: "🎙️"
+emoji: "🛡️"
 type: "tech"
 topics:
   - "AI"

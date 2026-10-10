@@ -1,6 +1,6 @@
 ---
 title: "Tech Watch 2026-10-08: 小さなモデルと適応する画面"
-emoji: "🎙️"
+emoji: "🧠"
 type: "tech"
 topics:
   - "AI"

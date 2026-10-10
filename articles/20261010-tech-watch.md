@@ -1,6 +1,6 @@
 ---
 title: "Tech Watch 2026-10-10: エージェントを運用に載せる"
-emoji: "🎙️"
+emoji: "🏢"
 type: "tech"
 topics:
   - "AI"

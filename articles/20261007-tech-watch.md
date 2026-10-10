@@ -1,6 +1,6 @@
 ---
 title: "Tech Watch 2026-10-07: 境界と検証"
-emoji: "🎙️"
+emoji: "🛡️"
 type: "tech"
 topics:
   - "AI"
