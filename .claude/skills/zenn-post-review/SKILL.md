@@ -18,7 +18,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
    python3 .claude/skills/zenn-post-review/scripts/lint_post.py <slug>
    ```
    It reports review-spec violations, dashes, banned words, hedges, slang, `:::details` toggles, task lists, generic speaker labels, quote-clause suspects, and frontmatter problems. Treat every hit as a finding to confirm or dismiss, not as proof.
-4. **Check the mermaid diagrams render.** Run `python3 .claude/skills/zenn-post-review/scripts/mermaid_page.py <slug> <scratchpad>`, serve the scratchpad directory with `python3 -m http.server` in the background, open the page in the browser pane, and read the tab title (`m0:ok | m1:ERR ...`). Then take one screenshot to catch layout problems (huge diamond nodes, unreadable fan-outs). Stop the server afterwards.
+4. **Check the diagrams.** View each PNG under `images/<slug>/` for clipped or overlapping labels. If the article still has mermaid, run `python3 .claude/skills/zenn-post-review/scripts/mermaid_page.py <slug> <scratchpad>`, serve the scratchpad directory with `python3 -m http.server` in the background, open the page in the browser pane, and read the tab title (`m0:ok | m1:ERR ...`). Then take one screenshot to catch layout problems (huge diamond nodes, unreadable fan-outs). Stop the server afterwards.
 5. **Run the judgment checks** (sections A to G below) by reading the article.
 6. **Report** the findings (format below). Change nothing unless the user asked for fixes.
 7. **If asked to fix:** apply the fixes, re-run lint and the mermaid check, then show the user a before/after table. Only commit if the user asks. Run `git pull --rebase` before committing, commit only, and leave the push to the user.
@@ -56,14 +56,15 @@ The rules below come from real corrections on past posts. Each rule names the fa
 
 ## E. Visuals: big pictures, few words
 
-- Each section should lead with a **mermaid diagram** or a **comparison table**, followed by at most one or two short sentences or a single bolded takeaway.
+- Each section should lead with a **diagram** or a **comparison table**, followed by at most one or two short sentences or a single bolded takeaway.
 - Encouraged: tables (★ ratings for strength), `:::message`, `:::message alert`, blockquotes (including `> ### ...` for the single key line), numbered lists, `---` between pillars, emoji markers, footnotes.
 - **Not allowed:**
   - `:::details` toggles. Make them `###` headings with visible text.
   - `- [ ]` task lists (Zenn does not reliably render them). Use a numbered list.
   - HTML comments `<!-- -->`. Zenn renders them as visible text (lint rule + `html_comment` fixture).
   - Special digits such as circled numbers (①②③) and keycap emoji (1️⃣). Plain `1.` `2.` `3.` is enough, in headings, tables and diagram labels (lint rule + `special_digit` fixture).
-- In mermaid:
+- Diagrams are SVG, not mermaid (the user found mermaid diagrams crude, 2026-10-10). Write them in `diagrams/<slug>/build.py`, starting from `diagrams/20260923-ai-kitchen-trust-ladder/build.py` for the shared style and sans-serif font, run it, and embed `![alt](/images/<slug>/NN.png)`. Zenn's GitHub sync serves only png, jpg, gif and webp, so readers see the PNG.
+- If an older post still has mermaid:
   - Use `classDef` colors with explicit `color:`.
   - Keep node labels short (use `<br/>` for a second line).
   - Avoid `{}` diamond nodes with long labels, because they render huge. Use `()` or `[]` instead.

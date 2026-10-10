@@ -26,17 +26,7 @@ Lauren Tan（@poteto）は、1か月で2,000件のプルリクエストを本番
 
 > **エージェントの誤りを直すたびに、その修正を「二度と起きない形」で環境に残す。** 信頼はその積み重ねで増え、信頼が増えた分だけ、任せられるエージェントの数が増える。
 
-```mermaid
-flowchart LR
-    A["😰 毎回見張る<br/>1〜5体"] -->|"信頼を積む"| B["🙂 ときどき確認<br/>10〜20体"]
-    B -->|"信頼を積む"| C["😎 並列で任せる<br/>数百体"]
-    classDef low fill:#fde2e0,stroke:#d0473f,color:#1c2621
-    classDef mid fill:#fdf1cf,stroke:#f0c24b,color:#1c2621
-    classDef high fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    class A low
-    class B mid
-    class C high
-```
+![信頼を積むほど任せられるエージェントの数が増える3段階](/images/20260923-ai-kitchen-trust-ladder/01.png)
 
 | | 🔧 Laurenの話 | 💼 業務では |
 |---|---|---|
@@ -50,17 +40,7 @@ Laurenによれば、信頼がないまま100体を動かしても、質の低�
 
 Laurenは「ソフトウェア工場」という比喩を退け、**ミシュランの厨房**を選びました。
 
-```mermaid
-flowchart LR
-    Cook["👩‍🍳 AIが調理"] --> Chef("🧑‍🍳 あなたが検品")
-    Chef -->|"✅ 合格"| Out["🍽️ 提供"]
-    Chef -->|"❌ 不合格"| Fix["🔧 厨房を直す"]
-    Fix -.->|"次の皿から失敗が減る"| Cook
-    classDef you fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef bad fill:#fde2e0,stroke:#d0473f,color:#1c2621
-    class Chef you
-    class Fix bad
-```
+![AIが調理し、人が検品し、不合格なら厨房を直す流れ](/images/20260923-ai-kitchen-trust-ladder/02.png)
 
 料理長は自分で食材を切りません。**皿を検品し、厨房を整えます。** 信頼を生むのは、図の中の「厨房を直す」という流れです。
 
@@ -68,26 +48,7 @@ flowchart LR
 
 厨房を直す方法は、次の3つに整理できます。
 
-```mermaid
-flowchart TD
-    Top["🎯 AIへの信頼を積み上げる"]
-    Top --> P1["1. 直す<br/>誤りを起こせない形にする"]
-    Top --> P2["2. 確かめる<br/>AI自身に検証させる"]
-    Top --> P3["3. 保つ<br/>悪い前例を増やさない"]
-    P1 --> P1a["5段のはしご"]
-    P1 --> P1b["文章のlint"]
-    P1 --> P1c["レビュー役のAI"]
-    P1 --> P1d["必ず成り立つ規則"]
-    P2 --> P2a["CLI: 同じ手順で証拠"]
-    P2 --> P2b["地図: 言葉を実物へ"]
-    P3 --> P3a["前例は複製される"]
-    P3 --> P3b["迷いようがないフォルダ"]
-    P3 --> P3c["庭師を置く"]
-    classDef top fill:#1c2621,stroke:#1c2621,color:#ffffff
-    classDef pillar fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    class Top top
-    class P1,P2,P3 pillar
-```
+![結論と3本の柱（直す、確かめる、保つ）の全体像](/images/20260923-ai-kitchen-trust-ladder/03.png)
 
 | 柱 | 問い | 信頼への寄与 |
 |---|---|---|
@@ -107,25 +68,7 @@ flowchart TD
 
 Laurenが講演の中で最も重要だと述べた図です。
 
-```mermaid
-flowchart BT
-    S1["1. 資料そのものを直す"]
-    S2["2. 機械で止める"]
-    S3["3. いつも読む指示"]
-    S4["4. 手順書スキル"]
-    S5["5. 人の目でチェック"]
-    S5 -->|"昇格"| S4 -->|"昇格"| S3 -->|"昇格"| S2 -->|"昇格"| S1
-    classDef r1 fill:#2e7a55,stroke:#2e7a55,color:#ffffff
-    classDef r2 fill:#4b9270,stroke:#4b9270,color:#ffffff
-    classDef r3 fill:#78ad92,stroke:#78ad92,color:#ffffff
-    classDef r4 fill:#a6cab6,stroke:#a6cab6,color:#1c2621
-    classDef r5 fill:#d4e5db,stroke:#d4e5db,color:#1c2621
-    class S1 r1
-    class S2 r2
-    class S3 r3
-    class S4 r4
-    class S5 r5
-```
+![人の目から資料そのものまで、誤りを直す5段のはしご](/images/20260923-ai-kitchen-trust-ladder/04.png)
 
 **上の段ほど確実。下の段は忘れられる。**
 
@@ -147,16 +90,7 @@ Laurenによれば、PRの流入速度では、人が全行を読んで指摘し
 
 ## 1-2. 深掘り: 文章にも機械のチェックをかける（2段目）
 
-```mermaid
-flowchart LR
-    D["📝 下書き"] --> C{"🔍 自動チェック"}
-    C -->|"✅"| P["通す"]
-    C -->|"❌"| R["戻す"]
-    classDef ok fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef ng fill:#fde2e0,stroke:#d0473f,color:#1c2621
-    class P ok
-    class R ng
-```
+![下書きを自動チェックし、OKなら通しNGなら戻す流れ](/images/20260923-ai-kitchen-trust-ladder/05.png)
 
 | 🔧 Laurenの話 | 💼 業務では | 例 |
 |---|---|---|
@@ -173,17 +107,7 @@ flowchart LR
 
 ## 1-3. 深掘り: 提出前に必ず見る「厳しい先輩」（3段目）
 
-```mermaid
-flowchart LR
-    D["📝 下書き"] --> AI["🧐 レビュー役のAI"]
-    AI --> Cm["💬 指摘だけ"]
-    Cm --> H{"👤 人が判断"}
-    H -.->|"同じ指摘が続いたら"| Up["⬆️ lintやテンプレへ昇格"]
-    classDef rv fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef up fill:#fdf1cf,stroke:#f0c24b,color:#1c2621
-    class AI rv
-    class Up up
-```
+![レビュー役のAIが指摘し、人が判断し、続く指摘は昇格させる流れ](/images/20260923-ai-kitchen-trust-ladder/06.png)
 
 🔧 Laurenは、rules や skills と並べて Bugbot（PR を自動でレビューする AI）を3段目に置いています。💼 業務では次の3点で再現できます。
 
@@ -202,17 +126,7 @@ flowchart LR
 
 🔧 Laurenは、LeanやTLA+による形式検証を、最も難しく、まだ答えの出ていない領域として挙げています。💼 業務では**道具は使わず、考え方だけ借ります。**
 
-```mermaid
-flowchart LR
-    A["申請"] --> B["承認"] --> C["完了"]
-    B -.->|"差し戻し"| A
-    Warn["⚠️ 差し戻しが終わらない経路を発見"]
-    B --- Warn
-    classDef done fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef warn fill:#fde2e0,stroke:#d0473f,color:#d0473f
-    class C done
-    class Warn warn
-```
+![申請と承認の間で差し戻しが終わらない経路を見つける例](/images/20260923-ai-kitchen-trust-ladder/07.png)
 
 **迷路の道を全部歩いて、行き止まりを先に見つける。**
 
@@ -232,16 +146,7 @@ flowchart LR
 
 🔧 Laurenは当初、Chrome DevToolsで性能トレースを手作業で取り続けていました。その不満から、AIがアプリを起動してトレースを取る検証スキル（Control Glass）を作りました。試行錯誤の末、構成は2つに落ち着いています。
 
-```mermaid
-flowchart LR
-    Q["❓ 曖昧な依頼<br/>（？？？だけのスクショ）"] --> M["🗺️ 地図で特定<br/>どの機能のことか"]
-    M --> CLI["⌨️ CLIで確かめる<br/>本当に起きるか"]
-    CLI --> Ans["📎 証拠つきで返す"]
-    classDef map fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef ans fill:#fdf1cf,stroke:#f0c24b,color:#1c2621
-    class M,CLI map
-    class Ans ans
-```
+![曖昧な依頼を地図で特定し、CLIで確かめ、証拠つきで返す流れ](/images/20260923-ai-kitchen-trust-ladder/08.png)
 
 **地図とCLIがあれば、AIは推測しない。**
 
@@ -286,31 +191,13 @@ flowchart LR
 
 🔧 Laurenのチームが性能問題の調査から得た中心的な学びは、**AIは近道をしたがる**ということです。そこで、AIに遠回りを求めるのではなく、近道そのものを正しい道にする方針を採りました。
 
-```mermaid
-flowchart LR
-    AI["🤖 AIは近道をしたがる"] --> Loose["🌀 自由な環境"]
-    AI --> Tight["🧱 窮屈な環境"]
-    Loose --> Bad["❌ 近道が誤った道になる"]
-    Tight --> Good["✅ 近道が正しい道になる"]
-    classDef ng fill:#fde2e0,stroke:#d0473f,color:#1c2621
-    classDef ok fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    class Bad ng
-    class Good ok
-```
+![AIの近道が、環境によって誤った道にも正しい道にもなる](/images/20260923-ai-kitchen-trust-ladder/09.png)
 
 **近道を禁じるのではなく、近道の行き先を正しくする。**
 
 ## 3-1. 悪い見本はうつる
 
-```mermaid
-flowchart LR
-    W["📄 「とりあえず」1枚"] --> C1["📄"] & C2["📄"] & C3["📄"]
-    C1 --> D1["📄"] & D2["📄"]
-    C2 --> D3["📄"] & D4["📄"]
-    C3 --> D5["📄"] & D6["📄"]
-    classDef bad fill:#fdf1cf,stroke:#f0c24b,color:#1c2621
-    class W,C1,C2,C3,D1,D2,D3,D4,D5,D6 bad
-```
+![「とりあえず」の1枚が3枚、6枚と複製されていく様子](/images/20260923-ai-kitchen-trust-ladder/10.png)
 
 > コピーされるたびに、次のコピーが起きやすくなる。（Laurenのスライドより）
 
@@ -330,17 +217,7 @@ AIが、コードに残されたコメントを根拠にして根本的な解決
 
 💼 業務でも、AIは手近な前例や推測で空欄を埋めようとします。そこで、フォルダ、テンプレート、権限を同じ考え方で固定し、最も手近な道が正しい手順になるようにします。
 
-```mermaid
-flowchart TD
-    Shared["📚 共通情報<br/>（読むだけ）"] --> A["📁 A社の案件"]
-    Shared --> B["📁 B社の案件"]
-    A x--x|"見ない"| B
-    Secret["🔒 社外秘<br/>AIは入れない"]
-    classDef case fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    classDef lock fill:#1c2621,stroke:#1c2621,color:#ffffff
-    class A,B case
-    class Secret lock
-```
+![共通情報は読むだけ、案件同士は見ない、社外秘には入れないフォルダ構成](/images/20260923-ai-kitchen-trust-ladder/11.png)
 
 | 💼 規則 | 中身 | 🔧 Duneでは |
 |---|---|---|
@@ -360,12 +237,7 @@ Electronのメインプロセス用のコードがレンダラーに紛れ込む
 
 ## 3-3. 庭師を置く
 
-```mermaid
-flowchart LR
-    G1["🗑️ 古いのを捨てる"] --> G2["🛣️ 型は1つだけ"] --> G3["🚫 同じミスを止める"]
-    classDef g fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    class G1,G2,G3 g
-```
+![庭師の3つの仕事（古いのを捨てる、型は1つだけ、同じミスを止める）](/images/20260923-ai-kitchen-trust-ladder/12.png)
 
 | 🔧 Laurenの話 | 💼 業務では |
 |---|---|
@@ -381,12 +253,7 @@ Laurenによれば、すぐに片付けられなくても、lint を書けば**�
 
 3つの柱で信頼が積み上がると、AIを**自動で起動**できるようになります。
 
-```mermaid
-flowchart LR
-    Bell["🔔 連絡が来る"] --> AI["🤖 AIが動く"] --> Draft["📬 下書きが届く"]
-    classDef s fill:#d9ece2,stroke:#2e7a55,color:#1c2621
-    class Bell,AI,Draft s
-```
+![連絡が来るとAIが動き、下書きが届く流れ](/images/20260923-ai-kitchen-trust-ladder/13.png)
 
 | 🔧 Laurenの話 | 💼 業務では |
 |---|---|
@@ -403,15 +270,7 @@ flowchart LR
 
 > ### エージェントの誤りを直すときは、「二度と起きない形」にできないか考える。
 
-```mermaid
-flowchart LR
-    Fix["✏️ 誤りを直す"] --> Ask{"どの段で直せる？"}
-    Ask -->|"できるだけ上"| Env["🏗️ 環境に残す"]
-    Env --> Trust["📈 信頼が増える"]
-    Trust --> More["🧑‍🍳🧑‍🍳🧑‍🍳 任せられる数が増える"]
-    classDef key fill:#1c2621,stroke:#1c2621,color:#ffffff
-    class Trust key
-```
+![誤りをできるだけ上の段で直し、環境に残すと信頼と任せられる数が増える](/images/20260923-ai-kitchen-trust-ladder/14.png)
 
 最初の一歩はこれだけです。
 
