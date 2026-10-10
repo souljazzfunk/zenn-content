@@ -1,5 +1,5 @@
 ---
-title: "AIへの信頼は環境でつくる: Laurenの「I Shipped 2000 PRs Last Month」を業務に読みかえる"
+title: "AIへの信頼は環境でつくる: @potetoの「I Shipped 2000 PRs Last Month」を業務に読みかえる"
 emoji: "🍳"
 type: "tech"
 topics:
