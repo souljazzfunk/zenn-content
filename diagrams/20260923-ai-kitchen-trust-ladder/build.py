@@ -15,20 +15,22 @@ ROOT = HERE.parent.parent
 OUT = ROOT / "images" / HERE.name
 CHROMIUM = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
+# Colors follow zenn.dev: brand blue #3ea8ff, link blue #0f83fd, :::message yellow, alert pink.
 FONT = "'Noto Sans CJK JP','Noto Sans JP','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif"
-INK = "#1c2621"
-MUTED = "#5d6b64"
-LINE = "#8a9a92"
+INK = "#26323d"
+MUTED = "#65717b"
+LINE = "#a3b3bf"
 W = 720
 
 STYLES = {
     #        fill       stroke     title  sub
-    "plain": ("#f3f6f4", "#d5ddd8", INK, MUTED),
-    "green": ("#e3f1ea", "#2e7a55", INK, "#2e6b4c"),
-    "amber": ("#fdf3d6", "#d9a521", INK, "#8a6510"),
-    "red": ("#fbe7e5", "#c94a41", INK, "#9c3830"),
-    "dark": (INK, INK, "#ffffff", "#c9d6cf"),
-    "solid": ("#2e7a55", "#2e7a55", "#ffffff", "#d7ece1"),
+    "plain": ("#f5f9fc", "#d6e3ed", INK, MUTED),
+    "green": ("#e6f4ff", "#3ea8ff", INK, "#0f83fd"),
+    "amber": ("#fff6e4", "#f5a000", INK, "#a86200"),
+    "red": ("#ffeff2", "#f0506e", INK, "#c9304f"),
+    "dark": ("#3ea8ff", "#3ea8ff", "#ffffff", "#e6f4ff"),
+    "ink": (INK, INK, "#ffffff", "#c5d0d9"),
+    "solid": ("#0f83fd", "#0f83fd", "#ffffff", "#e0f1ff"),
 }
 
 
@@ -144,11 +146,11 @@ def d02():
     s.box(360, y, 190, 64, "あなたが検品", style="dark")
     s.box(600, y, 170, 64, "提供", style="green")
     s.arrow(206, y, 262, y)
-    s.arrow(456, y, 512, y, color="#2e7a55")
-    s.label(484, y - 24, "合格", color="#2e7a55")
+    s.arrow(456, y, 512, y, color="#3ea8ff")
+    s.label(484, y - 24, "合格", color="#3ea8ff")
     s.box(360, 196, 190, 60, "厨房を直す", style="red")
-    s.arrow(360, y + 33, 360, 163, color="#c94a41")
-    s.label(400, 132, "不合格", color="#c94a41")
+    s.arrow(360, y + 33, 360, 163, color="#f0506e")
+    s.label(400, 132, "不合格", color="#f0506e")
     s.path("M264,196 C170,196 120,170 120,113", color=MUTED, dashed=True)
     s.label(170, 196, "次の皿から失敗が減る")
     return s
@@ -173,8 +175,8 @@ def d03():
         s.box(x, 152, cw, 64, t, sub, style="green", size=17)
         for j, k in enumerate(kids):
             ky = 216 + j * 44
-            s.add(f'<rect x="{x - cw / 2 + 10}" y="{ky - 17}" width="{cw - 20}" height="34" rx="8" fill="#f3f6f4"/>')
-            s.add(f'<rect x="{x - cw / 2 + 10}" y="{ky - 17}" width="4" height="34" rx="2" fill="#2e7a55"/>')
+            s.add(f'<rect x="{x - cw / 2 + 10}" y="{ky - 17}" width="{cw - 20}" height="34" rx="8" fill="#f5f9fc"/>')
+            s.add(f'<rect x="{x - cw / 2 + 10}" y="{ky - 17}" width="4" height="34" rx="2" fill="#3ea8ff"/>')
             s.text(x - cw / 2 + 26, ky, k, size=14, anchor="start")
     return s
 
@@ -182,11 +184,11 @@ def d03():
 # 4. 5段のはしご
 def d04():
     rungs = [
-        ("1", "資料そのものを直す", "#2e7a55", "#ffffff"),
-        ("2", "機械で止める", "#4b9270", "#ffffff"),
-        ("3", "いつも読む指示", "#78ad92", "#ffffff"),
-        ("4", "手順書スキル", "#a6cab6", INK),
-        ("5", "人の目でチェック", "#d4e5db", INK),
+        ("1", "資料そのものを直す", "#0f83fd", "#ffffff"),
+        ("2", "機械で止める", "#3ea8ff", "#ffffff"),
+        ("3", "いつも読む指示", "#7cc4ff", INK),
+        ("4", "手順書スキル", "#b5dcff", INK),
+        ("5", "人の目でチェック", "#e0f1ff", INK),
     ]
     s = Svg(366)
     top, rh, gap = 30, 52, 10
@@ -201,7 +203,7 @@ def d04():
     bottom = top + 4 * (rh + gap) + rh
     s.path(f"M160,{bottom - 10} L160,{top + 12}", color=INK, width=2.4)
     s.text(132, (top + bottom) / 2, "昇格", size=15, weight=700, color=INK)
-    s.text(625, top + rh / 2, "強い", size=13, color="#2e7a55", weight=700, anchor="start")
+    s.text(625, top + rh / 2, "強い", size=13, color="#3ea8ff", weight=700, anchor="start")
     s.text(625, bottom - rh / 2, "弱い", size=13, color=MUTED, weight=700, anchor="start")
     s.text(W / 2 + 40, bottom + 22, "見つけた誤りは、できるだけ上の段で直す", size=13, color=MUTED)
     return s
@@ -215,10 +217,10 @@ def d05():
     s.box(600, 52, 150, 56, "通す", style="green")
     s.box(600, 148, 150, 56, "戻す", style="red")
     s.arrow(187, 100, 240, 100)
-    s.path("M437,88 C480,88 480,52 520,52", color="#2e7a55")
-    s.path("M437,112 C480,112 480,148 520,148", color="#c94a41")
-    s.label(478, 50, "OK", color="#2e7a55")
-    s.label(478, 150, "NG", color="#c94a41")
+    s.path("M437,88 C480,88 480,52 520,52", color="#3ea8ff")
+    s.path("M437,112 C480,112 480,148 520,148", color="#f0506e")
+    s.label(478, 50, "OK", color="#3ea8ff")
+    s.label(478, 150, "NG", color="#f0506e")
     return s
 
 
@@ -232,8 +234,8 @@ def d06():
         {"t": "人が判断", "style": "dark"},
     ], 146, 30)
     s.box(xs[2], 186, 250, 56, "lintやテンプレへ昇格", style="amber")
-    s.path(f"M{xs[3]},103 C{xs[3]},170 {xs[3] - 20},186 {xs[2] + 131},186", color="#b7861a", dashed=True)
-    s.label(xs[3] - 10, 142, "同じ指摘が続いたら", color="#8a6510")
+    s.path(f"M{xs[3]},103 C{xs[3]},170 {xs[3] - 20},186 {xs[2] + 131},186", color="#d98a00", dashed=True)
+    s.label(xs[3] - 10, 142, "同じ指摘が続いたら", color="#a86200")
     return s
 
 
@@ -242,12 +244,12 @@ def d07():
     s = Svg(270)
     y = 70
     xs = chain(s, y, [{"t": "申請"}, {"t": "承認"}, {"t": "完了", "style": "green"}], 140, 70)
-    s.path(f"M{xs[1] - 30},{y + 33} C{xs[1] - 50},{y + 95} {xs[0] + 50},{y + 95} {xs[0] + 30},{y + 37}", color="#c94a41", dashed=True)
-    s.label((xs[0] + xs[1]) / 2, y + 80, "差し戻し", color="#c94a41")
-    s.add(f'<rect x="{W / 2 - 220}" y="196" width="440" height="50" rx="12" fill="#fbe7e5" stroke="#c94a41" stroke-width="1.5"/>')
-    s.add(f'<circle cx="{W / 2 - 190}" cy="221" r="12" fill="#c94a41"/>')
+    s.path(f"M{xs[1] - 30},{y + 33} C{xs[1] - 50},{y + 95} {xs[0] + 50},{y + 95} {xs[0] + 30},{y + 37}", color="#f0506e", dashed=True)
+    s.label((xs[0] + xs[1]) / 2, y + 80, "差し戻し", color="#f0506e")
+    s.add(f'<rect x="{W / 2 - 220}" y="196" width="440" height="50" rx="12" fill="#ffeff2" stroke="#f0506e" stroke-width="1.5"/>')
+    s.add(f'<circle cx="{W / 2 - 190}" cy="221" r="12" fill="#f0506e"/>')
     s.text(W / 2 - 190, 221, "!", size=15, weight=700, color="#ffffff")
-    s.text(W / 2 + 14, 221, "差し戻しが終わらない経路を発見", size=16, weight=700, color="#9c3830")
+    s.text(W / 2 + 14, 221, "差し戻しが終わらない経路を発見", size=16, weight=700, color="#c9304f")
     return s
 
 
@@ -273,8 +275,8 @@ def d09():
     s.box(590, 175, 210, 56, "近道が正しい道に", style="green")
     s.path("M212,100 C240,100 245,55 270,55")
     s.path("M212,130 C240,130 245,175 270,175")
-    s.arrow(447, 55, 480, 55, color="#c94a41")
-    s.arrow(447, 175, 480, 175, color="#2e7a55")
+    s.arrow(447, 55, 480, 55, color="#f0506e")
+    s.arrow(447, 175, 480, 175, color="#3ea8ff")
     return s
 
 
@@ -284,24 +286,24 @@ def d10():
 
     def doc(x, y, scale=1.0, strong=False):
         w, h = 34 * scale, 42 * scale
-        fill = "#f0c24b" if strong else "#fdf3d6"
+        fill = "#ffc85c" if strong else "#fff6e4"
         s.add(
             f'<path d="M{x - w / 2},{y - h / 2} h{w * 0.68} l{w * 0.32},{w * 0.32} v{h - w * 0.32} h{-w} z" '
-            f'fill="{fill}" stroke="#d9a521" stroke-width="1.5" stroke-linejoin="round"/>'
+            f'fill="{fill}" stroke="#f5a000" stroke-width="1.5" stroke-linejoin="round"/>'
         )
         for k in range(3):
             ly = y - h / 2 + h * (0.42 + k * 0.17)
-            s.add(f'<line x1="{x - w * 0.3}" x2="{x + w * 0.3}" y1="{ly}" y2="{ly}" stroke="#b7861a" stroke-width="1.4" opacity="0.6"/>')
+            s.add(f'<line x1="{x - w * 0.3}" x2="{x + w * 0.3}" y1="{ly}" y2="{ly}" stroke="#d98a00" stroke-width="1.4" opacity="0.6"/>')
 
     cx = [110, 360, 590]
     ys1 = [150]
     ys2 = [60, 150, 240]
     ys3 = [30 + 48 * k for k in range(6)]
     for y in ys2:
-        s.path(f"M{cx[0] + 34},{ys1[0]} C{cx[0] + 140},{ys1[0]} {cx[1] - 130},{y} {cx[1] - 26},{y}", color="#d9a521")
+        s.path(f"M{cx[0] + 34},{ys1[0]} C{cx[0] + 140},{ys1[0]} {cx[1] - 130},{y} {cx[1] - 26},{y}", color="#f5a000")
     for i, y in enumerate(ys3):
         p = ys2[i // 2]
-        s.path(f"M{cx[1] + 22},{p} C{cx[1] + 110},{p} {cx[2] - 110},{y} {cx[2] - 22},{y}", color="#d9a521")
+        s.path(f"M{cx[1] + 22},{p} C{cx[1] + 110},{p} {cx[2] - 110},{y} {cx[2] - 22},{y}", color="#f5a000")
     doc(cx[0], ys1[0], 1.6, strong=True)
     for y in ys2:
         doc(cx[1], y, 1.0)
@@ -309,23 +311,23 @@ def d10():
         doc(cx[2], y, 0.8)
     s.text(cx[0], 210, "「とりあえず」1枚", size=15, weight=700)
     for x, n in zip(cx, ["1枚", "3枚", "6枚"]):
-        s.text(x, 312, n, size=14, weight=700, color="#8a6510")
+        s.text(x, 312, n, size=14, weight=700, color="#a86200")
     return s
 
 
 # 11. 迷いようがないフォルダ
 def d11():
     s = Svg(300)
-    s.add('<rect x="30" y="20" width="460" height="260" rx="16" fill="none" stroke="#8a9a92" stroke-width="1.5" stroke-dasharray="6 5"/>')
+    s.add('<rect x="30" y="20" width="460" height="260" rx="16" fill="none" stroke="#a3b3bf" stroke-width="1.5" stroke-dasharray="6 5"/>')
     s.text(48, 42, "AIが入れる範囲", size=12.5, color=MUTED, weight=700, anchor="start")
     s.box(260, 90, 220, 64, "共通情報", "読むだけ", style="plain", size=17)
     s.box(150, 220, 170, 60, "A社の案件", style="green")
     s.box(370, 220, 170, 60, "B社の案件", style="green")
     s.path("M220,123 C220,160 150,160 150,188")
     s.path("M300,123 C300,160 370,160 370,188")
-    s.add('<line x1="260" y1="196" x2="260" y2="244" stroke="#c94a41" stroke-width="3" stroke-linecap="round"/>')
-    s.label(260, 268, "互いに見ない", color="#c94a41")
-    s.box(605, 150, 170, 84, "社外秘", "AIは入れない", style="dark", size=17)
+    s.add('<line x1="260" y1="196" x2="260" y2="244" stroke="#f0506e" stroke-width="3" stroke-linecap="round"/>')
+    s.label(260, 268, "互いに見ない", color="#f0506e")
+    s.box(605, 150, 170, 84, "社外秘", "AIは入れない", style="ink", size=17)
     return s
 
 
@@ -359,8 +361,8 @@ def d14():
     s.box(310, y1, 190, 60, "どの段で直せる？", style="plain")
     s.box(590, y1, 170, 60, "環境に残す", style="green")
     s.arrow(179, y1, 211, y1)
-    s.arrow(409, y1, 501, y1, color="#2e7a55")
-    s.label(455, y1 - 22, "できるだけ上", color="#2e7a55")
+    s.arrow(409, y1, 501, y1, color="#3ea8ff")
+    s.label(455, y1 - 22, "できるだけ上", color="#3ea8ff")
     s.box(590, y2, 170, 60, "信頼が増える", style="dark")
     s.box(270, y2, 300, 60, "任せられる数が増える", style="solid", size=17)
     s.arrow(590, y1 + 34, 590, y2 - 36)

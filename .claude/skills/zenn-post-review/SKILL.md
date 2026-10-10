@@ -64,6 +64,7 @@ The rules below come from real corrections on past posts. Each rule names the fa
   - HTML comments `<!-- -->`. Zenn renders them as visible text (lint rule + `html_comment` fixture).
   - Special digits such as circled numbers (①②③) and keycap emoji (1️⃣). Plain `1.` `2.` `3.` is enough, in headings, tables and diagram labels (lint rule + `special_digit` fixture).
 - Diagrams are SVG, not mermaid (the user found mermaid diagrams crude, 2026-10-10). Write them in `diagrams/<slug>/build.py`, starting from `diagrams/20260923-ai-kitchen-trust-ladder/build.py` for the shared style and sans-serif font, run it, and embed `![alt](/images/<slug>/NN.png)`. Zenn's GitHub sync serves only png, jpg, gif and webp, so readers see the PNG.
+- Diagram colors follow zenn.dev, not a palette of your own (the user found a green palette clashed, 2026-10-10): white background, brand blue `#3ea8ff` for key nodes, `#0f83fd` for the strongest one, light blue `#e6f4ff` for positive nodes, gray `#f5f9fc`/`#d6e3ed` for neutral ones, `:::message` yellow `#fff6e4` for caution and alert pink `#ffeff2` for errors. The `STYLES` table in the reference `build.py` holds these.
 - If an older post still has mermaid:
   - Use `classDef` colors with explicit `color:`.
   - Keep node labels short (use `<br/>` for a second line).
