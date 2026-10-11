@@ -1254,3 +1254,47 @@
 - writer: not called / chars 4049 → 4030
 - Result: pass
 - Harness change 候補: レビューIDが fact/style 間で重複すると article-fix.py の適用判定が衝突する
+
+## Run 1 (2026-10-12 06:13 JST) 20261012-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 66bfe21fa859
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03,F-04,S-01,S-02]
+- fact: Critical 1 / Must fix 3 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 1
+- writer: changed true / addressed [S-03,S-04,S-05] / declined [] / chars 4027 → 4005 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-12 06:15 JST) 20261012-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e31630ba00c5
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 1 / Must fix 0 / Nice 2
+- writer: changed true / addressed [S-01] / declined [] / chars 4005 → 4017 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-12 06:17 JST) 20261012-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 49d6a7cd4741
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 2
+- writer: changed true / addressed [S-01] / declined [] / chars 4017 → 4005 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-10-12 06:18 JST) 20261012-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e6281d2d4bd6
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 2 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called / writer_calls 3 / chars 4005
+- Result: pass
+- Harness change 候補: なし
