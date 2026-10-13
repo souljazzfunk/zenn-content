@@ -1331,3 +1331,15 @@
 - writer: not called / writer_calls total 1
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-14 06:10 JST) 20261014-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: a0bc2b1a4016
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 1 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: not called / chars 4032 → 4032
+- Result: pass
+- Harness change 候補: なし
