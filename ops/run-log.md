@@ -1387,3 +1387,51 @@
 - writer: not called / cumulative writer_calls 1
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-17 06:11 JST) 20261017-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 1056c9f6cdfc
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01,F-02,F-03]
+- fact: Critical 2 / Must fix 1 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [S-01,S-02,S-03,FAILURE_LENGTH] / declined [] / chars 3870 → 4036 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-17 06:14 JST) 20261017-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: b382c0093cb8
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-02,S-01]
+- fact: Critical 1 / Must fix 1 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [F-01] / declined [] / chars 4000 → 4020 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-10-17 06:17 JST) 20261017-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 8a900d09f3fb
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [F-01]
+- fact: Critical 0 / Must fix 1 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [FAILURE_LENGTH] / declined [] / chars 3994 → 4022 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-10-17 06:18 JST) 20261017-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 8a900d09f3fb
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- glossary: added [] / fixed [] / skipped 0
+- writer: not called / writer_calls total 3 / chars 4022
+- Result: pass
+- Harness change 候補: なし
