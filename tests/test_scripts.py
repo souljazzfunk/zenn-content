@@ -57,7 +57,9 @@ class TopicEmojiTest(unittest.TestCase):
         self.assertTrue(topic_emoji.is_allowed("🛡"))
 
     def test_style_table_matches_module(self):
-        style = Path(__file__).resolve().parents[2] / "shared" / "knowledge" / "zenn-style.md"
+        # life-automation では fleet/shared/knowledge/、Deploy 先の VPS では ~/.openclaw/shared/knowledge/ にある
+        style = next(p for p in (Path(__file__).resolve().parents[2] / "shared" / "knowledge" / "zenn-style.md",
+                                 Path.home() / ".openclaw" / "shared" / "knowledge" / "zenn-style.md") if p.exists())
         text = style.read_text(encoding="utf-8")
         section = text[text.index("## アイコン（emoji）の選び方"):]
         rows = [l.split("|")[1].strip() for l in section.splitlines() if l.startswith("| ") and "emoji" not in l]
