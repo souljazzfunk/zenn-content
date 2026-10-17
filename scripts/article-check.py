@@ -19,6 +19,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji を見つける
+from topic_emoji import ALLOWED_EMOJI, is_allowed
+
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_RULES = Path(os.path.expanduser("~/.openclaw/shared/knowledge/writing-rules.md"))
 DEFAULT_SEEN = Path(os.path.expanduser("~/.openclaw/workspace/state/tech-watch-seen.json"))
@@ -248,8 +251,8 @@ def main():
             warnings.append("WARNING_TITLE_SUBJECT_LONG: 主題は 20 字以内")
     if not re.match(r"^\d{8}-tech-watch$", args.slug):
         failures.append("FAILURE_SLUG_FORMAT: slug must be YYYYMMDD-tech-watch")
-    if fm.get("emoji") != "🎙️":
-        failures.append("FAILURE_FM_EMOJI: emoji must be 🎙️")
+    if not is_allowed(fm.get("emoji")):
+        failures.append("FAILURE_FM_EMOJI: emoji must be one of " + " ".join(sorted(ALLOWED_EMOJI)) + "（zenn-style.md の対応表）")
     if fm.get("type") != "tech":
         failures.append("FAILURE_FM_TYPE: type must be tech")
     if str(fm.get("published")).lower() != "false":

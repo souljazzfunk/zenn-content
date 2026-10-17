@@ -10,15 +10,24 @@
 - agent-state.md の `## Last run` を書き換える。--decision-file があれば `## Needs human decision` の先頭にその内容を足す。
   `## Next run` は result=stop なら「<slug> は人判断待ち」、pass なら「なし（<slug> は公開可）」、continue なら「<slug> の次の Run」
 - --publish があれば（result=pass のときだけ有効）commit の前に記事 frontmatter の `published: false` を `true` にする。既に true なら何もしない
+  当日公開の決まり（~/.openclaw/workspace/scripts/zenn-published.py の先頭）に従う:
+  - slug の日付が今日（JST）より前なら公開しない（error を返し、記録も commit もしない）
+  - 日付が過ぎて Zenn で読めない他の記事を `published: false` に戻し、同じ commit に入れる（`expired`）。
+    残すと次のデプロイで先に公開され、今日の記事が上限で弾かれる
+  - 直近の公開から 24 時間 1 分たっていなければ、その時刻に `published_at` で予約公開する（`scheduled_at`）。
+    その時刻が記事の日付を越えるなら公開しない（`published_set: false`、error）
 - --commit があれば articles/<slug>.md と ops/ を add して commit し、--no-push が無ければ push する
 - --publish で push まで成功したら、~/.openclaw/workspace/scripts/zenn-published.py <slug> --wait 180 で記事ページを未ログインで取得し、
   結果を `live` に入れる（true: 読める / false: 読めない / null: 判定不能）。公開の成否はこの値で判断する
-- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "committed": "<sha>|null", "pushed": bool, "live": bool|null, "error": "..."}
+- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "scheduled_at": "YYYY-MM-DD HH:MM"|null,
+  "expired": [slug], "committed": "<sha>|null", "pushed": bool, "live": bool|null, "error": "..."}
 標準ライブラリのみ。
 """
 import argparse
 import datetime
+import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -26,6 +35,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 JST = datetime.timezone(datetime.timedelta(hours=9))
+ZP_PATH = Path(os.environ.get("ZENN_PUBLISHED", Path.home() / ".openclaw/workspace/scripts/zenn-published.py"))
 TRIGGER_LABEL = {
     "telegram": "telegram（人の指示）",
     "cron": "cron（isolated セッションで起動された）",
@@ -62,6 +72,20 @@ def git(args, check=True):
     return subprocess.run(["git", "-C", str(REPO)] + args, capture_output=True, text=True, check=check)
 
 
+def load_zp():
+    spec = importlib.util.spec_from_file_location("zp", ZP_PATH)
+    zp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(zp)
+    return zp
+
+
+def zenn_user(zp):
+    try:
+        return zp.USER_FILE.read_text().strip()
+    except OSError:
+        return None
+
+
 def verify_live(slug):
     """記事ページを未ログインで取得して公開を確かめる。push 成功や frontmatter は公開の証拠にしない。"""
     script = Path.home() / ".openclaw/workspace/scripts/zenn-published.py"
@@ -93,9 +117,15 @@ def main():
     ap.add_argument("--no-push", action="store_true")
     args = ap.parse_args()
 
-    out = {"run_log": False, "agent_state": False, "published_set": False, "committed": None, "pushed": False, "live": None}
+    out = {"run_log": False, "agent_state": False, "published_set": False, "scheduled_at": None, "expired": [],
+           "committed": None, "pushed": False, "live": None}
     if args.publish and args.result != "pass":
         out["error"] = "--publish は --result pass のときだけ使える"
+        print(json.dumps(out, ensure_ascii=False))
+        return 2
+    zp = load_zp() if args.publish else None
+    if zp and zp.is_past_day(args.slug, zp.today()):
+        out["error"] = f"{args.slug} は今日（{zp.today()}）より前の日付の記事なので公開しない"
         print(json.dumps(out, ensure_ascii=False))
         return 2
     now = datetime.datetime.now(JST).strftime("%Y-%m-%d %H:%M JST")
@@ -149,17 +179,27 @@ def main():
     out["agent_state"] = True
 
     if args.publish:
+        user = zenn_user(zp)
+        if user:
+            out["expired"] = zp.expire_stale(REPO / "articles", user, zp.today(), exclude={args.slug})
         art = REPO / "articles" / f"{args.slug}.md"
         a = art.read_text(encoding="utf-8")
         m = re.match(r"^---\n(.*?)\n---\n", a, flags=re.S)
         if m and re.search(r"^published:\s*false\s*$", m.group(1), flags=re.M):
-            fm = re.sub(r"^published:\s*false\s*$", "published: true", m.group(1), count=1, flags=re.M)
-            art.write_text("---\n" + fm + "\n---\n" + a[m.end():], encoding="utf-8")
-            out["published_set"] = True
+            slot = zp.next_slot(zp.last_published_at(user) if user else None, datetime.datetime.now(JST))
+            day = zp.slug_day(args.slug)
+            if slot and day and slot.date() > day:
+                out["error"] = (f"直近の公開から 24 時間たつのが {slot:%Y-%m-%d %H:%M} で、{args.slug} の日付を越えるので"
+                                "公開しない（前日以前の記事は公開しない）")
+            else:
+                art.write_text(zp.set_published(a, True, slot), encoding="utf-8")
+                out["published_set"] = True
+                out["scheduled_at"] = slot.strftime("%Y-%m-%d %H:%M") if slot else None
 
     if args.commit:
         try:
-            git(["add", f"articles/{args.slug}.md", "ops/run-log.md", "ops/agent-state.md"])
+            git(["add", f"articles/{args.slug}.md", "ops/run-log.md", "ops/agent-state.md"]
+                + [f"articles/{s}.md" for s in out["expired"]])
             r = git(["commit", "-m", args.commit], check=False)
             if r.returncode != 0 and "nothing to commit" not in r.stdout + r.stderr:
                 out["error"] = (r.stdout + r.stderr).strip()[-400:]
@@ -170,7 +210,8 @@ def main():
                     out["pushed"] = r.returncode == 0
                     if r.returncode != 0:
                         out["error"] = (r.stdout + r.stderr).strip()[-400:]
-                    elif args.publish:
+                    elif args.publish and not out["scheduled_at"] and zp.front(
+                            (REPO / "articles" / f"{args.slug}.md").read_text(encoding="utf-8"))[0]:
                         out["live"], out["live_check"] = verify_live(args.slug)
         except subprocess.CalledProcessError as e:
             out["error"] = (e.stdout + e.stderr).strip()[-400:]

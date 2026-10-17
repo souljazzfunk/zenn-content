@@ -4,7 +4,8 @@
 使い方:
     python3 scripts/article-fix.py <slug> [--reviews a.json b.json ...] [--rules PATH] [--dry-run] [--json-only]
 
-やること（順番どおり。frontmatter、コードブロック、インラインコード、URL、`>` 引用行、`## 今日の N 件` の一覧節（冒頭。次の `## ` 見出しまで）は触らない）:
+やること（順番どおり。0 以外は frontmatter、コードブロック、インラインコード、URL、`>` 引用行、`## 今日の N 件` の一覧節（冒頭。次の `## ` 見出しまで）は触らない）:
+0. frontmatter の emoji が対応表（topic_emoji.py）に無ければ、タイトルの主題と本文から選び直す
 1. エスケープされたバッククォート（\\`）を戻す
 2. 引用ブロック末尾の「空の > 行 + > 出典名」をブロック外の「出典: 名前」に移す
 3. writing-rules.md「## 定訳（自動置換）」の `english → 日本語` を単語境界で置換（小文字表記の語だけ。大文字始まりは固有名詞とみなして触らない）
@@ -20,6 +21,9 @@ import os
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji を見つける
+import topic_emoji
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_RULES = Path(os.path.expanduser("~/.openclaw/shared/knowledge/writing-rules.md"))
@@ -80,6 +84,16 @@ def join_article(fm, main_lines, list_lines):
         i = main_lines.index(LIST_SENTINEL)
         main_lines = main_lines[:i] + list_lines + main_lines[i + 1:]
     return fm + "\n".join(main_lines)
+
+
+def fix_emoji(fm, body):
+    """emoji が対応表に無ければ（旧定型の 🎙️ など）、title の主題と本文から選んだ emoji に差し替える。"""
+    m = re.search(r'^emoji:\s*"?([^"\n]*)"?\s*$', fm, flags=re.M)
+    if not m or topic_emoji.is_allowed(m.group(1).strip()):
+        return fm, None
+    t = re.search(r'^title:\s*"?Tech Watch \d{4}-\d{2}-\d{2}:\s*(.*?)"?\s*$', fm, flags=re.M)
+    new = topic_emoji.pick(t.group(1) if t else "", body)
+    return fm[:m.start()] + f'emoji: "{new}"' + fm[m.end():], {"from": m.group(1).strip(), "to": new}
 
 
 def count_chars(lines):
@@ -253,6 +267,7 @@ def main():
     if not Path(args.rules).exists():
         result["warning"] = f"rules file not found ({args.rules}); glossary and banned-word steps skipped"
 
+    fm, result["emoji"] = fix_emoji(fm, original[len(fm):])
     main_lines, n1 = unescape_backticks(main_lines)
     main_lines, n2 = move_quote_sources(main_lines)
     main_lines, n3 = transform_prose(main_lines, tighten_japanese_spaces)
@@ -279,6 +294,8 @@ def main():
         print(f"{'DRY ' if args.dry_run else ''}{'CHANGED' if result['changed'] else 'NO CHANGE'}  {args.slug}  "
               f"glossary={result['glossary']} banned={result['banned']} markdown={result['markdown']} "
               f"applied={result['applied']} chars={before}->{result['chars_main_after']}")
+        if result["emoji"]:
+            print(f"  emoji: {result['emoji']['from']} -> {result['emoji']['to']}")
         for item in result["compound_skipped"]:
             print(f"  compound (not replaced): {item['phrase']} x{item['n']}")
         for pat, k in sorted(ghits.items(), key=lambda kv: -kv[1]):

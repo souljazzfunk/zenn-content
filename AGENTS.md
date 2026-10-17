@@ -11,7 +11,8 @@
 |---|---|---|
 | `articles/<slug>.md` | 初稿: tech-watch ジョブ（main）。修正: `zenn-writer` のみ | 全員 |
 | `ops/agent-state.md`, `ops/run-log.md` | main（Andy）のみ | 全員 |
-| `scripts/article-check.py`, この `AGENTS.md` | 人（Claude Code 経由）。週次レビューの承認後は main も可 | 全員 |
+| `scripts/`, `tests/`, この `AGENTS.md` | life-automation（`openclaw/fleet/zenn-content/`）が正本。Deploy が写しを置いて commit する。誰も VPS 上で直接直さない（読み取り専用。直すと次の Deploy が DRIFT で止まる） | 全員 |
+| `ops/proposals/<YYYY-MM-DD>-<要約>.md` | main（Andy）。承認された harness の変更案を置く | 人・Claude Code（life-automation に取り込む） |
 
 ## Evidence policy
 
@@ -22,7 +23,7 @@
 ## Anti-bloat（ループが静かに壊すもの、のドキュメント版）
 
 - レビュー指摘に応えるために注意書き・補足・ヘッジ語を足さない。直すか削る
-- 修正で本文の文字数を増やさない。原則は同じかそれ以下（上限は修正前の 1.05 倍）
+- 修正で本文の文字数を増やさない。原則は同じかそれ以下（上限は修正前の 1.05 倍。修正前が下限 4000 字未満なら上限は 6000 字で、出典にある事実で 4000 字以上にする）
 - 同じ概念に別の言い方を増やさない
 
 ## Safety
