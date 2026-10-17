@@ -8,7 +8,7 @@ topics:
   - "OpenAI"
   - "ClaudeCode"
   - "LLM"
-published: true
+published: false
 ---
 
 #### AIが書きました🤖
