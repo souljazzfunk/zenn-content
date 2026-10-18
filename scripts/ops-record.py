@@ -186,7 +186,7 @@ def main():
         a = art.read_text(encoding="utf-8")
         m = re.match(r"^---\n(.*?)\n---\n", a, flags=re.S)
         if m and re.search(r"^published:\s*false\s*$", m.group(1), flags=re.M):
-            slot = zp.next_slot(zp.last_published_at(user) if user else None, datetime.datetime.now(JST))
+            slot = zp.next_slot(zp.last_published_at(user) if user else None, zp.now())
             day = zp.slug_day(args.slug)
             if slot and day and slot.date() > day:
                 out["error"] = (f"直近の公開から 24 時間たつのが {slot:%Y-%m-%d %H:%M} で、{args.slug} の日付を越えるので"
