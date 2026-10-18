@@ -14,12 +14,14 @@
   - slug の日付が今日（JST）より前なら公開しない（error を返し、記録も commit もしない）
   - 日付が過ぎて Zenn で読めない他の記事を `published: false` に戻し、同じ commit に入れる（`expired`）。
     残すと次のデプロイで先に公開され、今日の記事が上限で弾かれる
-  - 直近の公開から 24 時間 1 分たっていなければ、その時刻に `published_at` で予約公開する（`scheduled_at`）。
+  - 直近の公開から 24 時間 1 分たっていなければ `published: false` のまま、その時刻を state/zenn-deferred.json に残す
+    （`deferred_until`）。時刻を過ぎたら zenn-live-watch.py --release が `published: true` にして push する。
+    未来の `published_at` を付けて先に push しても、Zenn は push の時点で上限を判定して弾く（台帳 F191）。
     その時刻が記事の日付を越えるなら公開しない（`published_set: false`、error）
 - --commit があれば articles/<slug>.md と ops/ を add して commit し、--no-push が無ければ push する
 - --publish で push まで成功したら、~/.openclaw/workspace/scripts/zenn-published.py <slug> --wait 180 で記事ページを未ログインで取得し、
   結果を `live` に入れる（true: 読める / false: 読めない / null: 判定不能）。公開の成否はこの値で判断する
-- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "scheduled_at": "YYYY-MM-DD HH:MM"|null,
+- 最後の行に JSON 1 行: {"run_log": true, "agent_state": true, "published_set": bool, "deferred_until": "YYYY-MM-DD HH:MM"|null,
   "expired": [slug], "committed": "<sha>|null", "pushed": bool, "live": bool|null, "error": "..."}
 標準ライブラリのみ。
 """
@@ -117,7 +119,7 @@ def main():
     ap.add_argument("--no-push", action="store_true")
     args = ap.parse_args()
 
-    out = {"run_log": False, "agent_state": False, "published_set": False, "scheduled_at": None, "expired": [],
+    out = {"run_log": False, "agent_state": False, "published_set": False, "deferred_until": None, "expired": [],
            "committed": None, "pushed": False, "live": None}
     if args.publish and args.result != "pass":
         out["error"] = "--publish は --result pass のときだけ使える"
@@ -191,10 +193,12 @@ def main():
             if slot and day and slot.date() > day:
                 out["error"] = (f"直近の公開から 24 時間たつのが {slot:%Y-%m-%d %H:%M} で、{args.slug} の日付を越えるので"
                                 "公開しない（前日以前の記事は公開しない）")
+            elif slot:
+                zp.defer(args.slug, zp.front(a)[2], slot)
+                out["deferred_until"] = slot.strftime("%Y-%m-%d %H:%M")
             else:
-                art.write_text(zp.set_published(a, True, slot), encoding="utf-8")
+                art.write_text(zp.set_published(a, True), encoding="utf-8")
                 out["published_set"] = True
-                out["scheduled_at"] = slot.strftime("%Y-%m-%d %H:%M") if slot else None
 
     if args.commit:
         try:
@@ -210,7 +214,7 @@ def main():
                     out["pushed"] = r.returncode == 0
                     if r.returncode != 0:
                         out["error"] = (r.stdout + r.stderr).strip()[-400:]
-                    elif args.publish and not out["scheduled_at"] and zp.front(
+                    elif args.publish and out["published_set"] and zp.front(
                             (REPO / "articles" / f"{args.slug}.md").read_text(encoding="utf-8"))[0]:
                         out["live"], out["live_check"] = verify_live(args.slug)
         except subprocess.CalledProcessError as e:
