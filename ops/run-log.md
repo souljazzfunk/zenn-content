@@ -1707,3 +1707,27 @@
 - writer: changed true / addressed [style:S-01, style:S-02, style:S-03, FAILURE_LENGTH] / declined [] / chars 3971 → 4036 / stop_reason none
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-28 06:05 JST) 20261028-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: b7bc3ddcd10a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 2
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01, style:S-02, fact:F-01, style:S-03, style:S-04] / declined [] / chars 4052 → 4013 / stop_reason none
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-28 06:06 JST) 20261028-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: b7bc3ddcd10a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01, style:S-02, fact:F-01, style:S-03, style:S-04] / declined [] / chars 4052 → 4013 / stop_reason none
+- Result: pass
+- Harness change 候補: なし
