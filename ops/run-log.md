@@ -1731,3 +1731,25 @@
 - writer: changed true / addressed [style:S-01, style:S-02, fact:F-01, style:S-03, style:S-04] / declined [] / chars 4052 → 4013 / stop_reason none
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-10-29 06:07 JST) 20261029-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 589cc02efe4a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01, style:S-01, style:S-02, style:S-03, style:S-04]
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 4 / Nice 2
+- writer: not called / chars 4124 → 4145
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-10-29 06:08 JST) 20261029-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 8744ec659345
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: not called / chars 4145 → 4151
+- Result: pass
+- Harness change 候補: なし
