@@ -1753,3 +1753,14 @@
 - writer: not called / chars 4145 → 4151
 - Result: pass
 - Harness change 候補: なし
+
+## Run 2 (2026-10-30 06:08 JST) 20261030-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: e361369f1b15
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: changed false / addressed [] / declined [] / chars 3973 → 4014 / stop_reason なし
+- Result: pass
+- Harness change 候補: なし
