@@ -1982,3 +1982,25 @@
 - writer: changed false / addressed [] / declined [] / chars 4270 → 4270
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-08 06:09 JST) 20261108-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 37f5713703a3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01, fact:F-02, fact:F-03, fact:F-04]
+- fact: Critical 2 / Must fix 2 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 2
+- writer: changed true / addressed [style:S-01, fact:F-05, style:S-02, style:S-03] / declined [] / chars 4179 → 4221
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-08 06:10 JST) 20261108-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 37f5713703a3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: changed true / addressed [style:S-01, fact:F-05, style:S-02, style:S-03] / declined [] / chars 4179 → 4221
+- Result: pass
+- Harness change 候補: なし
