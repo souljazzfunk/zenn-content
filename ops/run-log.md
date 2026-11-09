@@ -2028,3 +2028,36 @@
 - writer: changed false / addressed [] / declined [] / chars 4078 → 4078 / stop_reason なし
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-10 06:08 JST) 20261110-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: d7312ee2ef93
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 3 / Nice 3
+- writer: changed true / addressed [fact:F-01, style:S-01, style:S-02, style:S-03, FAILURE_LENGTH] / declined [] / chars 3923 → 4255
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-10 06:11 JST) 20261110-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 08b6c07114bf
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01]
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 3
+- writer: changed false / addressed [] / declined [] / chars 4255 → 4262 / confirmation review
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-11-10 06:11 JST) 20261110-tech-watch
+- Trigger: tech-watch（毎朝ジョブ内）
+- article_sha: 08b6c07114bf
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 3
+- writer: changed false / addressed [] / declined [] / chars 4262 → 4262
+- Result: pass
+- Harness change 候補: なし
