@@ -16,6 +16,17 @@ ARTIFACTS = Path(
 )
 
 
+def artifacts_available():
+    # GitHub の runner には読めない /home/ubuntu があり、Path.exists() が PermissionError を投げる
+    try:
+        return ARTIFACTS.exists()
+    except OSError:
+        return False
+
+
+HAVE_ARTIFACTS = artifacts_available()
+
+
 def main_lines(text):
     _, body = ARTICLE_CHECK.parse_frontmatter(text)
     lines = body.splitlines()
@@ -29,7 +40,7 @@ def main_lines(text):
 
 
 class SpeakerLabelTest(unittest.TestCase):
-    @unittest.skipUnless(ARTIFACTS.exists(), "local review artifacts unavailable")
+    @unittest.skipUnless(HAVE_ARTIFACTS, "local review artifacts unavailable")
     def test_historical_unlabeled_paragraphs_are_detected(self):
         text = (ARTIFACTS / "run-2.article.md").read_text(encoding="utf-8")
         self.assertEqual(
@@ -37,7 +48,7 @@ class SpeakerLabelTest(unittest.TestCase):
             len(ARTICLE_CHECK.unlabeled_dialogue_paragraphs(main_lines(text))),
         )
 
-    @unittest.skipUnless(ARTIFACTS.exists(), "local review artifacts unavailable")
+    @unittest.skipUnless(HAVE_ARTIFACTS, "local review artifacts unavailable")
     def test_corrected_final_version_is_accepted(self):
         text = (ARTIFACTS / "run-3.article.md").read_text(encoding="utf-8")
         self.assertEqual(
