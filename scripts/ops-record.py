@@ -35,13 +35,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import series
+
 REPO = Path(__file__).resolve().parents[1]
 JST = datetime.timezone(datetime.timedelta(hours=9))
 ZP_PATH = Path(os.environ.get("ZENN_PUBLISHED", Path.home() / ".openclaw/workspace/scripts/zenn-published.py"))
 TRIGGER_LABEL = {
     "telegram": "telegram（人の指示）",
     "cron": "cron（isolated セッションで起動された）",
-    "tech-watch": "tech-watch（毎朝ジョブ内）",
+    **{key: f"{key}（定期ジョブ内）" for key in series.keys()},
     "manual": "manual",
 }
 

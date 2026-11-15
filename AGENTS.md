@@ -3,13 +3,13 @@
 ## Deliverable
 
 - 公開物は `articles/*.md` だけ。Zenn は `articles/` と `books/` しか読まないので、`scripts/` と `ops/` は公開に影響しない
-- Tech Watch 記事は `articles/YYYYMMDD-tech-watch.md`。文体・構成・frontmatter は `~/.openclaw/shared/knowledge/zenn-style.md` が正本
+- 定期ジョブの対話記事は `articles/YYYYMMDD-<series>.md`（`<series>` は `scripts/series.py` の表にあるシリーズの key）。文体・構成・frontmatter は `~/.openclaw/shared/knowledge/zenn-style.md` が正本
 
 ## 誰が何を書くか（one writer, many readers）
 
 | パス | 書く | 読む |
 |---|---|---|
-| `articles/<slug>.md` | 初稿: tech-watch ジョブ（main）。修正: `zenn-writer` のみ | 全員 |
+| `articles/<slug>.md` | 初稿: 定期ジョブ（main）。修正: `zenn-writer` のみ | 全員 |
 | `ops/agent-state.md`, `ops/run-log.md` | main（Andy）のみ | 全員 |
 | `scripts/`, `tests/`, この `AGENTS.md` | life-automation（`openclaw/fleet/zenn-content/`）が正本。Deploy が写しを置いて commit する。誰も VPS 上で直接直さない（読み取り専用。直すと次の Deploy が DRIFT で止まる） | 全員 |
 | `ops/proposals/<YYYY-MM-DD>-<要約>.md` | main（Andy）。承認された harness の変更案を置く | 人・Claude Code（life-automation に取り込む） |

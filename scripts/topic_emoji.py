@@ -1,4 +1,4 @@
-"""topic_emoji.py — Tech Watch 記事の frontmatter `emoji` をその日の主題から選ぶ対応表。
+"""topic_emoji.py — 対話記事の frontmatter `emoji` をその日の主題から選ぶ対応表。
 
 zenn-style.md の「アイコン（emoji）の選び方」節と同じ表。変えるときは両方を合わせる。
 article-fix.py（表に無い emoji を主題から選び直す）と article-check.py（表に無い emoji を不合格にする）が使う。
@@ -35,7 +35,7 @@ def is_allowed(emoji):
 
 
 def pick(subject, body=""):
-    """タイトルの主題（「Tech Watch YYYY-MM-DD: 」の後ろ）と本文から emoji を選ぶ。
+    """タイトルの主題（「<シリーズ名> YYYY-MM-DD: 」の後ろ）と本文から emoji を選ぶ。
 
     キーワードの出現回数を数え、主題は 5 倍、`## ` 見出しは 3 倍、それ以外の本文は 1 倍で重み付けする。
     最高点の行を選び、同点なら表の上の行を優先する。どこにも当たらなければ FALLBACK_EMOJI。

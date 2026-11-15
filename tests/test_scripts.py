@@ -6,6 +6,7 @@
 標準ライブラリのみ。
 """
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,8 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import learning_watch_article as lw  # noqa: E402
 import topic_emoji  # noqa: E402
 
 SLUG = "20261010-tech-watch"
@@ -28,6 +31,13 @@ published: false
 ---
 本文
 """
+LW_SHORT = ARTICLE.replace("Tech Watch 2026-10-10", "Learning Watch 2026-11-17")
+
+
+def knowledge(name):
+    # life-automation では fleet/shared/knowledge/、Deploy 先の VPS では ~/.openclaw/shared/knowledge/ にある
+    return next(p for p in (Path(__file__).resolve().parents[2] / "shared" / "knowledge" / name,
+                            Path.home() / ".openclaw" / "shared" / "knowledge" / name) if p.exists())
 
 
 class TopicEmojiTest(unittest.TestCase):
@@ -83,11 +93,14 @@ class ScriptsTest(unittest.TestCase):
         (self.tmp / "articles").mkdir()
         self.article = self.tmp / "articles" / f"{SLUG}.md"
 
+    def run_slug(self, name, slug, home=None, rules=None):
+        p = subprocess.run([sys.executable, str(self.tmp / "scripts" / name), slug, "--json-only",
+                            "--rules", str(rules or self.tmp / "missing-rules.md")],
+                           capture_output=True, text=True, env={**os.environ, "HOME": str(home or self.tmp / "home")})
+        return p.returncode, json.loads(p.stdout.strip().splitlines()[-1])
+
     def run_script(self, name):
-        p = subprocess.run([sys.executable, str(self.tmp / "scripts" / name), SLUG, "--json-only",
-                            "--rules", str(self.tmp / "missing-rules.md")],
-                           capture_output=True, text=True)
-        return json.loads(p.stdout.strip().splitlines()[-1])
+        return self.run_slug(name, SLUG)[1]
 
     def emoji_failures(self):
         return [f for f in self.run_script("article-check.py")["failures"] if "EMOJI" in f]
@@ -107,6 +120,79 @@ class ScriptsTest(unittest.TestCase):
     def test_check_rejects_emoji_outside_table(self):
         self.article.write_text(ARTICLE.format(subject="MCP ゲートウェイの設計", emoji="🎙️"), encoding="utf-8")
         self.assertEqual(len(self.emoji_failures()), 1)
+
+    def test_check_fails_a_slug_of_no_known_series(self):
+        notes = self.tmp / "articles" / "20261117-notes.md"
+        notes.write_text(ARTICLE.format(subject="x", emoji="🧠").replace("Tech Watch 2026-10-10", "Notes"), encoding="utf-8")
+        code, out = self.run_slug("article-check.py", "20261117-notes")
+        self.assertEqual(code, 1)
+        self.assertIs(out["pass"], False)
+        self.assertIs(out["skipped"], False)
+        self.assertEqual([f.split(":")[0] for f in out["failures"]], ["FAILURE_SLUG_FORMAT"])
+        self.assertIn("tech-watch", out["failures"][0])
+
+    def test_check_wants_the_title_to_carry_the_series_and_the_date_of_the_slug(self):
+        def title_or_slug_failures():
+            return [f.split(":")[0] for f in self.run_script("article-check.py")["failures"] if "TITLE" in f or "SLUG" in f]
+        self.article.write_text(ARTICLE.format(subject="MCP ゲートウェイの設計", emoji="🔌"), encoding="utf-8")
+        self.assertEqual(title_or_slug_failures(), [])
+        self.article.write_text(ARTICLE.format(subject="x", emoji="🔌").replace("2026-10-10", "2026-10-11"), encoding="utf-8")
+        self.assertEqual(title_or_slug_failures(), ["FAILURE_TITLE_FORMAT"])
+
+    def test_check_reads_the_seen_list_of_the_series_when_no_seen_path_is_given(self):
+        def seen_missing():
+            return [w for w in self.run_script("article-check.py")["warnings"] if "WARNING_SEEN_MISSING" in w]
+        self.article.write_text(ARTICLE.format(subject="x", emoji="🔌"), encoding="utf-8")
+        self.assertEqual(len(seen_missing()), 1)
+        state = self.tmp / "home/.openclaw/workspace/state"
+        state.mkdir(parents=True)
+        (state / "tech-watch-seen.json").write_text("[]", encoding="utf-8")
+        self.assertEqual(seen_missing(), [])
+
+    def test_fix_leaves_a_slug_of_no_known_series_untouched(self):
+        notes = self.tmp / "articles" / "20261117-notes.md"
+        text = ARTICLE.format(subject="x", emoji="🎙️")
+        notes.write_text(text, encoding="utf-8")
+        code, out = self.run_slug("article-fix.py", "20261117-notes")
+        self.assertEqual(code, 2)
+        self.assertIs(out["changed"], False)
+        self.assertIn("tech-watch", out["error"])
+        self.assertEqual(notes.read_text(encoding="utf-8"), text)
+
+    def write(self, slug, text):
+        (self.tmp / "articles" / f"{slug}.md").write_text(text, encoding="utf-8")
+
+    def title_or_slug_failures(self, slug):
+        code, out = self.run_slug("article-check.py", slug)
+        self.assertIs(out["skipped"], False)
+        return [f.split(":")[0] for f in out["failures"] if "TITLE" in f or "SLUG" in f]
+
+    def test_check_takes_a_learning_watch_title_under_a_learning_watch_slug(self):
+        self.write(lw.SLUG, LW_SHORT.format(subject="x", emoji="🏢"))
+        self.assertEqual(self.title_or_slug_failures(lw.SLUG), [])
+
+    def test_check_fails_the_title_of_one_series_under_the_slug_of_the_other(self):
+        self.write("20261117-tech-watch", LW_SHORT.format(subject="x", emoji="🏢"))
+        self.assertEqual(self.title_or_slug_failures("20261117-tech-watch"), ["FAILURE_TITLE_FORMAT"])
+        self.write(lw.SLUG, ARTICLE.format(subject="x", emoji="🏢").replace("2026-10-10", "2026-11-17"))
+        self.assertEqual(self.title_or_slug_failures(lw.SLUG), ["FAILURE_TITLE_FORMAT"])
+
+    def test_fix_picks_the_emoji_of_a_learning_watch_article_from_its_subject(self):
+        self.write(lw.SLUG, LW_SHORT.format(subject="MCP ゲートウェイの設計", emoji="🎙️"))
+        code, out = self.run_slug("article-fix.py", lw.SLUG)
+        self.assertEqual(out["emoji"], {"from": "🎙️", "to": "🔌"})
+
+    def test_a_full_learning_watch_article_passes_the_check_against_its_own_seen_list(self):
+        self.write(lw.SLUG, lw.ARTICLE)
+        state = self.tmp / "home/.openclaw/workspace/state"
+        state.mkdir(parents=True)
+        urls = [line.strip() for line in lw.ARTICLE.splitlines() if line.strip().startswith("https://")]
+        (state / "learning-watch-seen.json").write_text(json.dumps(urls), encoding="utf-8")
+        code, out = self.run_slug("article-check.py", lw.SLUG, rules=knowledge("writing-rules.md"))
+        self.assertEqual((code, out["failures"]), (0, []))
+        self.assertIs(out["pass"], True)
+        self.assertEqual((out["stats"]["list_items"], out["stats"]["list_urls_not_in_seen"]), (3, 0))
+        self.assertEqual([w for w in out["warnings"] if "SEEN" in w], [])
 
 
 if __name__ == "__main__":

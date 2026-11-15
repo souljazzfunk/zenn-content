@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""article-check.py — Tech Watch 記事の機械検査（外部シグナル）。
+"""article-check.py — 対話記事（series.py のシリーズ）の機械検査（外部シグナル）。
 
 使い方:
     python3 scripts/article-check.py <slug> [--seen PATH] [--rules PATH] [--json-only]
 
-- slug は articles/<slug>.md のファイル名（拡張子なし）
-- Tech Watch 記事（title が "Tech Watch " で始まる）だけを検査する。それ以外は skipped=true, exit 0
+- slug は articles/<slug>.md のファイル名（拡張子なし）。シリーズは slug で決める（YYYYMMDD-<series>）
+- series.py に無いシリーズの slug は不合格にする（FAILURE_SLUG_FORMAT, exit 1）。検査を飛ばして合格にはしない（台帳 F211）
 - 検査項目は docs 化を兼ねて FAILURE_* / WARNING_* の定数名で読める
 - 出力: 人が読める行のあと、最後の行に JSON 1 行
-- 終了コード: pass なら 0、failures があれば 1、記事が無ければ 2
+- 終了コード: pass なら 0、failures があれば 1、series.py にあるシリーズの記事が無ければ 2
 
 標準ライブラリのみ。ネットワークに出ない。
 """
@@ -19,12 +19,12 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji を見つける
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji と series を見つける
+import series
 from topic_emoji import ALLOWED_EMOJI, is_allowed
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_RULES = Path(os.path.expanduser("~/.openclaw/shared/knowledge/writing-rules.md"))
-DEFAULT_SEEN = Path(os.path.expanduser("~/.openclaw/workspace/state/tech-watch-seen.json"))
 
 # 閾値（変えるときは zenn-style.md と合わせる）
 CHARS_MIN, CHARS_MAX = 4000, 7000
@@ -214,10 +214,17 @@ def numeric_density_candidates(lines):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("slug")
-    ap.add_argument("--seen", default=str(DEFAULT_SEEN), help="tech-watch-seen.json のパス（無ければ URL 照合を警告に格下げ）")
+    ap.add_argument("--seen", default=None, help="既読リストのパス（既定はそのシリーズの既読リスト。無ければ URL 照合を警告に格下げ）")
     ap.add_argument("--rules", default=str(DEFAULT_RULES), help="writing-rules.md のパス（無ければ内蔵リスト）")
     ap.add_argument("--json-only", action="store_true")
     args = ap.parse_args()
+
+    run = series.of_slug(args.slug)
+    if run is None:
+        failure = f"FAILURE_SLUG_FORMAT: slug must be YYYYMMDD-<series>. Known series: {', '.join(series.keys())}"
+        print(json.dumps({"pass": False, "skipped": False, "slug": args.slug, "failures": [failure], "warnings": [], "stats": {}},
+                         ensure_ascii=False))
+        return 1
 
     path = REPO / "articles" / f"{args.slug}.md"
     if not path.exists():
@@ -227,10 +234,6 @@ def main():
     text = path.read_text(encoding="utf-8")
     fm, body = parse_frontmatter(text)
     title = fm.get("title", "") if isinstance(fm.get("title"), str) else ""
-    if not title.startswith("Tech Watch "):
-        out = {"pass": True, "skipped": True, "failures": [], "warnings": ["not a Tech Watch article; skipped"], "stats": {"title": title}}
-        print(json.dumps(out, ensure_ascii=False))
-        return 0
 
     failures, warnings, stats = [], [], {}
     banned = read_list_section(args.rules, "禁止語") or FALLBACK_BANNED
@@ -240,17 +243,12 @@ def main():
         warnings.append(f"rules file not found ({args.rules}); using built-in lists")
 
     # --- frontmatter
-    m = re.match(r"^Tech Watch (\d{4})-(\d{2})-(\d{2}): (.+)$", title)
+    # head は slug の日付を含むので、title と slug の日付の食い違いもここで落ちる
+    m = re.match("^" + re.escape(run.head) + r": (.+)$", title)
     if not m:
-        failures.append("FAILURE_TITLE_FORMAT: title must be 'Tech Watch YYYY-MM-DD: <主題>'")
-    else:
-        date_compact = m.group(1) + m.group(2) + m.group(3)
-        if args.slug != f"{date_compact}-tech-watch":
-            failures.append(f"FAILURE_SLUG_DATE: slug {args.slug} does not match title date {date_compact}")
-        if count_chars(m.group(4)) > 20:
-            warnings.append("WARNING_TITLE_SUBJECT_LONG: 主題は 20 字以内")
-    if not re.match(r"^\d{8}-tech-watch$", args.slug):
-        failures.append("FAILURE_SLUG_FORMAT: slug must be YYYYMMDD-tech-watch")
+        failures.append(f"FAILURE_TITLE_FORMAT: title must be '{run.head}: <主題>'")
+    elif count_chars(m.group(1)) > 20:
+        warnings.append("WARNING_TITLE_SUBJECT_LONG: 主題は 20 字以内")
     if not is_allowed(fm.get("emoji")):
         failures.append("FAILURE_FM_EMOJI: emoji must be one of " + " ".join(sorted(ALLOWED_EMOJI)) + "（zenn-style.md の対応表）")
     if fm.get("type") != "tech":
@@ -464,7 +462,7 @@ def main():
             failures.append(f"FAILURE_LIST_COUNT: heading says {declared_n} but {len(list_items)} numbered items")
         if len(list_urls) < len(list_items):
             failures.append(f"FAILURE_LIST_URLS: {len(list_items)} items but {len(list_urls)} URLs")
-    seen_path = Path(args.seen)
+    seen_path = Path(args.seen) if args.seen else run.seen
     if seen_path.exists():
         try:
             seen = json.loads(seen_path.read_text(encoding="utf-8"))

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""article-fix.py — Tech Watch 記事の決定的な自動修正（writer を呼ぶ前に機械で直せるものを直す）。
+"""article-fix.py — 対話記事（series.py のシリーズ）の決定的な自動修正（writer を呼ぶ前に機械で直せるものを直す）。
 
 使い方:
     python3 scripts/article-fix.py <slug> [--reviews a.json b.json ...] [--rules PATH] [--dry-run] [--json-only]
@@ -12,7 +12,8 @@
 4. writing-rules.md「## 効く の言い換え（自動置換）」の対を書いてある順に置換
 5. --reviews で渡した review JSON の指摘に `replacement` があり、`quote` が本文に 1 回だけ現れるものを置換
 
-出力: 人が読める行のあと、最後の行に JSON 1 行。終了コードは常に 0（検査と同じく、結果は JSON で伝える）。
+出力: 人が読める行のあと、最後の行に JSON 1 行。終了コードは 0（検査と同じく、結果は JSON で伝える）。
+記事が無いとき、slug が series.py に無いシリーズのときは {"changed": false, "error": "..."} を出して 2。
 標準ライブラリのみ。ネットワークに出ない。
 """
 import argparse
@@ -22,7 +23,8 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji を見つける
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji と series を見つける
+import series
 import topic_emoji
 
 REPO = Path(__file__).resolve().parents[1]
@@ -86,12 +88,12 @@ def join_article(fm, main_lines, list_lines):
     return fm + "\n".join(main_lines)
 
 
-def fix_emoji(fm, body):
-    """emoji が対応表に無ければ（旧定型の 🎙️ など）、title の主題と本文から選んだ emoji に差し替える。"""
+def fix_emoji(fm, body, head):
+    """emoji が対応表に無ければ（旧定型の 🎙️ など）、title の主題（head の後ろ）と本文から選んだ emoji に差し替える。"""
     m = re.search(r'^emoji:\s*"?([^"\n]*)"?\s*$', fm, flags=re.M)
     if not m or topic_emoji.is_allowed(m.group(1).strip()):
         return fm, None
-    t = re.search(r'^title:\s*"?Tech Watch \d{4}-\d{2}-\d{2}:\s*(.*?)"?\s*$', fm, flags=re.M)
+    t = re.search(r'^title:\s*"?' + re.escape(head) + r':\s*(.*?)"?\s*$', fm, flags=re.M)
     new = topic_emoji.pick(t.group(1) if t else "", body)
     return fm[:m.start()] + f'emoji: "{new}"' + fm[m.end():], {"from": m.group(1).strip(), "to": new}
 
@@ -255,6 +257,12 @@ def main():
     ap.add_argument("--json-only", action="store_true")
     args = ap.parse_args()
 
+    run = series.of_slug(args.slug)
+    if run is None:
+        error = f"slug must be YYYYMMDD-<series>. Known series: {', '.join(series.keys())}"
+        print(json.dumps({"changed": False, "error": error}, ensure_ascii=False))
+        return 2
+
     path = REPO / "articles" / f"{args.slug}.md"
     if not path.exists():
         print(json.dumps({"changed": False, "error": f"file not found: {path}"}, ensure_ascii=False))
@@ -267,7 +275,7 @@ def main():
     if not Path(args.rules).exists():
         result["warning"] = f"rules file not found ({args.rules}); glossary and banned-word steps skipped"
 
-    fm, result["emoji"] = fix_emoji(fm, original[len(fm):])
+    fm, result["emoji"] = fix_emoji(fm, original[len(fm):], run.head)
     main_lines, n1 = unescape_backticks(main_lines)
     main_lines, n2 = move_quote_sources(main_lines)
     main_lines, n3 = transform_prose(main_lines, tighten_japanese_spaces)
