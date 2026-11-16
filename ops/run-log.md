@@ -2225,3 +2225,58 @@
 - writer: changed false / addressed [] / declined [] / chars 4082 → 4082 / stop_reason なし
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-17 06:07 JST) 20261117-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 4e5b56aa18d9
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-02, fact:F-03, fact:F-04, style:S-03]
+- fact: Critical 1 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 3
+- writer: changed true / addressed [fact:F-01, style:S-01, style:S-02] / declined [] / chars 4025 → 4007 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-17 06:10 JST) 20261117-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: d50063b5cd02
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [style:S-02, style:S-03]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 3
+- writer: changed true / addressed [style:S-01, FAILURE_LENGTH] / declined [] / chars 3983 → 4066 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-11-17 06:13 JST) 20261117-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 96eaffd2a5d9
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01, style:S-01]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 3
+- writer: changed true / addressed [style:S-02] / declined [] / chars 4067 → 4067 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-11-17 06:14 JST) 20261117-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: adafec0994e6
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [style:S-01, style:S-02]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 3
+- writer: changed false / addressed [] / declined [] / chars 4067 → 4062 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 5 (2026-11-17 06:15 JST) 20261117-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: adafec0994e6
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 3
+- writer: changed false / addressed [] / declined [] / chars 4062 → 4062 / stop_reason なし
+- Result: pass
+- Harness change 候補: なし
