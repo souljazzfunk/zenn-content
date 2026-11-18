@@ -2302,3 +2302,47 @@
 - writer: changed true / addressed [style:S-01] / declined [] / chars 4056 → 4024 / stop_reason なし
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-19 06:07 JST) 20261119-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 81f025767733
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [style:S-03, style:S-04, style:S-05]
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 5 / Nice 1
+- writer: changed true / addressed [style:S-01, style:S-02] / declined [] / chars 4085 → 4054
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-19 06:09 JST) 20261119-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 4c7178a6422d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 4 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [style:S-01, fact:F-01] / declined [] / chars 4054 → 4105
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-11-19 06:12 JST) 20261119-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: b50081bd98c3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- writer: changed true / addressed [style:S-01] / declined [] / chars 4105 → 4105
+- Result: continue
+- Harness change 候補: なし
+
+## Run 4 (2026-11-19 06:13 JST) 20261119-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: b50081bd98c3
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 1
+- writer: changed true / addressed [style:S-01] / declined [] / chars 4105 → 4105
+- Result: pass
+- Harness change 候補: なし
