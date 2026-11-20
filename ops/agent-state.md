@@ -2,11 +2,11 @@
 
 ## Last run
 
-- 2026-11-20 06:08 JST / 20261120-tech-watch / Run 2 / pass
+- 2026-11-21 06:08 JST / 20261121-learning-watch / Run 2 / pass
 - check: PASS
 - fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
-- style: Critical 0 / Must fix 0 / Nice 0
-- writer: changed false / addressed [] / declined [] / chars 4028 → 4028 / stop_reason なし
+- style: Critical 0 / Must fix 0 / Nice 2
+- writer: changed false / addressed [] / declined [] / chars 4216 → 4216 / stop_reason none
 
 ## Completed
 
@@ -99,7 +99,7 @@
 
 ## Next run
 
-- なし（20261120-tech-watch はレビュー合格で公開処理をした。公開の確認は ops-record の live と zenn-live-watch）
+- なし（20261121-learning-watch はレビュー合格で公開処理をした。公開の確認は ops-record の live と zenn-live-watch）
 
 ## Human read
 
