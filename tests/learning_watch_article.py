@@ -5,7 +5,7 @@
 SLUG = "20261117-learning-watch"
 ARTICLE = """---
 title: "Learning Watch 2026-11-17: 想起練習を AI に出題させる"
-emoji: "🏢"
+emoji: "🃏"
 type: "tech"
 topics:
   - "AI"

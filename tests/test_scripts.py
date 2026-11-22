@@ -71,9 +71,37 @@ class TopicEmojiTest(unittest.TestCase):
         style = next(p for p in (Path(__file__).resolve().parents[2] / "shared" / "knowledge" / "zenn-style.md",
                                  Path.home() / ".openclaw" / "shared" / "knowledge" / "zenn-style.md") if p.exists())
         text = style.read_text(encoding="utf-8")
-        section = text[text.index("## アイコン（emoji）の選び方"):]
-        rows = [l.split("|")[1].strip() for l in section.splitlines() if l.startswith("| ") and "emoji" not in l]
-        self.assertEqual(rows, [e for e, _, _ in topic_emoji.TOPIC_EMOJI] + [topic_emoji.FALLBACK_EMOJI])
+        block = text[text.index("## シリーズごとの決まり"):]
+        tech, learning = block[block.index("### tech-watch"):].split("### learning-watch")
+
+        def rows(part):
+            return [l.split("|")[1].strip() for l in part.splitlines() if l.startswith("| ") and "emoji" not in l]
+
+        self.assertEqual(rows(tech), [e for e, _, _ in topic_emoji.TOPIC_EMOJI] + [topic_emoji.FALLBACK_EMOJI])
+        self.assertEqual(rows(learning), [e for e, _, _ in topic_emoji.LEARNING_EMOJI] + [topic_emoji.LEARNING_FALLBACK])
+
+
+class LearningEmojiTest(unittest.TestCase):
+    """Learning Watch は 8 観点の表から選ぶ。Tech Watch の表では毎回 🎓 か 📊 になる（台帳 F214）。"""
+
+    def test_pick_by_subject_from_the_learning_table(self):
+        cases = {
+            "学習を代行しないAI設計": "💬",
+            "想起練習を AI に出題させる": "🃏",
+            "間隔を空けた復習": "📅",
+            "障害対応のロールプレイ": "🎭",
+            "社内資料に出典を付ける": "📚",
+            "学んだつもりを測り直す": "📏",
+            "今日の雑多な話題": topic_emoji.LEARNING_FALLBACK,
+        }
+        for subject, want in cases.items():
+            self.assertEqual(topic_emoji.pick(subject, series="learning-watch"), want, subject)
+
+    def test_each_series_allows_only_its_own_table(self):
+        self.assertTrue(topic_emoji.is_allowed("📊", "tech-watch"))
+        self.assertFalse(topic_emoji.is_allowed("📊", "learning-watch"))
+        self.assertTrue(topic_emoji.is_allowed("🛠", "learning-watch"))
+        self.assertFalse(topic_emoji.is_allowed("🃏", "tech-watch"))
 
 
 class ImportlibLoadTest(unittest.TestCase):
@@ -178,9 +206,31 @@ class ScriptsTest(unittest.TestCase):
         self.assertEqual(self.title_or_slug_failures(lw.SLUG), ["FAILURE_TITLE_FORMAT"])
 
     def test_fix_picks_the_emoji_of_a_learning_watch_article_from_its_subject(self):
-        self.write(lw.SLUG, LW_SHORT.format(subject="MCP ゲートウェイの設計", emoji="🎙️"))
+        self.write(lw.SLUG, LW_SHORT.format(subject="想起練習を AI に出題させる", emoji="🎙️"))
         code, out = self.run_slug("article-fix.py", lw.SLUG)
-        self.assertEqual(out["emoji"], {"from": "🎙️", "to": "🔌"})
+        self.assertEqual(out["emoji"], {"from": "🎙️", "to": "🃏"})
+
+    def slug_emoji_failures(self, slug):
+        return [f for f in self.run_slug("article-check.py", slug)[1]["failures"] if "EMOJI" in f]
+
+    def test_fix_replaces_the_writers_emoji_of_a_learning_watch_article_even_when_it_is_in_the_table(self):
+        # 11-17〜11-21 の 3 本は書き手が 📊 を選び、表にあったので直らなかった（台帳 F214）
+        self.write(lw.SLUG, LW_SHORT.format(subject="学んだつもりを測り直す", emoji="💬"))
+        self.assertEqual(len(self.slug_emoji_failures(lw.SLUG)), 1)
+        code, out = self.run_slug("article-fix.py", lw.SLUG)
+        self.assertEqual(out["emoji"], {"from": "💬", "to": "📏"})
+        self.assertEqual(self.slug_emoji_failures(lw.SLUG), [])
+
+    def test_learning_watch_rejects_the_tech_watch_table(self):
+        self.write(lw.SLUG, LW_SHORT.format(subject="学んだつもりを測り直す", emoji="📊"))
+        self.assertEqual(len(self.slug_emoji_failures(lw.SLUG)), 1)
+        self.assertEqual(self.run_slug("article-fix.py", lw.SLUG)[1]["emoji"], {"from": "📊", "to": "📏"})
+
+    def test_tech_watch_keeps_the_writers_emoji_from_its_table(self):
+        self.write("20261118-tech-watch", ARTICLE.format(subject="MCP ゲートウェイの設計", emoji="🧠")
+                   .replace("2026-10-10", "2026-11-18"))
+        self.assertIsNone(self.run_slug("article-fix.py", "20261118-tech-watch")[1]["emoji"])
+        self.assertEqual(self.slug_emoji_failures("20261118-tech-watch"), [])
 
     def test_a_full_learning_watch_article_passes_the_check_against_its_own_seen_list(self):
         self.write(lw.SLUG, lw.ARTICLE)

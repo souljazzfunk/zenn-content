@@ -21,7 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # importlib で読み込まれても topic_emoji と series を見つける
 import series
-from topic_emoji import ALLOWED_EMOJI, is_allowed
+import topic_emoji
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_RULES = Path(os.path.expanduser("~/.openclaw/shared/knowledge/writing-rules.md"))
@@ -249,8 +249,15 @@ def main():
         failures.append(f"FAILURE_TITLE_FORMAT: title must be '{run.head}: <主題>'")
     elif count_chars(m.group(1)) > 20:
         warnings.append("WARNING_TITLE_SUBJECT_LONG: 主題は 20 字以内")
-    if not is_allowed(fm.get("emoji")):
-        failures.append("FAILURE_FM_EMOJI: emoji must be one of " + " ".join(sorted(ALLOWED_EMOJI)) + "（zenn-style.md の対応表）")
+    key = run.series.key
+    emoji = fm.get("emoji") if isinstance(fm.get("emoji"), str) else ""
+    if not topic_emoji.is_allowed(emoji, key):
+        failures.append("FAILURE_FM_EMOJI: emoji must be one of " + " ".join(sorted(topic_emoji.allowed(key)))
+                        + "（zenn-style.md の対応表）")
+    elif key in topic_emoji.MACHINE_PICKED:
+        want = topic_emoji.pick(m.group(1) if m else "", body, key)
+        if not topic_emoji.same(emoji, want):
+            failures.append(f"FAILURE_FM_EMOJI: {run.series.title} の emoji は主題と本文から選んだ {want}（article-fix.py が書き換える）")
     if fm.get("type") != "tech":
         failures.append("FAILURE_FM_TYPE: type must be tech")
     if str(fm.get("published")).lower() != "false":

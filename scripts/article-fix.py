@@ -5,7 +5,8 @@
     python3 scripts/article-fix.py <slug> [--reviews a.json b.json ...] [--rules PATH] [--dry-run] [--json-only]
 
 やること（順番どおり。0 以外は frontmatter、コードブロック、インラインコード、URL、`>` 引用行、`## 今日の N 件` の一覧節（冒頭。次の `## ` 見出しまで）は触らない）:
-0. frontmatter の emoji が対応表（topic_emoji.py）に無ければ、タイトルの主題と本文から選び直す
+0. frontmatter の emoji がそのシリーズの対応表（topic_emoji.py）に無ければ、タイトルの主題と本文から選び直す。
+   MACHINE_PICKED のシリーズ（Learning Watch）は、表にあっても選んだ結果と違えば書き換える
 1. エスケープされたバッククォート（\\`）を戻す
 2. 引用ブロック末尾の「空の > 行 + > 出典名」をブロック外の「出典: 名前」に移す
 3. writing-rules.md「## 定訳（自動置換）」の `english → 日本語` を単語境界で置換（小文字表記の語だけ。大文字始まりは固有名詞とみなして触らない）
@@ -88,14 +89,21 @@ def join_article(fm, main_lines, list_lines):
     return fm + "\n".join(main_lines)
 
 
-def fix_emoji(fm, body, head):
-    """emoji が対応表に無ければ（旧定型の 🎙️ など）、title の主題（head の後ろ）と本文から選んだ emoji に差し替える。"""
+def fix_emoji(fm, body, run):
+    """emoji を title の主題（run.head の後ろ）と本文から選んだ emoji に差し替える。
+
+    差し替えるのは、そのシリーズの表に無いとき（旧定型の 🎙️ など）と、MACHINE_PICKED のシリーズで選んだ結果と違うとき。
+    """
+    key = run.series.key
     m = re.search(r'^emoji:\s*"?([^"\n]*)"?\s*$', fm, flags=re.M)
-    if not m or topic_emoji.is_allowed(m.group(1).strip()):
+    if not m:
         return fm, None
-    t = re.search(r'^title:\s*"?' + re.escape(head) + r':\s*(.*?)"?\s*$', fm, flags=re.M)
-    new = topic_emoji.pick(t.group(1) if t else "", body)
-    return fm[:m.start()] + f'emoji: "{new}"' + fm[m.end():], {"from": m.group(1).strip(), "to": new}
+    cur = m.group(1).strip()
+    t = re.search(r'^title:\s*"?' + re.escape(run.head) + r':\s*(.*?)"?\s*$', fm, flags=re.M)
+    new = topic_emoji.pick(t.group(1) if t else "", body, key)
+    if topic_emoji.is_allowed(cur, key) and (key not in topic_emoji.MACHINE_PICKED or topic_emoji.same(cur, new)):
+        return fm, None
+    return fm[:m.start()] + f'emoji: "{new}"' + fm[m.end():], {"from": cur, "to": new}
 
 
 def count_chars(lines):
@@ -275,7 +283,7 @@ def main():
     if not Path(args.rules).exists():
         result["warning"] = f"rules file not found ({args.rules}); glossary and banned-word steps skipped"
 
-    fm, result["emoji"] = fix_emoji(fm, original[len(fm):], run.head)
+    fm, result["emoji"] = fix_emoji(fm, original[len(fm):], run)
     main_lines, n1 = unescape_backticks(main_lines)
     main_lines, n2 = move_quote_sources(main_lines)
     main_lines, n3 = transform_prose(main_lines, tighten_japanese_spaces)
