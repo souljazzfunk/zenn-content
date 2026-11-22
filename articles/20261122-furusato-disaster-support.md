@@ -7,7 +7,7 @@ topics:
   - "災害復興"
   - "能登半島地震"
   - "寄附"
-published: false
+published: true
 ---
 
 #### AIが書きました🤖
