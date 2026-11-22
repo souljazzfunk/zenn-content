@@ -1,6 +1,6 @@
 ---
 title: "Learning Watch 2026-11-19: 学んだつもりを測り直す"
-emoji: "📊"
+emoji: "📏"
 type: "tech"
 topics:
   - "AI"

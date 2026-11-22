@@ -1,6 +1,6 @@
 ---
 title: "Learning Watch 2026-11-21: 理解を測るAI学習設計"
-emoji: "📊"
+emoji: "📏"
 type: "tech"
 topics:
   - "AI"

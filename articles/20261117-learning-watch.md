@@ -1,6 +1,6 @@
 ---
 title: "Learning Watch 2026-11-17: 学習を代行しないAI設計"
-emoji: "📊"
+emoji: "💬"
 type: "tech"
 topics:
   - "AI"
