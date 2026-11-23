@@ -149,6 +149,12 @@ class ScriptsTest(unittest.TestCase):
         self.article.write_text(ARTICLE.format(subject="MCP ゲートウェイの設計", emoji="🎙️"), encoding="utf-8")
         self.assertEqual(len(self.emoji_failures()), 1)
 
+    def test_check_exits_zero_on_a_failing_article_so_openclaw_does_not_report_bash_failed(self):
+        self.article.write_text(ARTICLE.format(subject="MCP ゲートウェイの設計", emoji="🎙️"), encoding="utf-8")
+        code, out = self.run_slug("article-check.py", SLUG)
+        self.assertIs(out["pass"], False)
+        self.assertEqual(code, 0)
+
     def test_check_fails_a_slug_of_no_known_series(self):
         notes = self.tmp / "articles" / "20261117-notes.md"
         notes.write_text(ARTICLE.format(subject="x", emoji="🧠").replace("Tech Watch 2026-10-10", "Notes"), encoding="utf-8")
