@@ -242,7 +242,6 @@ def main():
     if not Path(args.rules).exists():
         warnings.append(f"rules file not found ({args.rules}); using built-in lists")
 
-    # --- frontmatter
     # head は slug の日付を含むので、title と slug の日付の食い違いもここで落ちる
     m = re.match("^" + re.escape(run.head) + r": (.+)$", title)
     if not m:
@@ -266,7 +265,6 @@ def main():
     if not topics or len(topics) > 5:
         failures.append("FAILURE_FM_TOPICS: topics must have 1-5 entries")
 
-    # --- body split: main text vs final list
     lines = body.splitlines()
     # 「## 今日の N 件」は冒頭（導入の直後）に置く。一覧節は次の `## ` 見出しまで。本文はその前後
     list_idx = next((i for i, l in enumerate(lines) if re.match(r"^## 今日の\s*\d+\s*件", l)), None)
@@ -288,13 +286,11 @@ def main():
     if AI_NOTE not in main_text:
         failures.append(f"FAILURE_AI_NOTE: '{AI_NOTE}' missing (旧文言「人間が確認してから投稿」は不可)")
 
-    # --- length
     chars_main = count_chars(re.sub(r"```.*?```", "", main_text, flags=re.S))
     stats["chars_main"] = chars_main
     if chars_main < CHARS_MIN or chars_main > CHARS_MAX:
         failures.append(f"FAILURE_LENGTH: main text {chars_main} chars, expected {CHARS_MIN}-{CHARS_MAX}")
 
-    # --- speakers
     turns = split_turns(main_lines)
     speakers = sorted({t["speaker"] for t in turns})
     bad_speakers = [s for s in speakers if s not in ("L", "A")]
@@ -323,7 +319,6 @@ def main():
         if name in main_text:
             failures.append(f"FAILURE_OLD_NAME: '{name}' found")
 
-    # --- structure
     h2 = [l for l in main_lines if l.startswith("## ")]
     deeper = [l for l in main_lines if re.match(r"^#{3,}\s", l) and not l.startswith(AI_HEADER)]
     stats["h2"] = len(h2)
@@ -332,7 +327,6 @@ def main():
     if deeper:
         failures.append(f"FAILURE_HEADING_DEPTH: headings deeper than ## found ({len(deeper)})")
 
-    # --- markdown sanity
     fences = [l for l in lines if l.strip().startswith("```")]
     if len(fences) % 2:
         failures.append("FAILURE_CODE_FENCE: unbalanced ``` fences")
@@ -446,7 +440,6 @@ def main():
     for w, n in stock_hits.items():
         warnings.append(f"WARNING_STOCK_PHRASE: '{w}' x{n}")
 
-    # --- degradation guards
     hedge_count = sum(main_text.count(h) for h in hedges)
     per_1000 = hedge_count * 1000 / max(chars_main, 1)
     stats["hedges"], stats["hedges_per_1000"] = hedge_count, round(per_1000, 2)
@@ -479,7 +472,7 @@ def main():
             stats["list_urls_not_in_seen"] = len(extra)
             if extra:
                 warnings.append(f"WARNING_LIST_VS_SEEN_EXTRA: {len(extra)} list URL(s) not in seen file: {extra[:3]}")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             warnings.append(f"WARNING_SEEN_UNREADABLE: {e}")
     else:
         warnings.append("WARNING_SEEN_MISSING: seen file not found; skipped list/seen comparison")
