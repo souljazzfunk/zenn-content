@@ -2423,3 +2423,25 @@
 - writer: changed false / addressed [] / declined [] / chars 4074 → 4074
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-24 06:06 JST) 20261124-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 1311e889ef8a
+- check: FAIL (FAILURE_LENGTH)
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-03, fact:F-04]
+- fact: Critical 0 / Must fix 4 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 1
+- writer: changed true / addressed [fact:F-01, fact:F-02, style:S-01, style:S-02, FAILURE_LENGTH] / declined [] / chars 3747 → 4235 / stop_reason なし
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-24 06:07 JST) 20261124-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 1311e889ef8a
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- writer: changed true / addressed [fact:F-01, fact:F-02, style:S-01, style:S-02, FAILURE_LENGTH] / declined [] / chars 3747 → 4235 / stop_reason なし
+- Result: pass
+- Harness change 候補: なし
