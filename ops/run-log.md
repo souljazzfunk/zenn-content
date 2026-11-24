@@ -2445,3 +2445,27 @@
 - writer: changed true / addressed [fact:F-01, fact:F-02, style:S-01, style:S-02, FAILURE_LENGTH] / declined [] / chars 3747 → 4235 / stop_reason なし
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-25 06:07 JST) 20261125-tech-watch
+- Trigger: tech-watch（定期ジョブ内）
+- article_sha: 469da0c7c33e
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied [fact:F-01]
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 1 / Nice 1
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01] / declined [] / chars 4118 → 4019 / stop_reason none
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-25 06:08 JST) 20261125-tech-watch
+- Trigger: tech-watch（定期ジョブ内）
+- article_sha: 469da0c7c33e
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 1 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01] / declined [] / chars 4118 → 4019 / stop_reason none
+- Result: pass
+- Harness change 候補: なし
