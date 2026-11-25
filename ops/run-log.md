@@ -2469,3 +2469,39 @@
 - writer: changed true / addressed [style:S-01] / declined [] / chars 4118 → 4019 / stop_reason none
 - Result: pass
 - Harness change 候補: なし
+
+## Run 1 (2026-11-26 06:07 JST) 20261126-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: bac1fb1ee5b5
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 1 / applied [fact:F-01, fact:F-02, fact:F-03]
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 1
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01, style:S-02] / declined [] / chars 4353 → 4426 / stop_reason none
+- Result: continue
+- Harness change 候補: なし
+
+## Run 2 (2026-11-26 06:09 JST) 20261126-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 6f371ff8e42d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 2 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01, style:S-02] / declined [] / chars 4426 → 4426 / stop_reason none
+- Result: continue
+- Harness change 候補: なし
+
+## Run 3 (2026-11-26 06:10 JST) 20261126-learning-watch
+- Trigger: learning-watch（定期ジョブ内）
+- article_sha: 6f371ff8e42d
+- check: PASS
+- autofix: glossary 0 / banned 0 / markdown 0 / applied []
+- fact: Critical 0 / Must fix 0 / Nice 0 / unreachable 0
+- style: Critical 0 / Must fix 0 / Nice 0
+- glossary: added [] / fixed [] / skipped 0
+- writer: changed true / addressed [style:S-01, style:S-02] / declined [] / chars 4426 → 4426 / stop_reason none
+- Result: pass
+- Harness change 候補: なし
